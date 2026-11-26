@@ -1,4 +1,4 @@
-%% Core bundle: Sling Models and services (package com.airline.travel.core).
+%% Core bundle: Sling Models, services and filters (package com.airline.travel.core). Impact: all [N].
 classDiagram
     direction LR
     class Component {
@@ -11,16 +11,19 @@ classDiagram
         +getTitle() String
         +getIntroduction() String
         +getImage() HeroImage
+        +getJumpLinksTitle() String
         +getJumpLinks() List~JumpLink~
+        +isImageMissingAlt() boolean
         +isEmpty() boolean
     }
     class HeroBannerImpl {
-        -fileReference, altText, isDecorative
-        -resolveAlt() DAM dc:description fallback
+        -alt: author alt, else DAM dc:description, else none
+        -renditions 640/960/1280 only, never the original
     }
     class HeroImage {
         +getSrc() String
         +getSrcset() String
+        +getSizes() String
         +getWidth() int
         +getHeight() int
         +getAlt() String
@@ -34,10 +37,17 @@ classDiagram
         <<Core interface>>
     }
     class TeaserImpl {
-        -delegate Teaser (via ResourceSuperType)
-        +getLink() Link (adds rel noopener noreferrer)
-        +getActions() List~ListItem~
-        +getLinkRel() String
+        -delegate Teaser via ResourceSuperType
+        +getLink() RelSafeLink
+        +getActions() List~RelSafeListItem~
+    }
+    class RelSafeLink {
+        <<decorator of Core Link>>
+        +getHtmlAttributes() adds rel noopener noreferrer once, for target _blank
+    }
+    class RelSafeListItem {
+        <<decorator of Core ListItem>>
+        +getLink() RelSafeLink
     }
     class TravelQuestionsAccordion {
         <<interface>>
@@ -45,13 +55,15 @@ classDiagram
         +getHeadingElement() String
         +getItemHeadingElement() String
         +getItems() List~AccordionItem~
+        +isExpandFirst() boolean
+        +isTruncated() boolean
         +isEmpty() boolean
     }
     class TravelQuestionsAccordionImpl
     class AccordionItem {
-        +getId() String
+        +getId() String  from fragment path
         +getQuestion() String
-        +getAnswerHtml() String
+        +getAnswerHtml() String  allow-listed
         +getData() ComponentData
     }
     class FaqStructuredData {
@@ -60,25 +72,33 @@ classDiagram
         +isEmpty() boolean
     }
     class FaqStructuredDataImpl {
-        -finds travelquestions resources on the page
+        -reuses request-cached selection results
     }
     class FaqSchemaBuilder {
-        +build(List~TravelQuestion~) String
+        +build(List~TravelQuestion~) String  Gson HTML-safe
+    }
+    class RichTextSanitizer {
+        +sanitize(String) String  p ul ol li a-href strong b em i br
     }
     class TravelQuestionService {
         <<interface>>
-        +findQuestions(ResourceResolver, QuestionSelection) List~TravelQuestion~
+        +find(ResourceResolver, QuestionSelection) SelectionResult
     }
     class TravelQuestionServiceImpl {
         <<OSGi component>>
-        -Config allowedRootPath, modelPath, maxItems
+        -Config allowed.root.path, model.path, max.items, max.fragments.scanned
     }
     class QuestionSelection {
         <<value>>
-        +mode FOLDER|TAGS
+        +mode FOLDER descendants or TAGS exact IDs
         +folderPath, rootPath
         +tagIds, matchAll, limit
         +fromValueMap(ValueMap) QuestionSelection
+    }
+    class SelectionResult {
+        <<value>>
+        +questions List~TravelQuestion~  sortOrder, question
+        +truncated boolean
     }
     class TravelQuestion {
         <<value>>
@@ -87,16 +107,17 @@ classDiagram
     }
     class HtmlCacheHeadersFilter {
         <<Sling filter, publish only>>
-        -Config pathPattern, maxAge, sMaxAge
+        -Config path.pattern, max.age, surrogate.max.age, stale.while.revalidate, stale.if.error
+        -GET/HEAD, .html, 200 only. Adds Surrogate-Key
     }
     class LandmarkContainer {
         <<interface>>
         +getLandmarkElement() String
+        +getLandmarkId() String
     }
     class LandmarkContainerImpl {
-        -policy landmarkElement (header|main|footer|section|aside|div)
+        -policy landmarkElement header/main/footer/section/aside/div
     }
-    LandmarkContainer <|.. LandmarkContainerImpl
 
     Component <|-- HeroBanner
     Component <|-- TravelQuestionsAccordion
@@ -105,12 +126,19 @@ classDiagram
     HeroBannerImpl --> JumpLink
     Teaser <|.. TeaserImpl
     TeaserImpl ..> Teaser : delegates
+    TeaserImpl --> RelSafeLink
+    TeaserImpl --> RelSafeListItem
+    RelSafeListItem --> RelSafeLink
     TravelQuestionsAccordion <|.. TravelQuestionsAccordionImpl
     TravelQuestionsAccordionImpl --> AccordionItem
     TravelQuestionsAccordionImpl ..> TravelQuestionService
     TravelQuestionsAccordionImpl ..> QuestionSelection
+    TravelQuestionsAccordionImpl ..> RichTextSanitizer
     FaqStructuredData <|.. FaqStructuredDataImpl
     FaqStructuredDataImpl ..> TravelQuestionService
     FaqStructuredDataImpl ..> FaqSchemaBuilder
+    FaqSchemaBuilder ..> RichTextSanitizer
     TravelQuestionService <|.. TravelQuestionServiceImpl
-    TravelQuestionServiceImpl --> TravelQuestion
+    TravelQuestionServiceImpl --> SelectionResult
+    SelectionResult --> TravelQuestion
+    LandmarkContainer <|.. LandmarkContainerImpl

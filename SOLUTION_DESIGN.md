@@ -1,36 +1,37 @@
 # Solution design — "Flying with infants and children"
 
-**Audience:** Anchora architect and the airline's technical lead. **Status:** v1.1 (after architect review, see `docs/03-architect-review.md`).
-**Diagram sources:** `docs/diagrams/*.mmd` (Mermaid), rendered to `docs/diagrams/rendered/*.svg` by `scripts/render-diagrams.ps1`.
-Integration numbers `I-01`..`I-14` are used consistently in the diagrams, the integration register (§6) and the decision records (§9).
+**Audience:** Anchora architect and the airline's technical lead. **Status:** v1.1. v1.0 was reviewed by an independent architect review (`docs/03-architect-review.md`, 30 findings); every finding is resolved in that document's *Review resolution* table.
+**Diagram as code (SD-03):** Mermaid sources are in `docs/diagrams/*.mmd`, rendered to `docs/diagrams/rendered/*.svg` by `scripts/render-diagrams.ps1`. The Mermaid blocks below are copied from the sources by `scripts/sync-diagrams.ps1`. `scripts/check-traceability.ps1` checks that every `I-xx` agrees across the diagrams, this document and the ADRs.
+Integrations are numbered `I-01`..`I-16`, and those numbers are used in the diagrams, the integration register (§5) and the decision records (§9). Engineering detail is in `docs/02-design.md`.
 
 ---
 
 ## 1. Context and scope (SD-01)
 
-**Problem.** The airline's infants and children travel page is being rebuilt on its existing AEM as a Cloud Service (AEMaaCS) Sites and Assets platform. The page carries legally reviewed infant travel rules. It needs to be easy for six central authors to maintain, measurable in Adobe Analytics, well understood by search engines and AI crawlers, and reusable for New Zealand next quarter. No reusable components exist today.
+**Problem.** The airline's infants and children travel page is being rebuilt on its existing AEM as a Cloud Service (AEMaaCS) Sites and Assets platform. The page carries legally reviewed infant travel rules. It must be easy for six central authors to maintain, measurable in Adobe Analytics, machine-readable for search engines and AI crawlers, and reusable for New Zealand next quarter. No reusable components exist today.
 
 | In scope (built) | In scope (designed only) | Out of scope |
 |---|---|---|
-| Editable template with locked header/footer XFs, landmarks, skip link | Joey Club enquiry form → Salesforce (I-09, I-10) | Other reference-page sections (meals, baggage, bassinets, Bluey) |
-| Hero banner with DAM alt fallback and "On this page" links | Targeted cache invalidation on fragment publish (I-13) | Real header/footer XF content and global navigation |
-| Joey Club teaser (Core Teaser extension) | Legal approval workflow for travel-question fragments (I-14) | Analytics report suites, Tags rule authoring (owned by the analytics team) |
-| Accordion driven by Content Fragments (folder or tag selection) | NZ market rollout (§10) | Personalisation, A/B testing, search |
-| FAQPage JSON-LD, page metadata, canonical | CDN configuration as code (`cdn.yaml`) beyond headers | Real Salesforce objects |
-| Persisted GraphQL queries for non-AEM consumers | | |
+| Editable template with locked header/footer XFs, landmarks, skip link | Joey Club enquiry → Salesforce (I-09, I-10) | Other reference-page sections (meals, baggage, bassinets, Bluey) |
+| Hero banner with DAM alt fallback and "On this page" links | Targeted invalidation on fragment/XF publish (I-13) | Real header/footer XF content, global navigation |
+| Joey Club teaser (Core Teaser extension) | Legal approval workflow on Preview (I-14) | Tags rule authoring and report suites (analytics team) |
+| Fragment-driven accordion (folder or tag selection) | CDN configuration as code: rate limit, purge key (I-16) | Personalisation, search, A/B testing |
+| FAQPage JSON-LD, metadata, canonical, sitemap | NZ rollout (§10) | Real Salesforce objects |
+| Persisted GraphQL queries for non-AEM consumers | `robots.txt` AI-crawler policy (Q-05) | |
 | ACDL events, Dispatcher configuration, unit and UI tests | | |
 
 **Assumptions beyond the assumed current state**
 
 | # | Assumption |
 |---|---|
-| A-01 | Accordion answer copy is placeholder copy written for "the airline". Legal must approve real copy before go-live. Only the six item titles follow the reference page |
-| A-02 | Legal changes must be visible on every cache layer within **5 minutes** of publication |
-| A-03 | Images are self-produced for the exercise. In production they come from the airline's DAM with rights metadata |
-| A-04 | Dynamic Media / web-optimised image delivery is available in production but not on the local SDK. The hero uses static DAM renditions locally (ADR-007) |
-| A-05 | AEP Tags rules that map our events to Analytics variables are built by the analytics team against the contract in §8.3 |
-| A-06 | Salesforce exposes a REST endpoint for a `Joey_Club_Enquiry__c` record and supports OAuth 2.0 client credentials for an integration user |
-| A-07 | The page is public and anonymous. No logged-in or personalised variants |
+| A-01 | Accordion answers are placeholder copy written for "the airline". Legal approves real copy before go-live. Only the six item titles follow the reference page |
+| A-02 | A legal change must be visible on every cache layer within **300 s** of publication (worst case; formula in §7) |
+| A-03 | Images are self-produced. In production they come from the DAM with rights metadata |
+| A-04 | "Preview mode" (PF-01) is the AEMaaCS **Preview tier** in cloud environments. Locally, the nearest equivalent is the SDK **publish** instance (anonymous, no editor). Author with `wcmmode=disabled` is a secondary reference |
+| A-05 | The analytics team builds the AEP Tags rules against the contract in §8.3 |
+| A-06 | Salesforce exposes `Joey_Club_Enquiry__c` with an External ID field and supports OAuth 2.0 client credentials |
+| A-07 | The page is public and anonymous, with no personalised variants |
+| A-08 | FAQPage markup is for semantics and AI or answer engines. Google shows FAQ rich results only for authoritative government and health sites, so no rich-result uplift is promised |
 
 ## 2. Architecture (SD-02, SD-03, SD-04)
 
@@ -38,249 +39,415 @@ Integration numbers `I-01`..`I-14` are used consistently in the diagrams, the in
 
 ![C4 context](docs/diagrams/rendered/c4-context.svg)
 
-Source: [`docs/diagrams/c4-context.mmd`](docs/diagrams/c4-context.mmd)
+<!-- diagram:c4-context -->
+```mermaid
+%% C4 Level 1 - System context. Impact coding: [E] existing, [N] new, [C] changed. Dashed = designed only (not built in this exercise).
+flowchart LR
+    author(["Content authors (6)<br/>[Person] [E]"])
+    legal(["Legal reviewer<br/>[Person] [E]"])
+    visitor(["Families planning travel<br/>[Person] [E]"])
+    crawler(["Search engines and AI crawlers<br/>[External system] [E]"])
+    consumer(["Non-AEM consumer<br/>e.g. airline app<br/>[External system] [N]"])
+
+    platform["Airline web platform<br/>AEM as a Cloud Service (Sites + Assets)<br/>Author, Preview, Publish, Dispatcher,<br/>Adobe-managed CDN<br/>[Software system] [C]"]
+
+    analytics["Adobe Analytics<br/>via AEP Tags + ACDL<br/>[External system] [E]"]
+    salesforce["Salesforce<br/>Joey Club membership<br/>[External system] [E]"]
+    cloudmgr["Adobe Cloud Manager<br/>CI/CD + quality gates<br/>[External system] [E]"]
+
+    author -- "I-01 author pages, fragments, assets<br/>HTTPS + Adobe IMS [E]" --> platform
+    legal -. "I-14 review on Preview, approve in workflow<br/>[N, designed]" .-> platform
+    visitor -- "I-05 read page<br/>HTTPS [C]" --> platform
+    visitor -. "I-09 Joey Club enquiry<br/>HTTPS POST [N, designed]" .-> platform
+    crawler -- "I-08 crawl HTML + FAQPage JSON-LD, sitemap<br/>HTTPS [C]" --> platform
+    consumer -- "I-07 persisted GraphQL query<br/>HTTPS GET [N]" --> platform
+    visitor -- "I-06 interaction events<br/>ACDL -> Tags beacon [C]" --> analytics
+    platform -. "I-10 enquiry upsert<br/>REST + OAuth 2.0 [N, designed]" .-> salesforce
+    cloudmgr -- "I-11 code + Dispatcher pipelines [C]<br/>I-16 CDN config pipeline [N, designed]" --> platform
+
+    subgraph legend["Legend"]
+        direction TB
+        lE["[E] Existing - unchanged"]:::existing
+        lC["[C] Changed by this work"]:::changed
+        lN["[N] New in this work"]:::new
+        lD["Dashed arrow = designed only"]:::note
+    end
+
+    classDef existing fill:#eceff1,stroke:#607d8b,color:#263238
+    classDef changed fill:#fff3e0,stroke:#ef6c00,color:#3e2723
+    classDef new fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    classDef note fill:#ffffff,stroke:#9e9e9e,stroke-dasharray: 4 3,color:#424242
+    class author,legal,visitor,crawler,analytics,salesforce,cloudmgr existing
+    class platform changed
+    class consumer new
+```
+<!-- /diagram:c4-context -->
 
 ### 2.2 Containers (C4 level 2)
 
 ![C4 container](docs/diagrams/rendered/c4-container.svg)
 
-Source: [`docs/diagrams/c4-container.mmd`](docs/diagrams/c4-container.mmd)
+<!-- diagram:c4-container -->
+```mermaid
+%% C4 Level 2 - Container view. Impact coding: [E] existing, [N] new, [C] changed. Dashed = designed only.
+flowchart LR
+    author(["Content authors<br/>[Person] [E]"])
+    legal(["Legal reviewer<br/>[Person] [E]"])
+    browser(["Visitor browser<br/>HTML + ACDL + clientlibs<br/>[Container: web page] [C]"])
+    crawler(["Search engines and AI crawlers<br/>[E]"])
+    consumer(["Non-AEM consumer<br/>[N]"])
 
-**Impact legend (SD-04):** **[E] Existing** — unchanged by this work (grey). **[C] Changed** — existing element altered by this work (amber). **[N] New** — introduced by this work (green). **Dashed arrows** are designed only. Every element and every integration carries one of these tags in the diagrams and in the registers below.
+    subgraph aem["AEM as a Cloud Service environment [C]"]
+        direction LR
+        authorTier["AEM Author<br/>Sites editor, editable template,<br/>hero / teaser / travel-questions<br/>[Container: Java/OSGi] [C]"]
+        assets["AEM Assets (DAM)<br/>hero + Joey Club images,<br/>alt text in dc:description<br/>[Container] [C]"]
+        cf["Content Fragments<br/>model travel-question,<br/>6 infant-booking fragments<br/>[Container] [N]"]
+        preview["AEM Preview<br/>pre-publish review URL<br/>[Container] [E]"]
+        publish["AEM Publish<br/>HTL render, Sling Models,<br/>FAQPage JSON-LD, GraphQL,<br/>cache-header filter<br/>[Container: Java/OSGi] [C]"]
+        dispatcher["Dispatcher (Apache httpd)<br/>allow-list filters, cache + TTL,<br/>security headers<br/>[Container] [C]"]
+        cdn["Adobe-managed CDN<br/>Surrogate-Control TTL;<br/>rate limit + purge key (designed)<br/>[Container] [C]"]
+    end
 
-**Supporting diagrams** (also in `docs/02-design.md`): page-render sequence (`sequence-page-render.mmd`), data-layer events (`sequence-datalayer.mmd`), fragment invalidation (`sequence-cf-invalidation.mmd`), Joey Club enquiry (`sequence-joey-enquiry.mmd`), Sling Models (`class-models.mmd`), and JCR content structure (`content-structure.mmd`).
+    tags["AEP Tags library<br/>rules on airline:* events<br/>[Container] [C]"]
+    analytics["Adobe Analytics<br/>[External] [E]"]
+    salesforce["Salesforce REST API<br/>Joey Club enquiry<br/>[External] [E]"]
+    cloudmgr["Cloud Manager<br/>full-stack, web-tier, config pipelines<br/>[External] [E]"]
+    git["Git repository<br/>this project<br/>[N]"]
 
-## 3. Element register (impact coding)
+    author -- "I-01 HTTPS + IMS [E]" --> authorTier
+    authorTier -- "I-02 in-repo CF + asset read/write [C]" --> cf
+    authorTier -- "I-02 [C]" --> assets
+    authorTier -- "I-15 publish to Preview [E]" --> preview
+    legal -. "I-14 review Preview URL, approve workflow [N, designed]" .-> authorTier
+    authorTier -- "I-03 publish: Sling Content Distribution [E]" --> publish
+    authorTier -. "I-13 fragment/XF publish -> targeted invalidate [N, designed]" .-> dispatcher
+    authorTier -. "I-13 purge by Surrogate-Key [N, designed]" .-> cdn
+    publish -- "I-04 cache invalidation on activation [E]" --> dispatcher
+    publish -- "I-12 header/footer XF include [C]" --> publish
+    dispatcher -- "I-05 render request on cache miss [C]" --> publish
+    cdn -- "I-05 origin fetch [C]" --> dispatcher
+    browser -- "I-05 HTML, CSS/JS, images HTTPS [C]" --> cdn
+    crawler -- "I-08 HTML + JSON-LD + sitemap [C]" --> cdn
+    consumer -- "I-07 GET /graphql/execute.json/airline/... [N]" --> cdn
+    browser -- "I-06 ACDL events [C]" --> tags
+    tags -- "I-06 beacon HTTPS [C]" --> analytics
+    browser -. "I-09 POST enquiry JSON [N, designed]" .-> cdn
+    publish -. "I-10 REST upsert + OAuth 2.0 [N, designed]" .-> salesforce
+    git -- "I-11 [C]" --> cloudmgr
+    cloudmgr -- "I-11 deploy code + Dispatcher config [C]" --> aem
+    cloudmgr -. "I-16 cdn.yaml config pipeline [N, designed]" .-> cdn
 
-| Element | Type | Impact | Change |
-|---|---|---|---|
-| Content authors / Legal reviewer / Visitors | Person | E | — |
-| AEM Author | Container | C | New template, components, policies, CF model, tags |
-| AEM Assets (DAM) | Container | C | New images with alt-text metadata, new fragment folder |
-| Content Fragments | Container | N | `travel-question` model + six fragments |
-| AEM Publish | Container | C | New Sling Models, JSON-LD, persisted queries, cache-header filter |
-| Dispatcher | Container | C | Allow-list filters, cache rules, TTLs, security headers |
-| Adobe-managed CDN | Container | E | Honours our `Cache-Control` headers; no CDN config change |
-| AEP Tags | Container | C | New rules for `airline:*` events |
-| Adobe Analytics | External | E | — |
-| Salesforce | External | E | New inbound integration (designed) |
-| Cloud Manager | External | E | Runs pipelines for the new code (I-11 changed) |
-| Search engines and AI crawlers | External | E | Receive new structured data (I-08 changed) |
-| Non-AEM consumer | External | N | Consumes the persisted query |
+    subgraph legend["Legend"]
+        direction TB
+        lE["[E] Existing"]:::existing
+        lC["[C] Changed"]:::changed
+        lN["[N] New"]:::new
+        lD["Dashed = designed only"]:::note
+    end
+
+    classDef existing fill:#eceff1,stroke:#607d8b,color:#263238
+    classDef changed fill:#fff3e0,stroke:#ef6c00,color:#3e2723
+    classDef new fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    classDef note fill:#ffffff,stroke:#9e9e9e,stroke-dasharray: 4 3,color:#424242
+    class author,legal,crawler,analytics,salesforce,cloudmgr,preview existing
+    class browser,authorTier,assets,publish,dispatcher,tags,cdn changed
+    class cf,consumer,git new
+```
+<!-- /diagram:c4-container -->
+
+**Impact legend (SD-04):** **[E] Existing** — unchanged (grey). **[C] Changed** — existing element altered by this work (amber). **[N] New** (green). **Dashed** = designed only. Every element and integration carries a code in the diagrams and the registers.
+
+Supporting diagrams are in `docs/02-design.md` §1: page-render sequence, data-layer events, fragment invalidation, Joey Club enquiry, class view and JCR structure.
+
+## 3. Element register (SD-04)
+
+| Element | Impact | Change |
+|---|---|---|
+| Content authors, legal reviewer, visitors, crawlers | E | — |
+| AEM Author | C | Template, components, policies, CF model, tags |
+| AEM Assets (DAM) | C | Images with alt metadata, fragment folder |
+| Content Fragments | N | `travel-question` model + six fragments |
+| AEM Preview | E | Used for legal review (I-14, I-15) |
+| AEM Publish | C | Sling Models, JSON-LD, persisted queries, cache-header filter, CORS config |
+| Dispatcher | C | Allow-list filters, cache rules, TTL, security headers, sitemap rule |
+| Adobe-managed CDN | C | Honours `Surrogate-Control`. Rate limit and purge key designed via `cdn.yaml` (I-16) |
+| AEP Tags | C | Rules for `airline:*` events |
+| Adobe Analytics, Salesforce, Cloud Manager | E | New flows only (I-06, I-10, I-11, I-16) |
+| Non-AEM consumer | N | Consumes the persisted queries |
+| Git repository (this project) | N | Source for the I-11 pipelines |
 
 ## 4. Component register (SD-05)
 
-| Component | Purpose | Resource type | Base | Data source | Caching behaviour |
+| Component | Purpose | Resource type | Base | Data source | Caching |
 |---|---|---|---|---|---|
-| Page | Metadata (title, description, canonical, robots), skip link, clientlibs, FAQPage JSON-LD | `airline/components/page` | Core Page v3 proxy + `customheaderlibs.html` + `FaqStructuredData` model | Page properties + CFs (JSON-LD) | Part of page HTML: Dispatcher (stat-file + 300 s TTL), CDN `s-maxage=300` |
-| Container (landmark) | Layout + semantic `header`/`main`/`footer` element from policy | `airline/components/container` | Core Container v1 proxy, overrides `responsiveGrid.html` | Template structure + policy | Page HTML |
-| Experience Fragment | Placeholder header (logo, nav) and footer | `airline/components/experiencefragment` | Core XF v2 proxy | XF pages | Included server-side into page HTML; invalidated with the XF path |
-| Navigation | `<nav>` landmark in header XF | `airline/components/navigation` | Core Navigation v2 proxy | Page tree | Page HTML |
-| Hero banner (HB-01..03) | H1, introduction, image, "On this page" jump links | `airline/components/hero` | **Custom**: `HeroBanner` interface + `HeroBannerImpl` | Page content + DAM (image, `dc:description` alt fallback) | Page HTML. Image renditions: browser 1 day, CDN 7 days. Not lazy, `fetchpriority=high` |
-| Teaser (TS-01..02) | Joey Club promotion with CTA | `airline/components/teaser` → `core/wcm/components/teaser/v2/teaser` | **Core Teaser v2 proxy + delegation** (`TeaserImpl` adds `rel` and tracking) | Page content + DAM | Page HTML. Image via Core Image adaptive servlet (`.coreimg.` URLs with timestamp → 1 year), lazy |
-| Travel questions accordion (AC-01, HD-01) | FAQ-style accordion of travel rules | `airline/components/travelquestions` | **Custom** (`TravelQuestionsAccordion` + `TravelQuestionService`) | **Content Fragments** (`travel-question`) by folder or tags | Page HTML. Fragment changes reach HTML by TTL (≤ 5 min) today; targeted invalidation designed (I-13) |
-| Persisted queries (HD-02) | Same items for non-AEM consumers | `/graphql/execute.json/airline/travel-questions-by-folder` (and `-by-tag`) | AEM GraphQL | Content Fragments | Dispatcher cache (`CACHE_GRAPHQL_PERSISTED_QUERIES`) + query cache headers `max-age=60, s-maxage=300` |
+| Page | Title, description, canonical, robots, skip link, clientlibs, FAQPage JSON-LD | `airline/components/page` | Core Page v3 proxy + `FaqStructuredData` model | Page properties + CFs | Page HTML (budget §7) |
+| Container (landmark) | Semantic `header`/`main`/`footer` from policy | `airline/components/container` | Core Container v1 proxy, landmark HTL override | Template + policy | Page HTML |
+| Experience Fragment | Placeholder header and footer | `airline/components/experiencefragment` | Core XF v2 proxy | XF pages | Included in page HTML. An XF publish reaches pages by TTL (≤ 300 s); I-13 adds targeted invalidation |
+| XF page | Renders XF variations | `airline/components/xfpage` | Core XF page proxy | XF | n/a |
+| Navigation | `<nav>` in the header XF | `airline/components/navigation` | Core Navigation v2 proxy | Page tree | Page HTML |
+| Text | Footer XF copy | `airline/components/text` | Core Text v2 proxy | XF content | Page HTML |
+| Image | Teaser image delegate | `airline/components/image` | Core Image v3 proxy (lazy by default) | DAM | `.coreimg.` URLs carry a timestamp → 1 year immutable |
+| **Hero banner** (HB-01..03) | Single H1, intro, image, "On this page" | `airline/components/hero` | **Custom**: `HeroBanner` → `HeroBannerImpl`. Placed in the template structure (one per page) | Page content + DAM (`dc:description` alt) | Page HTML. Renditions 1 day (§7). Eager, `fetchpriority=high` |
+| **Teaser** (TS-01..02) | Joey Club promotion with CTA | `airline/components/teaser` | **Core Teaser v2 proxy + delegation** (`TeaserImpl`) | Page content + DAM | Page HTML. Image lazy via Core Image |
+| **Travel questions** (AC-01, HD-01) | Accordion of travel rules | `airline/components/travelquestions` | **Custom** (`TravelQuestionsAccordion` + `TravelQuestionService`) | **CFs** by folder or tags | Page HTML. Fragment publish → TTL ≤ 300 s; I-13 designed |
+| Persisted queries (HD-02) | Same items for non-AEM consumers | `/graphql/execute.json/airline/travel-questions-by-{folder,tag,tags-all}` | AEM GraphQL | CFs | Same budget as HTML (§7) |
+
+Unused archetype proxies (accordion, carousel, tabs, forms, list, search, and others) are removed, so authors cannot confuse the Core Accordion with the fragment-driven one.
 
 ## 5. Integration register (SD-06)
 
 | # | Source → Target | Protocol | Direction | Authentication | Frequency | Error handling | Impact / status |
 |---|---|---|---|---|---|---|---|
-| I-01 | Authors → AEM Author | HTTPS (Touch UI) | Inbound | Adobe IMS SSO; AEM groups | Working hours, 6 users | AEM UI errors; autosave | E / existing |
-| I-02 | AEM Author ↔ Assets / CFs | In-repository (JCR/Sling) | Internal | Author session ACLs | On edit | Transactional JCR save | C / **built** |
-| I-03 | Author → Publish | Sling Content Distribution (Adobe pipeline) | Push | Adobe-managed service identity | On publish | Distribution queue retries; queue alerts in Cloud Manager | E / existing |
-| I-04 | Publish → Dispatcher invalidation | SCD invalidate (Adobe-managed) | Push | Adobe-managed | Per activation | Retries; TTL bound as fallback | E / existing |
-| I-05 | Browser → CDN → Dispatcher → Publish | HTTPS GET | Inbound | Anonymous | Per page view | CDN `stale-if-error=86400`; Dispatcher `serveStaleOnError` | C / **built** (filters, headers, TTLs) |
-| I-06 | Browser ACDL → AEP Tags → Analytics | JS events → HTTPS beacon | Outbound from browser | Report-suite ID (public); no PII | Per interaction | ACDL queues events before Tags loads; beacon failure is non-blocking | C / **built** (events), Tags rules by the analytics team |
-| I-07 | Non-AEM consumer → CDN → Publish GraphQL | HTTPS GET persisted query | Inbound | Anonymous (public content); CORS allow-list | Per app session (cached) | 4xx on bad params; CDN stale-if-error | N / **built** |
-| I-08 | Crawlers → CDN | HTTPS GET HTML + JSON-LD | Inbound | Anonymous | Crawl schedule | Same as I-05 | C / **built** (JSON-LD, canonical) |
-| I-09 | Browser → Publish enquiry servlet | HTTPS POST JSON (`*.enquiry.json`) | Inbound | CSRF token + bot-check token | Low (est. < 200/day) | 400 validation, 503 retry later; CDN rate limit | N / designed |
-| I-10 | Publish → Salesforce REST | HTTPS REST JSON | Outbound | OAuth 2.0 client credentials; secrets in Cloud Manager secret variables | Per enquiry | 3 attempts, exponential backoff, idempotency key; alert on failure rate | N / designed |
-| I-11 | Git → Cloud Manager → AEM | Git + Cloud Manager pipelines | Push | Cloud Manager IMS roles | Per release | Quality gates block; rollback by redeploy | C / built (code ready for the pipeline) |
-| I-12 | Page → header/footer XF | Server-side include | Internal | n/a | Per render | Missing XF → placeholder in author, nothing on publish | E / existing (placeholders built) |
-| I-13 | Author fragment publish → Dispatcher + CDN targeted invalidation | SCD INVALIDATE + CDN purge API | Push | Service user (`airline-invalidation`); purge key in secret variable | Per fragment publish | Log + retry once; TTL bound fallback (5 min) | N / designed |
-| I-14 | Legal approval of fragments | AEM workflow (Inbox) | Internal | AEM group `airline-legal-approvers` | Per change | Rejection returns to author | N / designed |
+| I-01 | Authors → AEM Author | HTTPS (Touch UI) | In | Adobe IMS SSO; AEM groups | Working hours | UI errors; autosave | E / existing |
+| I-02 | Author ↔ Assets/CFs | In-repository | Internal | Author session ACLs | On edit | Transactional save | C / **built** |
+| I-03 | Author → Publish | Sling Content Distribution | Push | Adobe-managed | On publish | Queue retries + alerts | E / existing |
+| I-04 | Publish → Dispatcher invalidation | SCD invalidate | Push | Adobe-managed | Per activation | Retries; TTL fallback | E / existing |
+| I-05 | Browser → CDN → Dispatcher → Publish | HTTPS GET | In | Anonymous | Per view | CDN `stale-if-error`; Dispatcher `serveStaleOnError` | C / **built** (filters, headers, TTL) |
+| I-06 | Browser ACDL → Tags → Analytics | JS events → beacon | Out (browser) | Public report suite; no PII | Per interaction | ACDL queues before Tags loads; non-blocking | C / **built** (events); Tags rules by the analytics team |
+| I-07 | Consumer → CDN → Publish GraphQL | HTTPS GET persisted query, URL-encoded variables | In | Anonymous; CORS allow-list (`CORSPolicyImpl~airline-graphql`) | Per app session (cached) | 4xx bad params; `stale-if-error` | N / **built** |
+| I-08 | Crawlers → CDN | HTTPS GET HTML, JSON-LD, `sitemap.xml` | In | Anonymous | Crawl schedule | As I-05 | C / **built** (JSON-LD, canonical, sitemap) |
+| I-09 | Browser → Publish enquiry servlet | HTTPS POST JSON | In | CSRF + bot-check token; referrer filter | < 200/day | 400 / 503; CDN rate limit | N / designed |
+| I-10 | Publish → Salesforce | REST upsert on External ID | Out | OAuth 2.0 client credentials (Cloud Manager secrets); dedicated egress IP | Per enquiry | 3 attempts in 4 s; alert > 5 % failures | N / designed |
+| I-11 | Git → Cloud Manager → AEM | Full-stack + web-tier pipelines | Push | Cloud Manager roles | Per release | Quality gates block; redeploy to roll back | C / code ready |
+| I-12 | Page → header/footer XF | Server-side include | Internal | n/a | Per render | Missing XF → editor placeholder | C / **built** (placeholders) |
+| I-13 | Author fragment/XF publish → Dispatcher + CDN | SCD INVALIDATE + CDN purge by `Surrogate-Key` | Push | Service user `airline-invalidation` (repoinit); purge key in secret | Per publish | Sling Job, 3 retries; TTL fallback | N / designed (`Surrogate-Key` already emitted) |
+| I-14 | Legal review and approval | Preview URL + AEM workflow | Internal | Group `airline-legal-approvers` | Per change | Rejection returns to author | N / designed |
+| I-15 | Author → Preview | SCD to Preview | Push | Adobe-managed | On "publish to preview" | As I-03 | E / existing |
+| I-16 | Cloud Manager config pipeline → CDN | `cdn.yaml` (traffic filter, purge key, HSTS) | Push | Cloud Manager roles | Per change | Pipeline validation | N / designed |
 
 ## 6. Content model (SD-07)
 
 ### 6.1 Template and policies
 
-Template `travel-information-page` (template type `page`). Structure (locked unless stated):
+Template `travel-information-page` (type `page`). The template and policies are code-owned: the FileVault filter uses `mode="update"`, so changes reach existing environments.
 
-| Structure node | Component | Policy | Notes |
+| Structure node | Component | Locked | Notes |
 |---|---|---|---|
-| `root` | container (div) | `airline-root` | Layout wrapper |
-| `root/header` | container, element `header` | `airline-landmark-header` | Contains `experiencefragment-header` (locked, `/content/experience-fragments/airline/au/en/site/header/master`) |
-| `root/main` | container, element `main`, id `main-content` | `airline-landmark-main` | Skip-link target |
-| `root/main/content` | container (**unlocked, editable**) | `airline-content` | Allowed: `hero`, `teaser`, `travelquestions` only |
-| `root/footer` | container, element `footer` | `airline-landmark-footer` | Contains `experiencefragment-footer` (locked) |
+| `root/header` | container, element `header` | Yes | Header XF `…/site/header/master` |
+| `root/main` | container, element `main`, `id=main-content` | Yes | Skip-link target |
+| `root/main/hero` | hero | **Unlocked, single instance** | Guarantees exactly one hero, and so one `h1` |
+| `root/main/content` | container | Unlocked | Allowed: `teaser`, `travelquestions` |
+| `root/footer` | container, element `footer` | Yes | Footer XF |
 
 | Policy | Key settings |
 |---|---|
-| Page | clientlibs `airline.dependencies`, `airline.site`; JS at body end (deferred); `mainContentSelector=main-content` (skip link) |
-| Hero | Max jump links 8; image root `/content/dam/airline` |
-| Teaser | `titleType=h2` (author cannot change); pretitle hidden; image delegate `airline/components/image` (Core Image v3 with lazy loading); actions enabled (single CTA) |
-| Travel questions | `headingElement=h2`, `itemHeadingElement=h3`, allowed root `/content/dam/airline/travel-questions` |
+| Page | clientlibs `airline.dependencies`, `airline.site`; JS in footer; `mainContentSelector=main-content` |
+| Teaser | `titleType=h2`, `showTitleType=false`, pretitle hidden, image delegate `airline/components/image` |
+| Travel questions | `headingElement=h2`, `itemHeadingElement=h3` |
 
 ### 6.2 Content Fragment model `travel-question`
 
 | Field | Type | Required | Notes |
 |---|---|---|---|
-| `question` | Single-line text | Yes (max 255) | Accordion button label; JSON-LD `Question.name` |
-| `answer` | Multi-line text, rich text (`text/html`) | Yes | Panel body; JSON-LD `acceptedAnswer.text` |
-| `tags` | Tags (multiple), root `airline:travel` | No | Tag-mode selection; GraphQL filter |
-| `sortOrder` | Number (integer) | No | Ascending order; ties broken by question. Same sort in the persisted query (departure noted in ADR-002) |
+| `question` | Single-line text (255) | Yes | Button label; JSON-LD `Question.name` |
+| `answer` | Multi-line rich text | Yes | Panel body; JSON-LD `acceptedAnswer.text` (allow-listed HTML) |
+| `tags` | Tags (multiple), root `airline:` | No | Exact-ID matching in the accordion and GraphQL |
+| `sortOrder` | Number (integer) | Yes (default 100) | Order for all consumers (ADR-016) |
 
-Fragments live in `/content/dam/airline/travel-questions/<topic>/`. The folder carries `cq:conf=/conf/airline`, and its allowed models are restricted to `travel-question`.
+Fragments live in `/content/dam/airline/travel-questions/<topic>/`. The folder has `cq:conf=/conf/airline` and allows only `travel-question`. `/conf/airline` has the *Content Fragment Models* and *GraphQL Persisted Queries* capabilities enabled.
 
-### 6.3 Tags
+**The six sample fragments (AC-01)**, under the heading "Booking for infants (under 2 years)":
+1. Infants on domestic flights
+2. Infants on international flights
+3. Booking a seat for your infant
+4. Travelling with more than one infant per adult
+5. How soon can infants travel after birth?
+6. My infant isn't born yet, how do I book?
 
-| Tag ID | Use |
+### 6.3 Tags and DAM metadata
+
+| Tag | Use |
 |---|---|
-| `airline:travel/infants`, `airline:travel/children` | Audience of a question — accordion tag mode |
-| `airline:travel/booking`, `airline:travel/seating`, `airline:travel/medical` | Topic facets for reuse on other pages |
-| `airline:market/au`, `airline:market/nz` | Market applicability for the NZ rollout (§10) |
+| `airline:travel/infants`, `airline:travel/children` | Audience: accordion tag mode |
+| `airline:travel/booking`, `/seating`, `/medical` | Topic facets |
+| `airline:market/au`, `airline:market/nz` | Market applicability (§10). A shared fragment carries both |
 
-### 6.4 DAM metadata the page relies on
-
-| Property | Used by | Rule |
+| DAM property | Used by | Rule |
 |---|---|---|
-| `dc:description` | Hero alt-text fallback (HB-02) | Required for non-decorative images; metadata-schema field marked required for `/content/dam/airline` |
-| `dc:title` | Asset search, teaser image title | Required |
-| `tiff:ImageWidth`, `tiff:ImageLength` | Hero `width`/`height` attributes to prevent CLS | Written by asset processing |
-| `cq:tags` | Asset findability (`airline:travel/*`) | Recommended |
-| `xmpRights:UsageTerms`, `prism:expirationDate` | Rights and expiry governance | Required by the airline's DAM policy (assumed) |
-| Renditions `cq5dam.web.640.640.jpeg`, `cq5dam.web.1280.1280.jpeg` | Hero `srcset` | Produced by processing profile `airline-web` |
+| `dc:description` | Hero alt fallback (HB-02) | Required for non-decorative imagery (metadata schema) |
+| `dc:title` | Search, governance | Required. Never used as alt text |
+| `tiff:ImageWidth` / `tiff:ImageLength` | Hero `width`/`height` (CLS) | From processing |
+| `cq:tags`, `xmpRights:UsageTerms`, `prism:expirationDate` | Findability, rights | Rights expiry triggers a takedown (CDN purge) |
+| Renditions `cq5dam.web.{640,960,1280}` | Hero `srcset` | Processing profile `airline-web` |
 
 ## 7. Non-functional targets (SD-08)
 
 | Target | Value | Reason |
 |---|---|---|
-| LCP | **≤ 2.5 s** p75 field (CrUX, mobile); lab ≤ 2.5 s (Lighthouse mobile) | Core Web Vitals "good" threshold. The hero image is the LCP element, so it is eager, `fetchpriority=high`, served from a sized rendition |
-| CLS | **≤ 0.1** | "Good" threshold. Explicit image `width`/`height`, no late-injected banners, header XF has a fixed height |
-| INP | **≤ 200 ms** p75 field; lab proxy TBT ≤ 200 ms | "Good" threshold. Accordion JS is small and vanilla, and its handlers only toggle attributes |
-| Page weight | **≤ 1,000 KB** transferred on first mobile load; JS ≤ 200 KB compressed (excluding Tags); hero image ≤ 150 KB at 640 w | Keeps slow-4G LCP within budget, and parents often browse on mobile data |
-| Accessibility | **WCAG 2.1 AA**: 0 axe serious/critical; keyboard operable; visible focus; contrast ≥ 4.5:1; reflow at 320 CSS px | Regulatory exposure (Disability Discrimination Act) and the airline's accessibility commitment |
-| HTML cache | Browser `max-age=60`; CDN `s-maxage=300`; `stale-while-revalidate=300`; `stale-if-error=86400`; Dispatcher stat-file invalidation **plus** 300 s TTL | Meets A-02 (≤ 5 min) for legal changes without hammering publish |
-| Clientlibs | Versioned (`lc-<hash>-lc`) → `max-age=31536000, immutable` | Content-hashed URLs never change in place |
-| DAM images | Renditions `max-age=86400`, `s-maxage=604800`; Core Image `.coreimg.` (timestamped) → 1 year | Images change rarely. Timestamped URLs bust caches on change |
-| Persisted query | `max-age=60, s-maxage=300` | Same freshness as HTML, so app and web agree |
-| Invalidation | Page publish → SCD invalidate (existing). Fragment publish → TTL ≤ 5 min (built), targeted invalidation + CDN purge (I-13, designed) | R-01 |
-| Security headers | `Strict-Transport-Security: max-age=31536000; includeSubDomains` (CDN); `X-Content-Type-Options: nosniff`; `X-Frame-Options: SAMEORIGIN`; `Referrer-Policy: strict-origin-when-cross-origin`; `Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()`; `Content-Security-Policy: frame-ancestors 'self'; object-src 'none'; base-uri 'self'` (enforced) + `Content-Security-Policy-Report-Only` with a strict `script-src` | OWASP secure-headers baseline. The full CSP is report-only until Tags vendor domains are inventoried (R-07) |
+| LCP | **≤ 2.5 s** p75 field (CrUX mobile); lab ≤ 2.5 s (Lighthouse mobile on publish) | Core Web Vitals "good". The hero is the LCP element: eager, `fetchpriority=high`, sized rendition |
+| CLS | **≤ 0.1** | "Good". Image `width`/`height`; accordion collapsed in server HTML; fixed-height header |
+| INP | **≤ 200 ms** p75; lab proxy TBT ≤ 200 ms | "Good". Vanilla TypeScript; handlers only toggle attributes |
+| Page weight | **≤ 1,000 KB** first mobile load; JS ≤ 200 KB compressed (excl. Tags); **LCP rendition ≤ 150 KB** for the rendition the browser *selects* at 412 px × 1.75 DPR (≈ 960 w). The original is never in `srcset` | Slow-4G budget for parents browsing on mobile data |
+| Accessibility | **WCAG 2.1 AA**: 0 axe serious/critical; keyboard operable; visible focus; contrast ≥ 4.5:1; reflow at 320 px; one `h1` | Disability Discrimination Act exposure |
+| Freshness budget | **≤ 300 s worst case** = Dispatcher TTL 60 + CDN 150 + CDN SWR 30 + browser 60 | A-02. `DISABLE_DEFAULT_CACHING` is defined so the project owns every header, and `Age` is preserved |
+| HTML headers (AEM filter, publish only) | `Cache-Control: max-age=60`; `Surrogate-Control: max-age=150, stale-while-revalidate=30, stale-if-error=86400`; `Surrogate-Key: airline-page-<hash>` | AEM-emitted, so Dispatcher `enableTTL` sees them. `mod_headers` values are invisible to it |
+| Persisted queries | Same `Cache-Control`/`Surrogate-Control` set in the query cache config; Dispatcher caching via `CACHE_GRAPHQL_PERSISTED_QUERIES` | App and web agree |
+| Clientlibs | Versioned `lc-<hash>-lc` → `max-age=31536000, immutable`; unversioned → `max-age=3600` | Hashed URLs never change in place |
+| DAM renditions | `max-age=86400` (browser + CDN); Dispatcher invalidated on asset publish | Unversioned URLs, so the TTL is capped at 1 day. Rights takedown = CDN purge |
+| Invalidation | Page publish → SCD (existing). Fragment/XF publish → TTL (built) + targeted (I-13 designed) | R-01 |
+
+**Security headers**
+
+| Header | Value | Owner |
+|---|---|---|
+| `Strict-Transport-Security` | `max-age=31536000; includeSubDomains` | CDN (`cdn.yaml`, I-16) |
+| `X-Content-Type-Options` | `nosniff` | Dispatcher vhost |
+| `X-Frame-Options` | `SAMEORIGIN` (set once; the default vhost is not included) | Dispatcher vhost |
+| `Referrer-Policy` | `strict-origin-when-cross-origin` | Dispatcher vhost |
+| `Permissions-Policy` | `camera=(), microphone=(), geolocation=(), payment=()` | Dispatcher vhost |
+| `Content-Security-Policy` (enforced) | `frame-ancestors 'self'; object-src 'none'; base-uri 'self'` | Dispatcher vhost |
+| `Content-Security-Policy-Report-Only` | Hash-based `script-src 'self' 'sha256-…' https://assets.adobedtm.com` (hashes of Core's inline scripts; JSON-LD is not executable, so it is exempt); `report-uri` to the airline collector (Q-06) | Dispatcher vhost |
 
 ## 8. Key designs
 
-### 8.1 Fragment-driven accordion
+### 8.1 Fragment selection: one semantic, two engines (HD-01, HD-02)
 
-The author picks **Folder** (direct children of a DAM folder) or **Tags** (fragments under a root folder carrying any/all of the chosen tags). An optional maximum applies. `TravelQuestionService` resolves the selection with a bounded traversal: a cap of 50 fragments, restricted to the configured root, with no repository query, so no custom index is needed. It returns items sorted by `sortOrder` then `question`. The accordion, the FAQPage JSON-LD and the persisted query all read the same fragments.
+The Java service and the persisted queries implement the **same** rules, limited to what GraphQL can express:
+- **Folder:** all descendants of the folder (`_path STARTS_WITH folder/`).
+- **Tags:** exact tag IDs on the fragment's `tags` field. *Any* uses `EQUALS` + `AT_LEAST_ONCE` OR'd; *all* uses AND'd expressions.
+- **Limit:** ≤ 20 (`limit` variable).
+- **Order:** `sortOrder ASC, question ASC`.
 
-### 8.2 Structured data and metadata
+The Java side scans at most **100 `dam:Asset` nodes** without descending into `jcr:content`. When the cap is hit it logs a WARN and shows an edit-mode warning, so truncation is never silent. A Playwright contract test compares the rendered accordion with the persisted query for the same selection.
 
-`customheaderlibs.html` in the page proxy renders `FaqStructuredData`. It finds `travelquestions` components on the page, reuses `TravelQuestionService`, and serialises `FAQPage` with Gson. HTML-safe escaping means `<`, `>` and `&` are emitted as `\u003c` and similar, so output cannot break out of `<script>`. Title (`pageTitle`/`jcr:title` + brand slug), meta description, robots and canonical (`cq:canonicalUrl`, defaulting to self) come from Core Page v3.
+### 8.2 Structured data, metadata, URLs (SE-01, SE-02, I-08)
+
+- `FaqStructuredData` (page head) reuses the request-cached result of `TravelQuestionService` and serialises `FAQPage` with Gson. HTML-safe escaping means output cannot break out of `<script>`, and the answer HTML is allow-listed (`p, ul, ol, li, a[href], strong, b, em, i, br`).
+- Title (`pageTitle`/`jcr:title` + brand slug), description, robots and canonical come from Core Page v3. The canonical is absolute via the Externalizer (`AEM_EXTERNALIZER_PUBLISH` in Cloud Manager).
+- **Public URLs:** `/content/airline` is mapped to `/` (publish resource-resolver mapping plus the archetype Dispatcher rewrite), giving `/au/en/travel-information/flying-infants-children.html`. `/en-au/...` vanity paths are a later decision (Q-07).
+- **Sitemap:** Apache Sling Sitemap with `sling:sitemapRoot` on `au/en`, allowed by the filter (`.sitemap.xml`, `.sitemap-index.xml`). **robots.txt** with an AI-crawler policy (GPTBot, Google-Extended, and others) is a client decision (Q-05).
 
 ### 8.3 Data-layer contract (DL-01, I-06)
 
 | Event | When | `eventInfo` |
 |---|---|---|
-| `airline:accordion:expand` | Item opened by click, Enter or Space | `path: "component.<itemId>"`, `componentId`, `title` (question), `parentId` (accordion ID) |
+| `airline:accordion:expand` | Item opened (click/Enter/Space, or find-in-page) | `path: "component.<itemId>"`, `componentId`, `title`, `parentId`, `trigger` (`click` / `find-in-page`) |
 | `airline:accordion:collapse` | Item closed | Same as expand |
-| `airline:teaser:click` | Teaser CTA or link activated | `path: "component.<teaserId>"`, `componentId`, `title` (teaser title), `linkUrl` |
+| `airline:teaser:click` | Teaser CTA or link activated | `path: "component.<teaserId>"`, `componentId`, `title`, `linkUrl` |
+| `airline:joeyclub:enquiry-submitted` | Enquiry accepted (designed) | `componentId` only, no PII |
 
-Component state (`component.<id>`, with `@type`, `dc:title`, `parentId`) is registered through Core's `data-cmp-data-layer` mechanism. No personal data is ever pushed.
+Item IDs derive from the fragment path, so reordering keeps analytics IDs stable. Core also pushes `cmp:click` for teasers; Tags rules subscribe to `airline:*` only.
 
 ## 9. Decision records (SD-09)
 
-Full text, including trade-offs, is in `docs/04-decision-log.md`. Summary:
+Full text is in `docs/04-decision-log.md`.
 
 | ADR | Context | Options | Decision | Consequences |
 |---|---|---|---|---|
-| **ADR-001** Server-rendered HTL vs headless React (set) | Content page, SEO/AI crawlers, six authors used to the page editor, existing HTL header/footer XFs | (a) HTL + Core Components; (b) React SPA Editor; (c) headless Next.js on CFs | **(a) HTL** | Full HTML on first byte (best LCP/SEO), page-editor authoring, Dispatcher/CDN caching for free. Headless reuse is still provided by the persisted query (I-07). Less suited to app-like interactivity, which this page does not need |
-| **ADR-002** Accordion items as page content vs CFs (set) | Rules are legally reviewed and reused (NZ, app, other pages, FAQ schema) | (a) Core Accordion with child components; (b) CFs selected by folder/tag | **(b) CFs** | One legally approved source for web, JSON-LD and GraphQL; reuse across markets. Costs: a custom component, cache invalidation (ADR-004) and a CF authoring step. Adds `sortOrder` to the model |
-| **ADR-003** Teaser: Core proxy + delegation vs custom | TS-01 needs `rel`, policy heading level and tracking | (a) Proxy + delegation; (b) custom component | **(a)** | Keeps Core dialog, image handling, lazy loading and upgrades. Only `getLink()`/`getActions()` are decorated. Risk: Core HTL changes in upgrades; mitigated by unit + UI tests |
-| **ADR-004** Caching and invalidation of fragment-driven content | Fragment publish does not invalidate the pages that render it (stat-file scope) | (a) `statfileslevel` 0/1 (flush all HTML); (b) TTL bound; (c) targeted invalidation via reference lookup; (d) client-side fetch of persisted query | **(b) now + (c) designed** | Legal changes are visible within ≤ 5 min with no new moving parts. (c) removes the delay when built (I-13). (a) rejected: every DAM publish would flush the whole site. (d) rejected: hurts LCP/SEO |
-| **ADR-005** How the Joey Club enquiry reaches Salesforce | PII, secrets, unreliable network | (a) Browser → Salesforce Web-to-Lead; (b) AEM servlet → Salesforce REST, synchronous, bounded retries; (c) AEM → queue (Sling Jobs) → Salesforce | **(b)** | Secrets stay server-side, validation is authoritative, and no PII is at rest in AEM. Cost: the user sees a retry message during a Salesforce outage. (c) rejected: persisting PII in the publish JCR. (a) rejected: exposes the org ID and offers no server validation |
-| **ADR-006** New Zealand rollout | NZ next quarter, mostly shared rules | (a) MSM live copy of `au/en`; (b) language copy + translation; (c) separate site | **(a) MSM** with market tags on fragments | Shared structure inherits; NZ-specific copy breaks inheritance per component. Fragments are shared and filtered by `airline:market/*` tags |
+| **001** HTL vs headless React (set) | Content page; crawlers (I-08); editor-trained authors; HTL XFs | (a) HTL + Core; (b) SPA Editor; (c) headless Next.js | **(a)** | Full HTML at first byte, editor authoring, Dispatcher/CDN caching. Headless reuse is still provided via I-07. Not suited to app-like UI (not needed) |
+| **002** Accordion items: page content vs CFs (set) | Legally reviewed, reused on web, JSON-LD, app, NZ | (a) Core Accordion children; (b) CFs by folder/tag | **(b)** | One approved source for all consumers. Costs a custom component, freshness handling (ADR-004) and `sortOrder` (ADR-016) |
+| **003** Teaser: Core proxy + delegation vs custom | TS-01 `rel`, policy heading | (a) proxy + delegation; (b) custom | **(a)** | Keeps Core dialog, image, data layer and upgrades. Decorates links only. Tests guard against HTL drift |
+| **004** Caching and invalidation of fragment-driven content | Fragment/XF publish does not touch page stat files | (a) low `statfileslevel`; (b) TTL budget; (c) targeted invalidation (I-13); (d) client-side fetch | **(b) built + (c) designed** | ≤ 300 s with no new runtime parts. (a) flushes the site on every DAM publish. (d) hurts LCP and SEO |
+| **005** Joey Club enquiry → Salesforce (I-09, I-10) | PII, secrets, flaky network | (a) Web-to-Lead; (b) AEM servlet, synchronous, bounded retries, External ID upsert; (c) Sling Job queue | **(b)** | Secrets server-side, no PII at rest. An outage shows a retry message. (c) would persist PII in the JCR |
+| **006** NZ rollout | Same language, mostly shared rules | (a) MSM live copy + market tags; (b) language masters; (c) separate site | **(a)** | Cheap now; structure inherits. Tag mode keeps markets apart (§10) |
 
-Engineering ADRs (007–017: hero image strategy, landmarks, archetype patch, Node LTS, SDK alignment, Playwright, PR process, JSON-LD location, Dispatcher allow-list, `sortOrder`, event naming) are in `docs/04-decision-log.md`.
+ADR-007..019 cover engineering choices: hero image strategy, landmarks, archetype patch, Node LTS, SDK alignment, Playwright, PR process, JSON-LD placement, Dispatcher allow-list, `sortOrder`, event naming, `hidden="until-found"`, and the sample-content package.
 
 ## 10. New Zealand rollout (SD-10)
 
-**Approach: MSM live copy.** Create `/content/airline/nz/en` as a live copy of `/content/airline/au/en`, using a rollout config that excludes `jcr:title`/`cq:canonicalUrl` and keeps the `travelquestions` component configuration inherited. Header and footer XFs are live-copied to `/content/experience-fragments/airline/nz/en/site/...`. Core XF's localised path resolution (`localizedFragmentVariationPath`) then picks the NZ variation automatically. Travel-question fragments remain shared. NZ-specific rules are new fragments tagged `airline:market/nz`, and the NZ accordion switches to tag mode with `airline:travel/infants` **and** `airline:market/nz`. The persisted query `travel-questions-by-tag` serves the NZ app with the same filter. `hreflang` alternates come from Core Page once both markets exist.
+- **Pages:** `/content/airline/nz/en` is an MSM live copy of `au/en`. Header and footer XFs are live-copied to `…/nz/en/site/…`, and Core's localised XF resolution picks the NZ variation automatically. `hreflang` alternates come from Core Page.
+- **Fragments (one selection model for both markets):** from the NZ rollout onward, both markets use **tag mode with *all*: audience + market** (AU: `travel/infants` + `market/au`; NZ: `travel/infants` + `market/nz`).
+  - A shared rule is **one fragment tagged with both markets**.
+  - A market-specific variant is a separate fragment with the same `sortOrder` carrying only its market tag, and the shared one loses that market's tag. That is the override rule.
+  - The AU sample page already uses this mode, so NZ-only fragments can never leak onto the AU page.
+- **Inheritance:** the NZ live copy inherits the `travelquestions` component except the `tags` property. The rollout config `airline-nz-rollout` uses MSM's excluded-properties setting for `tags`, and the author sets `market/nz` once.
+- **Persisted query:** `travel-questions-by-tags-all` takes `$audience` and `$market`.
 
 | Option | Cost now | Cost to change later |
 |---|---|---|
-| MSM live copy from `au/en` (chosen) | ~2 days (rollout config, XF copies, tags) | Moving later to a language-masters blueprint means re-parenting live copies (~3–5 days with a script), but content survives |
-| Language masters (`/language-masters/en` → `au/en`, `nz/en`) | ~4 days now (restructure AU, which is already live) | Lowest later cost; overkill for two same-language markets |
-| Language copy + translation | n/a (same language) | Not applicable to an `en` → `en` market split |
-| Independent NZ site | ~1 day | Highest: duplicated maintenance of legally reviewed content; drift risk |
+| MSM live copy + market tags (chosen) | ~2 days | Moving to language masters later means re-parenting live copies (~3–5 days, scripted); content survives |
+| Language masters now | ~4 days, restructuring live AU | Lowest later cost; overkill for two `en` markets |
+| Separate NZ site | ~1 day | Highest: duplicated legally reviewed content drifts |
 
 ## 11. Joey Club enquiry — designed only (SD-11)
 
-![Joey Club enquiry sequence](docs/diagrams/rendered/sequence-joey-enquiry.svg)
+![Joey Club enquiry](docs/diagrams/rendered/sequence-joey-enquiry.svg)
 
 | Concern | Design |
 |---|---|
-| Validation | Client-side for UX only. **Server-side is authoritative** in `JoeyClubEnquiryServlet` (selector `enquiry`, POST, JSON schema, length limits, allow-listed values, explicit consent flag, bot-check token verification) |
-| Secrets | Salesforce client ID/secret and the bot-check secret are held as **Cloud Manager secret environment variables**, injected into OSGi config as `$[secret:SF_CLIENT_SECRET]`. Never in Git, never in the JCR |
-| Retries | ≤ 3 attempts within a 4 s budget. Exponential backoff (200 ms, 800 ms) on 429/5xx/timeouts. One token refresh on 401. Idempotency key (UUID) prevents duplicates |
-| Failure | 503 with a friendly retry message. Correlation ID logged (no PII). Metric + alert when the failure rate exceeds 5 % over 15 min |
-| Personal data flows | Browser → AEM publish (memory only) → Salesforce. **Never** in the JCR, logs, Dispatcher/CDN cache (POST, `Cache-Control: no-store`), ACDL or Analytics. Analytics receives only `airline:joeyclub:enquiry-submitted` without fields |
-| Abuse protection | CDN rate-limit rule (per IP), CSRF token, bot check, payload size limit (8 KB) |
+| Validation | Client-side for UX. **Server-side is authoritative** (schema, 8 KB limit, allow-lists, consent + consent-text version, bot-check verification) |
+| Secrets | Salesforce and bot-check secrets in **Cloud Manager secret variables** → OSGi `$[secret:…]`. Never in Git or the JCR |
+| Retries | ≤ 3 attempts within a 4 s budget, backoff 200/800 ms on 429/5xx/timeouts. One token refresh on 401. **Upsert on `External_Id__c` = submission UUID** makes retries idempotent |
+| Failure | 503 with a friendly retry message. Correlation ID logged (no PII). Alert when failures exceed 5 % over 15 min |
+| Network | AEMaaCS Advanced Networking **dedicated egress IP**, if Salesforce IP allow-lists |
+| Abuse | CDN rate limit (I-16), CSRF token, Sling Referrer Filter allowed hosts, bot check (vendor: Q-08) |
+| Personal data | Browser → AEM (memory only) → Salesforce. **Never** in the JCR, logs, caches (`no-store`), ACDL or Analytics |
 
 ## 12. Risks and open questions (SD-12)
 
-| # | Item | Type | Owner | Next step |
-|---|---|---|---|---|
-| R-01 | Fragment publish leaves page HTML stale up to 5 min | Risk | Tech lead | Accept for v1; build I-13 invalidator (story S-14) |
-| R-02 | Dispatcher config not validated with the SDK validator locally (no Docker) | Risk | Anchora developer | Run `validate.sh` / Cloud Manager config pipeline before the first release |
-| R-03 | Placeholder answer copy differs from the approved rules | Risk | Airline legal | Legal replaces fragment copy via workflow (I-14) before go-live |
-| R-04 | Lab performance measured on SDK author, not CDN-backed publish | Risk | Anchora developer | Re-measure on Stage behind CDN; monitor CrUX after launch |
-| R-05 | Core Components upgrade changes Teaser HTL | Risk | Anchora developer | UI tests on the teaser link; pin Core version per release |
-| R-06 | Tags rule mapping not delivered in time | Risk | Analytics lead | Share the event contract (§8.3) at sprint 1 |
-| R-07 | CSP enforcement may break Tags vendor scripts | Risk | Security + Analytics | Collect report-only violations for 2 weeks, then enforce |
-| Q-01 | Does Salesforce support idempotency on the enquiry object? | Question | Salesforce admin | Confirm, or use an external ID field upsert |
-| Q-02 | Is Dynamic Media with OpenAPI licensed? | Question | Airline platform owner | If yes, swap hero renditions for DM URLs (ADR-007) |
-| Q-03 | Legal SLA for publishing a rule change | Question | Airline legal | Confirms whether the 5 min TTL bound is acceptable |
-| Q-04 | NZ go-live date and NZ-specific rules | Question | Product owner | Drives S-17 sequencing |
+| # | Item | Owner | Next step / by |
+|---|---|---|---|
+| R-01 | Fragment/XF publish leaves HTML stale ≤ 300 s | Tech lead | Accept for v1; build I-13 (S-14), sprint 3 |
+| R-02 | Dispatcher config not validated with the SDK validator locally (tools not on this machine) | Senior dev A | Run the validator and the Cloud Manager web-tier pipeline, sprint 1 |
+| R-03 | Placeholder answers differ from approved rules | Airline legal | Replace via I-14 before UAT, sprint 2 |
+| R-04 | Lab performance on the SDK, not behind the CDN | QA/FE | Re-measure on Stage (S-21), sprint 2 |
+| R-05 | Core upgrade changes Teaser or Container HTL | Senior dev B | Pin the Core version; teaser and landmark UI tests in CI, every release |
+| R-06 | Tags rules late | Analytics lead | Contract hand-off (§8.3), sprint 1 day 3 |
+| R-07 | CSP enforcement breaks Tags vendors | Security + analytics | Two weeks of report-only, then enforce, after go-live |
+| R-08 | Java selection and GraphQL diverge | Senior dev A | Contract UI test in CI (S-12) |
+| R-09 | MSM + tag interplay leaks market content | Tech lead | Rollout config + checklist in S-17 |
+| R-10 | Authors unfamiliar with CF authoring | Content lead | Training using AUTHORING.md, sprint 2 |
+| R-11 | Copied Dispatcher `enabled_*` files drift from `available_*` | Senior dev A | `scripts/check-dispatcher.ps1` in CI |
+| R-12 | Local SDK lags the Maven SDK API | Senior dev B | Pin the API to the SDK (ADR-011); bump with environment upgrades |
+| Q-01 | Salesforce External ID field available? | Salesforce admin | Confirm, sprint 1 |
+| Q-02 | Dynamic Media with OpenAPI licensed? | Platform owner | If yes, hero URLs via DM (ADR-007), sprint 2 |
+| Q-03 | Is the legal SLA compatible with 300 s? | Airline legal | Confirm, sprint 1 |
+| Q-04 | NZ date and NZ-specific rules | Product owner | Drives S-17 |
+| Q-05 | AI-crawler policy for `robots.txt` | Product + legal | Decide before go-live |
+| Q-06 | CSP report collector | Security | Name the endpoint, sprint 2 |
+| Q-07 | Public URL shape (`/au/en` vs `/en-au`) | Product + SEO | Decide, sprint 1 |
+| Q-08 | Bot-check vendor (affects CSP) | Security | Decide before S-15 |
 
 ## 13. Delivery plan (SD-13)
 
-| Story | Description | Est. (days) | Depends on | Level |
+Two-week sprints, team of five: tech lead (TL), senior devs A and B, mid-level dev (Mid), QA/front-end (QA).
+
+| Story | Description | Days | Depends on | Owner |
 |---|---|---|---|---|
-| S-01 | Archetype project, Cloud Manager pipeline, coding standards, AI context files | 1 | — | Senior |
-| S-02 | Template, policies, landmark container, skip link, placeholder XFs | 1.5 | S-01 | **Mid** |
-| S-03 | Hero component, model, DAM alt fallback, tests | 2 | S-02 | **Mid** |
-| S-04 | Teaser proxy + delegation, rel handling, tests | 1 | S-02 | **Mid** |
-| S-05 | CF model, tags, fragment folder + sample fragments | 1 | S-01 | **Mid** |
-| S-06 | `TravelQuestionService` + accordion component, a11y JS, tests | 3 | S-05 | Senior |
-| S-07 | FAQPage JSON-LD + page metadata/canonical | 1 | S-06 | Senior |
-| S-08 | Persisted queries + consumer docs | 1 | S-05 | **Mid** |
-| S-09 | Data-layer events + contract hand-off to analytics | 1 | S-04, S-06 | **Mid** |
-| S-10 | Dispatcher filters/cache/headers, cache-header filter, validator in pipeline | 2 | S-07, S-08 | Senior |
-| S-11 | Performance tuning + Lighthouse/CrUX measurement | 1.5 | S-03..S-10 | Senior |
-| S-12 | Playwright UI tests + axe in pipeline | 2 | S-06, S-09 | **Mid** |
-| S-13 | README, authoring guide, handover | 1.5 | S-12 | **Mid** |
-| S-14 | Fragment-publish targeted invalidation (I-13) | 3 | S-10 | Senior |
-| S-15 | Joey Club enquiry form + Salesforce integration (I-09, I-10) | 5 | S-10, Q-01 | Senior (+ Salesforce admin) |
-| S-16 | Legal approval workflow (I-14) | 1.5 | S-05 | **Mid** |
-| S-17 | NZ live copy + market tags | 2 | S-13, Q-04 | **Mid** |
-| | **Total** | **31 days** | | |
+| S-01 | Project, pipelines, AI context files, environments + secret variables | 1.5 | — | TL |
+| S-02 | Template, policies, landmarks, skip link, placeholder XFs, base styling | 2 | S-01 | **Mid** |
+| S-03 | Hero component + model + tests | 2 | S-02 | **Mid** |
+| S-04 | Teaser proxy + delegation + tests | 1 | S-02 | **Mid** |
+| S-05 | CF model, tags, fragment folder, sample fragments | 1 | S-01 | Senior B |
+| S-06 | Selection service + accordion + a11y JS + tests | 3 | S-05 | Senior A |
+| S-07 | FAQPage JSON-LD, metadata, canonical, sitemap | 1 | S-06 | Senior A |
+| S-08 | Persisted queries, CORS, consumer docs | 1 | S-05 | Senior B |
+| S-09 | Data-layer events + contract hand-off | 1 | S-04, S-06 | **Mid** |
+| S-10 | Dispatcher, cache-header filter, validator in pipeline | 2 | S-07, S-08 | Senior B |
+| S-11 | Performance tuning + measurement | 1.5 | S-10 | QA |
+| S-12 | Playwright + axe + contract tests in CI | 2 | S-06, S-09 | QA |
+| S-13 | README, authoring guide, handover | 1.5 | S-11, S-12 | **Mid** |
+| S-14 | Targeted invalidation (I-13) | 3 | S-10 | Senior A |
+| S-15 | Joey Club enquiry (I-09, I-10) | 5 | S-10, Q-01, Q-08 | Senior B (+ Salesforce admin) |
+| S-16 | Legal workflow on Preview (I-14) | 1.5 | S-05 | **Mid** |
+| S-17 | NZ live copy + market tags + rollout config | 2 | S-13, Q-04 | **Mid** |
+| S-18 | `cdn.yaml`: rate limit, purge key, HSTS (I-16) | 1 | S-10 | Senior B |
+| S-19 | Accessibility audit (manual screen reader, keyboard) | 1.5 | S-12 | QA |
+| S-20 | Real copy entry + legal review | 1 | S-16, R-03 | Mid + legal |
+| S-21 | QA/UAT, Stage performance re-measurement | 2 | S-13, S-19 | QA + TL |
+| S-22 | AEP Tags rules (analytics team) | 1 | S-09 | Analytics |
+| | **Subtotal** | **38.5** | | |
+| | **Contingency 15 %** | **6** | | |
+| | **Total** | **44.5 person-days** | | |
 
-Sequence:
-- Sprint 1 (S-01 → S-02 ∥ S-05 → S-03 ∥ S-04 ∥ S-06): two developers in parallel.
-- Sprint 2 (S-07 → S-08 ∥ S-09 → S-10 → S-11 ∥ S-12 → S-13).
-- Sprint 3 (S-14, S-15, S-16, S-17).
+**Critical path:** S-01 → S-05 → S-06 → S-07 → S-10 → S-11 → S-13 → S-21, which is ≈ 14.5 days of elapsed work, inside sprint 2. The sprints:
+- Sprint 1: S-01..S-09.
+- Sprint 2: S-10..S-13, S-19..S-22.
+- Sprint 3: S-14..S-18.
 
-The critical path is S-01 → S-05 → S-06 → S-07 → S-10 → S-11. Stories marked **Mid** have clear acceptance criteria and existing patterns to follow, so they can go to a mid-level engineer.
+The **Mid** stories have clear acceptance criteria and existing patterns to follow, so a mid-level engineer can take them.
 
 ## 14. AI-enabled delivery (SD-14)
 
-Team of five: tech lead/architect, two senior AEM developers, one mid-level developer, and one QA/front-end engineer. Everyone works inside the airline's AI terms: an enterprise tenant with no training on prompts, no client PII or credentials in prompts, and only approved tools.
+The team works inside the airline's AI terms: an enterprise tenant with no training on prompts, and only approved tools.
 
-| Practice | How |
-|---|---|
-| Context files | `AGENTS.md` (project map, build commands, AEMaaCS rules) and `.cursor/rules/*.mdc`, scoped per file type (Java/Sling Models, HTL, Dispatcher, tests). Versioned with the code and reviewed like code |
-| Reusable prompts / skills | `.cursor/skills/new-aem-component/` (scaffold a component to project standards: proxy or custom, model + interface, dialog, policy, test, README row), `.ai/prompts/` for Dispatcher filter review, ADR drafting and authoring-guide drafting |
-| Agents | Review agents run before human review: Dispatcher allow-list reviewer, accessibility reviewer, test-gap finder. Output goes into the PR as comments, never auto-merged |
-| Review gates | 1) CI: unit tests, JaCoCo threshold, ESLint, Cloud Manager quality gates. 2) Mandatory human review on every PR, with the AI-assisted parts declared in the PR template. 3) Architect sign-off for ADRs. 4) Legal sign-off for rule copy |
-| Not delegated | Legal rule wording, PII/security decisions (data flows, CSP enforcement, secrets), production deployment approval, final ADR decisions, and client communications. AI may draft; humans decide and own |
-| Measurement | Track PR cycle time and escaped defects per story to see whether AI use helps |
+| Practice | Committed artefact | Owner |
+|---|---|---|
+| Context files | `AGENTS.md`, `.cursor/rules/*.mdc` (Java/Sling Models, HTL, Dispatcher, tests), versioned and reviewed like code | TL |
+| Reusable skill | `.cursor/skills/new-aem-component/SKILL.md`, which scaffolds a component to project standards | Senior A |
+| Reusable prompts | `.ai/prompts/` (Dispatcher review, accessibility review, ADR draft, authoring-guide section) | Senior B / QA |
+| Machine gates on AI output | Unit tests + JaCoCo, ESLint, Playwright + axe, Dispatcher validator, Cloud Manager Sonar/OakPAL/analyser. None can be bypassed | TL |
+| Human gates | A PR template declares AI-assisted parts; mandatory human review; ADR sign-off by the TL; legal sign-off on copy | TL |
+| Data classification | **Allowed** in prompts: code, public docs, synthetic content. **Forbidden:** PII, credentials, Salesforce production schemas/data, draft legal copy before approval, client analytics data | TL |
+| Not delegated | Legal wording, PII/security decisions (data flows, CSP enforcement, secrets), production approval, final ADR decisions, client communication | — |
+| Evidence | PR descriptions record the agent used and the review result (`docs/pull-requests/`) | Each author |
