@@ -1,0 +1,44 @@
+%% SD-07 JCR content structure (impact: [N] new, [C] changed, [E] existing).
+flowchart TB
+    subgraph conf["/conf/airline [C]"]
+        tpl["settings/wcm/templates/travel-information-page [N]<br/>structure: header XF (locked), main (editable), footer XF (locked)"]
+        pol["settings/wcm/policies/airline/components/... [N]<br/>page, container-main, hero, teaser (titleType=h2), travelquestions"]
+        cfm["settings/dam/cfm/models/travel-question [N]<br/>question, answer (rich text), tags, sortOrder"]
+        pq["settings/graphql/persistentQueries/ [N]<br/>travel-questions-by-folder, travel-questions-by-tag"]
+        ca["sling:configs DataLayerConfig enabled=true [E]"]
+    end
+    subgraph content["/content/airline/au/en [C]"]
+        home["en (home) [E]"]
+        ti["travel-information [N]"]
+        page["flying-infants-children [N]<br/>hero, teaser (Joey Club), travelquestions (folder mode)"]
+        states["component-states [N]<br/>empty hero, decorative image, tag-mode accordion"]
+    end
+    subgraph xf["/content/experience-fragments/airline/au/en/site [E]"]
+        hdr["header/master - placeholder logo + navigation [C]"]
+        ftr["footer/master - placeholder links [C]"]
+    end
+    subgraph dam["/content/dam/airline [C]"]
+        img["travel-information/infants-children/<br/>family-hero.jpg, joey-club.jpg [N]<br/>dc:title, dc:description (alt), cq:tags, tiff:ImageWidth/Length, xmpRights:UsageTerms"]
+        tq["travel-questions/infants [N]<br/>6 x travel-question fragments, cq:conf=/conf/airline"]
+    end
+    subgraph tags["/content/cq:tags/airline [N]"]
+        t1["travel/infants, travel/children, travel/booking,<br/>travel/seating, travel/medical, market/au, market/nz"]
+    end
+    home --> ti --> page
+    home --> states
+    page -. cq:template .-> tpl
+    tpl -. policies .-> pol
+    page -. XF include .-> hdr
+    page -. XF include .-> ftr
+    page -. fileReference .-> img
+    page -. folderPath / tags .-> tq
+    tq -. cq:model .-> cfm
+    tq -. cq:tags .-> t1
+    pq -. queries model .-> cfm
+
+    classDef existing fill:#eceff1,stroke:#607d8b
+    classDef changed fill:#fff3e0,stroke:#ef6c00
+    classDef new fill:#e8f5e9,stroke:#2e7d32
+    class home,ca existing
+    class hdr,ftr changed
+    class tpl,pol,cfm,pq,ti,page,states,img,tq,t1 new

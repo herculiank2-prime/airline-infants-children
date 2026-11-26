@@ -1,0 +1,34 @@
+%% Page request on publish: CDN -> Dispatcher -> AEM Publish. Integrations I-05, I-08, I-12.
+sequenceDiagram
+    autonumber
+    participant B as Browser / crawler
+    participant CDN as Adobe CDN
+    participant D as Dispatcher
+    participant P as AEM Publish
+    participant TQ as TravelQuestionService
+    participant CF as Content Fragments (DAM)
+
+    B->>CDN: GET /content/airline/au/en/travel-information/flying-infants-children.html (I-05 / I-08)
+    alt CDN hit (age < s-maxage 300 s)
+        CDN-->>B: 200 cached HTML
+    else CDN miss
+        CDN->>D: origin fetch
+        alt Dispatcher cache valid (stat file + TTL)
+            D-->>CDN: 200 cached HTML
+        else stale or missing
+            D->>P: render request (filters allow .html, no selectors)
+            P->>P: Page v3 + customheaderlibs: FaqStructuredData model
+            P->>TQ: findQuestions(selection from travelquestions resource)
+            TQ->>CF: list folder children / filter by tags (bounded traversal)
+            CF-->>TQ: travel-question fragments
+            TQ-->>P: ordered List<TravelQuestion>
+            P->>P: HeroBanner, Teaser (delegate), TravelQuestionsAccordion models
+            P->>P: include header/footer XFs (I-12)
+            P-->>D: 200 HTML + JSON-LD, Cache-Control max-age=60, s-maxage=300
+            D->>D: store in cache (enableTTL honours max-age)
+            D-->>CDN: 200 HTML + security headers
+        end
+        CDN-->>B: 200 HTML
+    end
+    B->>CDN: GET versioned clientlibs (1 year, immutable) and hero rendition (eager, fetchpriority=high)
+    B->>CDN: GET teaser image via Core Image (lazy)

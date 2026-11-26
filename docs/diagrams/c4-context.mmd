@@ -1,0 +1,38 @@
+%% C4 Level 1 - System context. Impact coding: [E] existing, [N] new, [C] changed. Dashed = designed only (not built in this exercise).
+flowchart LR
+    author(["Content authors (6)<br/>[Person] [E]"])
+    legal(["Legal reviewer<br/>[Person] [E]"])
+    visitor(["Families planning travel<br/>[Person] [E]"])
+    crawler(["Search engines and AI crawlers<br/>[External system] [E]"])
+    consumer(["Non-AEM consumer<br/>e.g. airline app<br/>[External system] [N]"])
+
+    platform["Airline web platform<br/>AEM as a Cloud Service (Sites + Assets)<br/>behind Adobe-managed CDN<br/>[Software system] [C]"]
+
+    analytics["Adobe Analytics<br/>via AEP Tags + ACDL<br/>[External system] [E]"]
+    salesforce["Salesforce<br/>Joey Club membership<br/>[External system] [E]"]
+    cloudmgr["Adobe Cloud Manager<br/>CI/CD + quality gates<br/>[External system] [E]"]
+
+    author -- "I-01 author pages, fragments, assets<br/>HTTPS + Adobe IMS [E]" --> platform
+    legal -. "I-14 approve infant-rule fragments<br/>AEM workflow [N, designed]" .-> platform
+    visitor -- "I-05 read page<br/>HTTPS [C]" --> platform
+    crawler -- "I-08 crawl HTML + FAQPage JSON-LD<br/>HTTPS [C]" --> platform
+    consumer -- "I-07 persisted GraphQL query<br/>HTTPS GET [N]" --> platform
+    visitor -- "I-06 interaction events<br/>ACDL -> Tags beacon [C]" --> analytics
+    platform -. "I-10 Joey Club enquiry<br/>REST + OAuth 2.0 [N, designed]" .-> salesforce
+    cloudmgr -- "I-11 build, test, deploy<br/>Git + pipelines [C]" --> platform
+
+    subgraph legend["Legend"]
+        direction TB
+        lE["[E] Existing - unchanged"]:::existing
+        lC["[C] Changed by this work"]:::changed
+        lN["[N] New in this work"]:::new
+        lD["Dashed arrow = designed only"]:::note
+    end
+
+    classDef existing fill:#eceff1,stroke:#607d8b,color:#263238
+    classDef changed fill:#fff3e0,stroke:#ef6c00,color:#3e2723
+    classDef new fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    classDef note fill:#ffffff,stroke:#9e9e9e,stroke-dasharray: 4 3,color:#424242
+    class author,legal,visitor,crawler,analytics,salesforce,cloudmgr existing
+    class platform changed
+    class consumer new
