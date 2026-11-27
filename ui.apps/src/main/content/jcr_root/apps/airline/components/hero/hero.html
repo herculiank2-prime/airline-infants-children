@@ -8,14 +8,8 @@
     <div class="cmp-hero__content">
         <h1 class="cmp-hero__title" id="${hero.id}-title">${hero.title}</h1>
         <p class="cmp-hero__introduction" data-sly-test="${hero.introduction}">${hero.introduction}</p>
-        <nav class="cmp-hero__jumplinks" data-sly-test="${hero.jumpLinks.size > 0}" aria-labelledby="${hero.id}-jumplinks">
-            <p class="cmp-hero__jumplinks-title" id="${hero.id}-jumplinks">${hero.jumpLinksTitle}</p>
-            <ul class="cmp-hero__jumplinks-list">
-                <li class="cmp-hero__jumplinks-item" data-sly-repeat.link="${hero.jumpLinks}">
-                    <a class="cmp-hero__jumplink" href="#${link.anchor}">${link.label}</a>
-                </li>
-            </ul>
-        </nav>
+        <div class="cmp-hero__links"
+             data-sly-resource="${'links' @ resourceType='airline/components/container'}"></div>
     </div>
     <div class="cmp-hero__media" data-sly-test="${hero.image}">
         <img class="cmp-hero__image"

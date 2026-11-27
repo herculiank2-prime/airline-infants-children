@@ -1,0 +1,15 @@
+<sly data-sly-use.jumpLinks="com.airline.travel.core.models.JumpLinks"
+     data-sly-use.templates="core/wcm/components/commons/v1/templates.html"></sly>
+<nav data-sly-test="${!jumpLinks.empty}"
+     id="${jumpLinks.id}"
+     class="cmp-jumplinks"
+     aria-labelledby="${jumpLinks.id}-title"
+     data-cmp-data-layer="${jumpLinks.data.json}">
+    <p class="cmp-jumplinks__title" id="${jumpLinks.id}-title">${jumpLinks.title}</p>
+    <ul class="cmp-jumplinks__list">
+        <li class="cmp-jumplinks__item" data-sly-repeat.link="${jumpLinks.links}">
+            <a class="cmp-jumplinks__link" href="#${link.anchor}">${link.label}</a>
+        </li>
+    </ul>
+</nav>
+<sly data-sly-call="${templates.placeholder @ isEmpty=jumpLinks.empty, classAppend='cmp-jumplinks'}"></sly>

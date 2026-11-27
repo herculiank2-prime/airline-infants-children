@@ -13,21 +13,75 @@
             jcr:primaryType="nt:unstructured"
             sling:resourceType="airline/components/container"
             layout="simple">
-            <sitename
+            <logo
                 jcr:primaryType="nt:unstructured"
-                sling:resourceType="airline/components/text"
-                text="&lt;p&gt;&lt;a href=&quot;/content/airline/au/en.html&quot; class=&quot;site-logo&quot;&gt;&lt;img src=&quot;/etc.clientlibs/airline/clientlibs/clientlib-site/resources/images/qantas-logo.svg&quot; alt=&quot;Home, Qantas Airways Logo&quot; width=&quot;203&quot; height=&quot;40&quot;&gt;&lt;/a&gt;&lt;a href=&quot;https://www.qantas.com/en-au/where-we-fly/partner-airlines/oneworld&quot; class=&quot;site-partner&quot;&gt;&lt;img src=&quot;/etc.clientlibs/airline/clientlibs/clientlib-site/resources/images/oneworld-logo.svg&quot; alt=&quot;Qantas and oneworld travel alliance&quot; width=&quot;38&quot; height=&quot;38&quot;&gt;&lt;/a&gt;&lt;/p&gt;"
-                textIsRich="true"/>
+                sling:resourceType="airline/components/image"
+                alt="Home, Qantas Airways Logo"
+                altValueFromDAM="{Boolean}false"
+                fileReference="/content/dam/airline/brand/qantas-logo.svg"
+                id="site-logo"
+                linkURL="/content/airline/au/en"/>
+            <partner
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="airline/components/image"
+                alt="Qantas and oneworld travel alliance"
+                altValueFromDAM="{Boolean}false"
+                fileReference="/content/dam/airline/brand/oneworld-logo.svg"
+                id="site-partner"
+                linkURL="https://www.qantas.com/en-au/where-we-fly/partner-airlines/oneworld"/>
             <mainnav
                 jcr:primaryType="nt:unstructured"
-                sling:resourceType="airline/components/text"
-                text="&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/book/flights&quot;&gt;Flights&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/where-we-fly&quot;&gt;Travel&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://marketplace.qantas.com/au&quot;&gt;Shop&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantasmoney.com/&quot;&gt;Banking &amp;amp; Insurance&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/frequent-flyer&quot;&gt;Frequent Flyer&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;"
-                textIsRich="true"/>
+                sling:resourceType="airline/components/container"
+                accessibilityLabel="Main"
+                id="main-navigation"
+                layout="simple"
+                roleAttribute="navigation">
+                <links
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="airline/components/list"
+                    linkItems="{Boolean}true"
+                    listFrom="static">
+                    <static jcr:primaryType="nt:unstructured">
+                        <item0
+                            jcr:primaryType="nt:unstructured"
+                            linkText="Flights"
+                            linkURL="https://www.qantas.com/en-au/book/flights"/>
+                        <item1
+                            jcr:primaryType="nt:unstructured"
+                            linkText="Travel"
+                            linkURL="https://www.qantas.com/en-au/where-we-fly"/>
+                        <item2
+                            jcr:primaryType="nt:unstructured"
+                            linkText="Shop"
+                            linkURL="https://marketplace.qantas.com/au"/>
+                        <item3
+                            jcr:primaryType="nt:unstructured"
+                            linkText="Banking &amp; Insurance"
+                            linkURL="https://www.qantasmoney.com/"/>
+                        <item4
+                            jcr:primaryType="nt:unstructured"
+                            linkText="Frequent Flyer"
+                            linkURL="https://www.qantas.com/en-au/frequent-flyer"/>
+                    </static>
+                </links>
+            </mainnav>
             <actions
                 jcr:primaryType="nt:unstructured"
-                sling:resourceType="airline/components/text"
-                text="&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/manage-booking&quot;&gt;Manage booking&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/frequent-flyer/log-in&quot; class=&quot;site-login&quot;&gt;Log in&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;"
-                textIsRich="true"/>
+                sling:resourceType="airline/components/container"
+                id="site-actions"
+                layout="simple">
+                <managebooking
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="Manage booking"
+                    sling:resourceType="airline/components/button"
+                    linkURL="https://www.qantas.com/en-au/manage-booking"/>
+                <login
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="Log in"
+                    sling:resourceType="airline/components/button"
+                    cq:styleIds="[button-primary]"
+                    linkURL="https://www.qantas.com/en-au/frequent-flyer/log-in"/>
+            </actions>
         </root>
     </jcr:content>
 </jcr:root>

@@ -51,7 +51,7 @@ test.describe("Travel questions accordion (AC-01, ADR-018)", () => {
     });
 
     test("hero jump link targets the booking section that holds the accordion", async ({ page }) => {
-        const link = page.locator(".cmp-hero__jumplink", { hasText: "Booking for infants and children" });
+        const link = page.locator(".cmp-hero .cmp-jumplinks__link", { hasText: "Booking for infants and children" });
         await expect(link).toHaveAttribute("href", "#booking");
         await expect(page.locator("#booking")).toHaveCount(1);
         await expect(page.locator("#booking-infants .cmp-travelquestions")).toHaveCount(1);

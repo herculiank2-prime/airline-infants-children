@@ -69,14 +69,48 @@
                     </cq:styleGroups>
                 </policy_section>
                 <policy_xf_root
-                    jcr:description="Experience fragment root: site name, navigation and footer text."
+                    jcr:description="Experience fragment root: logos, navigation list, buttons, link lists and legal text (ADR-030)."
                     jcr:primaryType="nt:unstructured"
                     jcr:title="XF Root"
                     sling:resourceType="wcm/core/components/policy/policy"
-                    components="[/apps/airline/components/navigation,/apps/airline/components/text,/apps/airline/components/image]">
+                    components="[/apps/airline/components/image,/apps/airline/components/container,/apps/airline/components/list,/apps/airline/components/button,/apps/airline/components/text]">
                     <jcr:content jcr:primaryType="nt:unstructured"/>
                 </policy_xf_root>
-            </container>
+                <policy_xf_group
+                    jcr:description="Group inside a header or footer: main navigation (role navigation), actions or brand."
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="XF Group"
+                    sling:resourceType="wcm/core/components/policy/policy"
+                    components="[/apps/airline/components/image,/apps/airline/components/list,/apps/airline/components/button]"
+                    layout="simple">
+                    <jcr:content jcr:primaryType="nt:unstructured"/>
+                </policy_xf_group>
+                <policy_hero_links
+                    jcr:description="Links area inside the hero: holds the jump links component (ADR-030)."
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="Hero Links"
+                    sling:resourceType="wcm/core/components/policy/policy"
+                    components="[/apps/airline/components/jumplinks]"
+                    layout="simple">
+                    <jcr:content jcr:primaryType="nt:unstructured"/>
+                </policy_hero_links>                <policy_xf_group
+                    jcr:description="Group inside a header or footer: main navigation (role navigation), actions or brand."
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="XF Group"
+                    sling:resourceType="wcm/core/components/policy/policy"
+                    components="[/apps/airline/components/image,/apps/airline/components/list,/apps/airline/components/button]"
+                    layout="simple">
+                    <jcr:content jcr:primaryType="nt:unstructured"/>
+                </policy_xf_group>
+                <policy_hero_links
+                    jcr:description="Links area inside the hero: holds the jump links component (ADR-030)."
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="Hero Links"
+                    sling:resourceType="wcm/core/components/policy/policy"
+                    components="[/apps/airline/components/jumplinks]"
+                    layout="simple">
+                    <jcr:content jcr:primaryType="nt:unstructured"/>
+                </policy_hero_links>            </container>
             <experiencefragment jcr:primaryType="nt:unstructured">
                 <policy_header
                     cq:styleDefaultElement="header"
@@ -136,6 +170,7 @@
                         <format jcr:primaryType="nt:unstructured" features="bold,italic"/>
                         <links jcr:primaryType="nt:unstructured" features="modifylink,unlink"/>
                         <lists jcr:primaryType="nt:unstructured" features="*"/>
+                        <misctools jcr:primaryType="nt:unstructured" features="sourceedit"/>
                     </rtePlugins>
                 </policy_footer_text>
                 <policy_content_text
@@ -192,12 +227,53 @@
                         <format jcr:primaryType="nt:unstructured" features="bold,italic"/>
                         <links jcr:primaryType="nt:unstructured" features="modifylink,unlink"/>
                         <lists jcr:primaryType="nt:unstructured" features="*"/>
+                        <misctools jcr:primaryType="nt:unstructured" features="sourceedit"/>
                         <paraformat jcr:primaryType="nt:unstructured" features="*"/>
                     </rtePlugins>
                 </policy_content_text>
             </text>
-            <breadcrumb jcr:primaryType="nt:unstructured">
+            <button jcr:primaryType="nt:unstructured">
                 <policy_default
+                    jcr:description="Header and footer actions."
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="Button"
+                    sling:resourceType="wcm/core/components/policy/policy">
+                    <jcr:content jcr:primaryType="nt:unstructured"/>
+                    <cq:styleGroups jcr:primaryType="nt:unstructured">
+                        <item0
+                            cq:styleGroupLabel="Appearance"
+                            jcr:primaryType="nt:unstructured">
+                            <cq:styles jcr:primaryType="nt:unstructured">
+                                <item0
+                                    cq:styleClasses="cmp-button--primary"
+                                    cq:styleId="button-primary"
+                                    cq:styleLabel="Primary (red pill)"
+                                    jcr:primaryType="nt:unstructured"/>
+                                <item1
+                                    cq:styleClasses="cmp-button--back-to-top"
+                                    cq:styleId="button-link-up"
+                                    cq:styleLabel="Back to top link"
+                                    jcr:primaryType="nt:unstructured"/>
+                            </cq:styles>
+                        </item0>
+                    </cq:styleGroups>
+                </policy_default>
+            </button>
+            <list jcr:primaryType="nt:unstructured">
+                <policy_default
+                    jcr:description="Header navigation and footer link rows: fixed list of links."
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="Link List"
+                    sling:resourceType="wcm/core/components/policy/policy"
+                    disableChildren="{Boolean}false"
+                    disableSearch="{Boolean}true"
+                    disableTags="{Boolean}true"
+                    showDescription="{Boolean}false"
+                    showModificationDate="{Boolean}false">
+                    <jcr:content jcr:primaryType="nt:unstructured"/>
+                </policy_default>
+            </list>
+            <breadcrumb jcr:primaryType="nt:unstructured">                <policy_default
                     jcr:primaryType="nt:unstructured"
                     jcr:title="Breadcrumb"
                     sling:resourceType="wcm/core/components/policy/policy"

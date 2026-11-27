@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Jump links"
+    sling:resourceType="cq/gui/components/authoring/dialog">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/container"
+        margin="{Boolean}true">
+        <items jcr:primaryType="nt:unstructured">
+            <title
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                emptyText="On this page"
+                fieldLabel="Heading"
+                fieldDescription="Shown above the links. Leave blank for &quot;On this page&quot;."
+                name="./title"/>
+            <links
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/form/multifield"
+                composite="{Boolean}true"
+                fieldLabel="Links">
+                <field
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="granite/ui/components/coral/foundation/container"
+                    name="./links">
+                    <items jcr:primaryType="nt:unstructured">
+                        <label
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                            fieldLabel="Label"
+                            name="./label"
+                            required="{Boolean}true"/>
+                        <anchor
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                            fieldLabel="Section ID"
+                            fieldDescription="The ID of a section on this page, for example booking. Set it in the section container's ID field."
+                            name="./anchor"
+                            required="{Boolean}true"/>
+                    </items>
+                </field>
+            </links>
+            <id
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                fieldLabel="ID"
+                fieldDescription="Optional HTML ID. Leave blank to generate one."
+                name="./id"/>
+        </items>
+    </content>
+</jcr:root>

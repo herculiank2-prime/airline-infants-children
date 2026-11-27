@@ -7,7 +7,6 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.apache.sling.api.resource.ModifiableValueMap;
@@ -18,7 +17,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import com.airline.travel.core.models.HeroBanner;
 import com.airline.travel.core.models.HeroImage;
-import com.airline.travel.core.models.JumpLink;
 import com.airline.travel.core.testcontext.AppAemContext;
 import com.day.cq.dam.api.Asset;
 import com.day.cq.wcm.api.Page;
@@ -75,8 +73,6 @@ class HeroBannerImplTest {
         assertNull(hero.getTitle());
         assertNull(hero.getImage());
         assertFalse(hero.isImageMissingAlt());
-        assertEquals(HeroBannerImpl.DEFAULT_JUMP_LINKS_TITLE, hero.getJumpLinksTitle());
-        assertTrue(hero.getJumpLinks().isEmpty());
     }
 
     @Test
@@ -152,32 +148,6 @@ class HeroBannerImplTest {
         HeroImage image = hero("jcr:title", "Title", "fileReference", ASSET).getImage();
         assertEquals(1280, image.getWidth());
         assertEquals(720, image.getHeight());
-    }
-
-    @Test
-    void jumpLinksAreNormalisedAndIncompleteOnesSkipped() {
-        HeroBanner hero = hero("jcr:title", "Title", "jumpLinksTitle", "Jump to");
-        String links = context.currentResource().getPath() + "/jumpLinks";
-        context.create().resource(links + "/item0", "label", "Booking", "anchor", "#Booking Infants!");
-        context.create().resource(links + "/item1", "label", "No anchor");
-        context.create().resource(links + "/item2", "label", "Bad", "anchor", "javascript:alert(1)");
-        context.create().resource(links + "/item3", "anchor", "#no-label");
-        context.create().resource(links + "/item4", "label", "Symbols only", "anchor", "#!!!");
-        hero = context.request().adaptTo(HeroBanner.class);
-
-        assertEquals("Jump to", hero.getJumpLinksTitle());
-        List<JumpLink> jumpLinks = hero.getJumpLinks();
-        assertEquals(2, jumpLinks.size());
-        assertEquals("Booking", jumpLinks.get(0).getLabel());
-        assertEquals("booking-infants", jumpLinks.get(0).getAnchor());
-        assertEquals("javascript-alert-1", jumpLinks.get(1).getAnchor());
-    }
-
-    @Test
-    void normaliseAnchor() {
-        assertNull(HeroBannerImpl.normaliseAnchor(null));
-        assertNull(HeroBannerImpl.normaliseAnchor(" # "));
-        assertEquals("seat_1-a", HeroBannerImpl.normaliseAnchor("##Seat_1 A"));
     }
 
     @Test

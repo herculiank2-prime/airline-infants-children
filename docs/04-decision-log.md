@@ -328,3 +328,17 @@ Format: context → options → decision → trade-offs → consequences. Status
   - Decorative card icons and the footer logo are CSS backgrounds, because the rich-text sanitizer strips `loading="lazy"` and PF-01 requires lazy images below the hero.
   - The accordion's heading moved into a text component, so `travelquestions` renders `aria-labelledby` only when it has its own heading.
   - UI tests now assert the live titles, the `infant-questions` data-layer parent and the qantas.com Joey Club URL.
+
+## ADR-030 - Split jump links out of the hero, and build the header and footer from Core Components
+
+- **Context.** Review feedback on PR-007: the header and footer were single rich-text components, the hero owned its jump links, and authors couldn't edit link HTML in the RTE.
+- **Options.**
+  - (a) Keep the custom markup.
+  - (b) Replace the hero with Core Title, Text and Image.
+  - (c) Keep one custom hero with a links container that only allows a new jumplinks component, and build the header and footer from Core Image, Container, List, Button and Text proxies.
+- **Decision.** (c). Enable the RTE source-edit plugin for inline, fullscreen and dialog editing.
+- **Trade-offs.** (b) would clutter the page with small components and lose the eager, high-priority LCP image. Core Teaser can't hold a container. With (c), authors edit the navigation in list dialogs rather than in HTML. Source edit lets authors write any markup, but the HTML sanitizer still applies on output.
+- **Consequences.**
+  - The HeroBanner API loses its jump-link methods, so the models package moves to 3.0.0.
+  - The link checker's transformer is disabled (LinkCheckerTransformerFactory), because it was stripping <a> from external Core Button and List links it couldn't verify.
+  - The header logos are Core Images, which the Core Image policy lazy-loads.

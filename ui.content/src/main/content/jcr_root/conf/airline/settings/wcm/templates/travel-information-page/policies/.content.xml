@@ -25,8 +25,15 @@
                     cq:policy="airline/components/breadcrumb/policy_default"
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="wcm/core/components/policies/mapping"/>
-                <content
-                    cq:policy="airline/components/container/policy_content"
+                <hero
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="wcm/core/components/policies/mapping">
+                    <links
+                        cq:policy="airline/components/container/policy_hero_links"
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wcm/core/components/policies/mapping"/>
+                </hero>
+                <content                    cq:policy="airline/components/container/policy_content"
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="wcm/core/components/policies/mapping">
                     <airline jcr:primaryType="nt:unstructured">

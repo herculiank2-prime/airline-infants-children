@@ -15,18 +15,93 @@
             layout="simple">
             <brand
                 jcr:primaryType="nt:unstructured"
-                sling:resourceType="airline/components/text"
-                text="&lt;p&gt;&lt;a href=&quot;#main-content&quot; class=&quot;back-to-top&quot;&gt;Back to top&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;/content/airline/au/en.html&quot; class=&quot;site-logo&quot;&gt;Home, Qantas Airways Logo&lt;/a&gt;&lt;/p&gt;"
-                textIsRich="true"/>
-            <links
+                sling:resourceType="airline/components/container"
+                id="footer-brand"
+                layout="simple">
+                <backtotop
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="Back to top"
+                    sling:resourceType="airline/components/button"
+                    cq:styleIds="[button-link-up]"
+                    linkURL="#main-content"/>
+                <logo
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="airline/components/image"
+                    alt="Home, Qantas Airways Logo"
+                    altValueFromDAM="{Boolean}false"
+                    fileReference="/content/dam/airline/brand/qantas-logo.svg"
+                    linkURL="/content/airline/au/en"/>
+            </brand>
+            <primarylinks
                 jcr:primaryType="nt:unstructured"
-                sling:resourceType="airline/components/text"
-                text="&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/about-us&quot;&gt;About us&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/au/en/qantas-group.html&quot;&gt;Qantas Group&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/help&quot;&gt;Support&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/qantas-app&quot;&gt;Qantas App&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/help/contact-us&quot;&gt;Connect with us&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;"
-                textIsRich="true"/>
+                sling:resourceType="airline/components/list"
+                id="footer-primary-links"
+                linkItems="{Boolean}true"
+                listFrom="static">
+                <static jcr:primaryType="nt:unstructured">
+                        <item0
+                            jcr:primaryType="nt:unstructured"
+                            linkText="About us"
+                            linkURL="https://www.qantas.com/en-au/about-us"/>
+                        <item1
+                            jcr:primaryType="nt:unstructured"
+                            linkText="Qantas Group"
+                            linkURL="https://www.qantas.com/au/en/qantas-group.html"/>
+                        <item2
+                            jcr:primaryType="nt:unstructured"
+                            linkText="Support"
+                            linkURL="https://www.qantas.com/en-au/help"/>
+                        <item3
+                            jcr:primaryType="nt:unstructured"
+                            linkText="Qantas App"
+                            linkURL="https://www.qantas.com/en-au/qantas-app"/>
+                        <item4
+                            jcr:primaryType="nt:unstructured"
+                            linkText="Connect with us"
+                            linkURL="https://www.qantas.com/en-au/help/contact-us"/>
+                </static>
+            </primarylinks>
+            <legallinks
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="airline/components/list"
+                id="footer-legal-links"
+                linkItems="{Boolean}true"
+                listFrom="static">
+                <static jcr:primaryType="nt:unstructured">
+                        <item0
+                            jcr:primaryType="nt:unstructured"
+                            linkText="Privacy &amp; security"
+                            linkURL="https://www.qantas.com/en-au/support/privacy-and-security"/>
+                        <item1
+                            jcr:primaryType="nt:unstructured"
+                            linkText="Terms of Use"
+                            linkURL="https://www.qantas.com/en-au/support/terms-of-use"/>
+                        <item2
+                            jcr:primaryType="nt:unstructured"
+                            linkText="Conditions of Carriage"
+                            linkURL="https://www.qantas.com/en-au/support/conditions-of-carriage"/>
+                        <item3
+                            jcr:primaryType="nt:unstructured"
+                            linkText="Modern Slavery Act Statement (PDF)"
+                            linkURL="https://www.qantas.com/en-au/qantas-group/acting-responsibly"/>
+                        <item4
+                            jcr:primaryType="nt:unstructured"
+                            linkText="Reconciliation Action Plan"
+                            linkURL="https://www.qantas.com/en-au/qantas-group/acting-responsibly/reconciliation"/>
+                        <item5
+                            jcr:primaryType="nt:unstructured"
+                            linkText="Access &amp; Inclusion Plan"
+                            linkURL="https://www.qantas.com/en-au/travel-information/specific-needs-assistance"/>
+                        <item6
+                            jcr:primaryType="nt:unstructured"
+                            linkText="Fare types"
+                            linkURL="https://www.qantas.com/en-au/book/flights/fare-types"/>
+                </static>
+            </legallinks>
             <legal
                 jcr:primaryType="nt:unstructured"
                 sling:resourceType="airline/components/text"
-                text="&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/support/privacy-and-security&quot;&gt;Privacy &amp;amp; security&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/support/terms-of-use&quot;&gt;Terms of Use&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/support/conditions-of-carriage&quot;&gt;Conditions of Carriage&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/qantas-group/acting-responsibly&quot;&gt;Modern Slavery Act Statement (PDF)&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/qantas-group/acting-responsibly/reconciliation&quot;&gt;Reconciliation Action Plan&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/travel-information/specific-needs-assistance&quot;&gt;Access &amp;amp; Inclusion Plan&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/book/flights/fare-types&quot;&gt;Fare types&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&amp;copy; Qantas Airways Limited ABN 16 009 661 901&lt;/p&gt;&lt;p&gt;Qantas would like to acknowledge the Traditional Custodians of the local lands and waterways on which we live, work and fly. We pay our respects to Elders past and present.&lt;/p&gt;"
+                text="&lt;p&gt;&amp;copy; Qantas Airways Limited ABN 16 009 661 901&lt;/p&gt;&lt;p&gt;Qantas would like to acknowledge the Traditional Custodians of the local lands and waterways on which we live, work and fly. We pay our respects to Elders past and present.&lt;/p&gt;"
                 textIsRich="true"/>
         </root>
     </jcr:content>

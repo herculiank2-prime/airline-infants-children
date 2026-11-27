@@ -1,10 +1,7 @@
 package com.airline.travel.core.models.impl;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -16,7 +13,6 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.sling.api.SlingHttpServletRequest;
 import org.apache.sling.api.resource.Resource;
-import org.apache.sling.api.resource.ValueMap;
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Exporter;
 import org.apache.sling.models.annotations.Model;
@@ -33,7 +29,6 @@ import com.adobe.cq.wcm.core.components.models.datalayer.builder.DataLayerBuilde
 import com.adobe.cq.wcm.core.components.util.ComponentUtils;
 import com.airline.travel.core.models.HeroBanner;
 import com.airline.travel.core.models.HeroImage;
-import com.airline.travel.core.models.JumpLink;
 import com.day.cq.commons.jcr.JcrConstants;
 import com.day.cq.dam.api.Asset;
 import com.day.cq.dam.api.Rendition;
@@ -50,13 +45,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public class HeroBannerImpl implements HeroBanner {
 
     static final String RESOURCE_TYPE = "airline/components/hero";
-    static final String DEFAULT_JUMP_LINKS_TITLE = "On this page";
     static final String SIZES = "(min-width: 1200px) 50vw, 100vw";
     static final int PREFERRED_SRC_WIDTH = 960;
     static final List<Integer> RENDITION_WIDTHS = List.of(640, 960, 1280);
 
     private static final Pattern WEB_RENDITION = Pattern.compile("^cq5dam\\.web\\.(\\d+)\\.(\\d+)\\.(?:jpe?g|png|webp)$");
-    private static final String NN_JUMP_LINKS = "jumpLinks";
 
     @Self
     private SlingHttpServletRequest request;
@@ -84,21 +77,14 @@ public class HeroBannerImpl implements HeroBanner {
 
     @ValueMapValue
     private boolean isDecorative;
-
-    @ValueMapValue
-    private String jumpLinksTitle;
-
     private HeroImage image;
     private boolean imageMissingAlt;
-    private List<JumpLink> jumpLinks = Collections.emptyList();
     private String id;
 
     @PostConstruct
     protected void init() {
         title = StringUtils.trimToNull(title);
         introduction = StringUtils.trimToNull(introduction);
-        jumpLinksTitle = StringUtils.defaultIfBlank(jumpLinksTitle, DEFAULT_JUMP_LINKS_TITLE);
-        jumpLinks = readJumpLinks(resource.getChild(NN_JUMP_LINKS));
         initImage();
     }
 
@@ -201,38 +187,6 @@ public class HeroBannerImpl implements HeroBanner {
         }
     }
 
-    private static List<JumpLink> readJumpLinks(Resource container) {
-        if (container == null) {
-            return Collections.emptyList();
-        }
-        List<JumpLink> links = new ArrayList<>();
-        Iterator<Resource> children = container.listChildren();
-        while (children.hasNext()) {
-            ValueMap properties = children.next().getValueMap();
-            String label = StringUtils.trimToNull(properties.get("label", String.class));
-            String anchor = normaliseAnchor(properties.get("anchor", String.class));
-            if (label != null && anchor != null) {
-                links.add(new JumpLinkImpl(label, anchor));
-            }
-        }
-        return Collections.unmodifiableList(links);
-    }
-
-    /**
-     * Strips leading {@code #} and reduces the value to {@code [a-z0-9_-]}, so it can only ever be an
-     * in-page fragment.
-     */
-    static String normaliseAnchor(String raw) {
-        if (StringUtils.isBlank(raw)) {
-            return null;
-        }
-        String anchor = StringUtils.stripStart(raw.trim(), "#")
-                .toLowerCase(Locale.ROOT)
-                .replaceAll("[^a-z0-9_-]+", "-")
-                .replaceAll("^-+|-+$", "");
-        return anchor.isEmpty() ? null : anchor;
-    }
-
     @Override
     public String getTitle() {
         return title;
@@ -246,16 +200,6 @@ public class HeroBannerImpl implements HeroBanner {
     @Override
     public HeroImage getImage() {
         return image;
-    }
-
-    @Override
-    public String getJumpLinksTitle() {
-        return jumpLinksTitle;
-    }
-
-    @Override
-    public List<JumpLink> getJumpLinks() {
-        return jumpLinks;
     }
 
     @Override

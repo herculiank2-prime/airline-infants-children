@@ -1,14 +1,12 @@
 package com.airline.travel.core.models;
 
-import java.util.List;
-
 import org.osgi.annotation.versioning.ConsumerType;
 
 import com.adobe.cq.wcm.core.components.models.Component;
 
 /**
  * Hero banner ({@code airline/components/hero}): the page's single {@code h1}, an introduction,
- * an optional image and "on this page" jump links (HB-01..HB-03, ADR-020).
+ * an optional image and a links container for the jump links component (HB-01..HB-03, ADR-020, ADR-030).
  */
 @ConsumerType
 public interface HeroBanner extends Component {
@@ -22,10 +20,6 @@ public interface HeroBanner extends Component {
      *         image has no alternative text (see {@link #isImageMissingAlt()})
      */
     HeroImage getImage();
-
-    String getJumpLinksTitle();
-
-    List<JumpLink> getJumpLinks();
 
     /**
      * @return {@code true} when an image is selected, is not decorative, and neither the author nor

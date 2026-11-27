@@ -1,15 +1,16 @@
 
-//== XF footer style (policy element "footer")
+//== XF footer style (policy element "footer"): Core Button, Core Image, two Core Lists and Core Text
 
 footer.experiencefragment {
     margin-top: $section-spacing;
     background: $color-surface;
+    color: $color-foreground;
 
     @media (min-width: $breakpoint-desktop) {
         margin-top: $section-spacing-desktop;
     }
 
-    .cmp-container {
+    .cmp-container:has(> .container > #footer-brand) {
         max-width: $content-max-width;
         margin: 0 auto;
         padding: 2.5rem $page-gutter 3rem;
@@ -19,59 +20,64 @@ footer.experiencefragment {
         }
     }
 
-    .cmp-text {
-        color: $color-foreground;
-
-        p, li {
-            font-size: 1rem;
-        }
-
-        ul {
-            display: flex;
-            flex-wrap: wrap;
-            gap: .5rem 2rem;
-            margin: 0 0 1.5rem;
-            padding: 0;
-            list-style: none;
-        }
-
-        a {
-            color: $color-foreground;
-            text-decoration: none;
-
-            &:hover {
-                text-decoration: underline;
-            }
-        }
-    }
-
-    .text:first-child .cmp-text {
+    #footer-brand {
         display: flex;
         flex-direction: column;
+        align-items: flex-start;
         gap: 1.5rem;
         padding-bottom: 1.5rem;
-        border-bottom: 1px solid $color-border;
         margin-bottom: 1.5rem;
-
-        p { margin: 0; }
+        border-bottom: 1px solid $color-border;
     }
 
-    .site-logo {
+    .cmp-button--back-to-top .cmp-button {
+        color: $color-foreground;
+        font-weight: 700;
+        text-decoration: none;
+
+        &::after {
+            @include chevron($color-foreground);
+            transform: rotate(-45deg);
+        }
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    .cmp-image__link,
+    .cmp-image__image {
         display: block;
+    }
+
+    .cmp-image__image {
         width: 203px;
-        height: 40px;
-        overflow: hidden;
-        text-indent: 100%;
-        white-space: nowrap;
-        background: url("#{$clientlib-images}/qantas-logo.svg") left center / contain no-repeat;
+        height: auto;
     }
 
-    .back-to-top::after {
-        @include chevron($color-foreground);
-        transform: rotate(-45deg);
+    .cmp-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .5rem 2rem;
+        margin: 0 0 1.5rem;
+        padding: 0;
+        list-style: none;
     }
 
-    .text:last-child p:last-child {
+    .cmp-list__item-link {
+        color: $color-foreground;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    .cmp-text p {
+        font-size: 1rem;
+    }
+
+    .cmp-text p:last-child {
         color: $color-muted;
         font-size: .875rem;
     }

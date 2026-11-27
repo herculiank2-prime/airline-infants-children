@@ -11,7 +11,7 @@
         color: $color-foreground;
     }
 
-    p > a:only-child:not(:has(img)):not(.site-logo) {
+    p > a:only-child:not(:has(img)) {
         color: $color-brand;
         font-weight: 700;
         text-decoration: none;

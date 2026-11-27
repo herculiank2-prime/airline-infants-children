@@ -8,4 +8,5 @@
     <filter root="/content/experience-fragments/airline" mode="merge"/>
     <filter root="/content/dam/airline/travel-questions" mode="merge"/>
     <filter root="/content/dam/airline/travel-information" mode="merge"/>
+    <filter root="/content/dam/airline/brand" mode="merge"/>
 </workspaceFilter>

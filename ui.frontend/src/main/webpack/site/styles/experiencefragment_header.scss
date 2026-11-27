@@ -1,5 +1,5 @@
 
-//== XF header style (policy element "header")
+//== XF header style (policy element "header"): Core Image logos, a navigation container with a Core List, Core Buttons
 
 header.experiencefragment {
     position: relative;
@@ -7,12 +7,12 @@ header.experiencefragment {
     background: $color-background;
     box-shadow: 0 4px 12px rgba(0, 0, 0, .08);
 
-    .cmp-container {
+    .cmp-container:has(> .container > #main-navigation) {
         display: grid;
-        grid-template-columns: 1fr auto;
+        grid-template-columns: auto auto 1fr auto;
         grid-template-areas:
-            "brand actions"
-            "nav nav";
+            "logo partner . actions"
+            "nav nav nav nav";
         align-items: center;
         gap: 0 2rem;
         max-width: calc(#{$content-max-width} + 2 * 2.5rem);
@@ -22,46 +22,70 @@ header.experiencefragment {
         @media (min-width: $breakpoint-desktop) {
             padding: 1.25rem 2.5rem 0;
         }
+
+        > .image:nth-child(1) { grid-area: logo; }
+        > .image:nth-child(2) { grid-area: partner; }
+        > .container:has(#main-navigation) { grid-area: nav; }
+        > .container:has(#site-actions) { grid-area: actions; }
     }
 
-    .cmp-text p,
-    .cmp-text ul {
-        margin: 0;
-    }
-
-    .text:nth-child(1) { grid-area: brand; }
-    .text:nth-child(2) { grid-area: nav; }
-    .text:nth-child(3) { grid-area: actions; }
-
-    .text:nth-child(1) p {
-        display: flex;
-        align-items: center;
-        gap: 2rem;
-    }
-
-    .site-logo img {
+    .cmp-image__link,
+    .cmp-image__image {
         display: block;
+    }
+
+    #site-logo .cmp-image__image {
         width: 203px;
         height: auto;
     }
 
-    .site-partner img {
-        display: block;
+    #site-partner .cmp-image__image {
         width: 38px;
         height: 38px;
     }
 
-    ul {
+    #main-navigation .cmp-list {
         display: flex;
         flex-wrap: wrap;
-        align-items: center;
         gap: .25rem 2.25rem;
-        padding: 0;
+        margin: 0;
+        padding: 1.25rem 0 1.5rem;
         list-style: none;
     }
 
-    a {
+    .cmp-list__item-link {
+        display: inline-block;
+        padding: .5rem 0;
         color: $color-foreground;
+        font-size: 1.125rem;
+        font-weight: 500;
+        text-decoration: none;
+
+        &::after {
+            content: "";
+            display: inline-block;
+            width: .45em;
+            height: .45em;
+            margin-left: .65em;
+            border-right: 2px solid currentColor;
+            border-bottom: 2px solid currentColor;
+            transform: rotate(45deg) translateY(-.2em);
+        }
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+
+    #site-actions {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .cmp-button {
+        color: $color-foreground;
+        font-weight: 500;
         text-decoration: none;
 
         &:hover {
@@ -69,50 +93,16 @@ header.experiencefragment {
         }
     }
 
-    .text:nth-child(2) {
-        ul {
-            padding: 1.25rem 0 1.5rem;
-        }
+    .cmp-button--primary .cmp-button {
+        display: inline-block;
+        padding: .625rem 1.5rem;
+        border-radius: 2rem;
+        background: $color-brand;
+        color: #fff;
 
-        a {
-            display: inline-block;
-            padding: .5rem 0;
-            font-size: 1.125rem;
-            font-weight: 500;
-
-            &::after {
-                content: "";
-                display: inline-block;
-                width: .45em;
-                height: .45em;
-                margin-left: .65em;
-                border-right: 2px solid currentColor;
-                border-bottom: 2px solid currentColor;
-                transform: rotate(45deg) translateY(-.2em);
-            }
-        }
-    }
-
-    .text:nth-child(3) {
-        ul {
-            gap: 1.5rem;
-        }
-
-        a {
-            font-weight: 500;
-        }
-
-        .site-login {
-            display: inline-block;
-            padding: .625rem 1.5rem;
-            border-radius: 2rem;
-            background: $color-brand;
-            color: #fff;
-
-            &:hover {
-                background: $color-brand-dark;
-                text-decoration: none;
-            }
+        &:hover {
+            background: $color-brand-dark;
+            text-decoration: none;
         }
     }
 }

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Merged over Core Text's dialog by the Sling Resource Merger: only adds the source-edit button. -->
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="nt:unstructured">
+    <content jcr:primaryType="nt:unstructured">
+        <items jcr:primaryType="nt:unstructured">
+            <tabs jcr:primaryType="nt:unstructured">
+                <items jcr:primaryType="nt:unstructured">
+                    <properties jcr:primaryType="nt:unstructured">
+                        <items jcr:primaryType="nt:unstructured">
+                            <columns jcr:primaryType="nt:unstructured">
+                                <items jcr:primaryType="nt:unstructured">
+                                    <column jcr:primaryType="nt:unstructured">
+                                        <items jcr:primaryType="nt:unstructured">
+                                            <text jcr:primaryType="nt:unstructured">
+                                                <rtePlugins jcr:primaryType="nt:unstructured">
+                                                    <misctools
+                                                        jcr:primaryType="nt:unstructured"
+                                                        features="sourceedit"/>
+                                                </rtePlugins>
+                                                <uiSettings jcr:primaryType="nt:unstructured">
+                                                    <cui jcr:primaryType="nt:unstructured">
+                                                        <inline
+                                                            jcr:primaryType="nt:unstructured"
+                                                            toolbar="[format#bold,format#italic,format#underline,#justify,#lists,links#modifylink,links#unlink,#paraformat,misctools#sourceedit]"/>
+                                                    </cui>
+                                                </uiSettings>
+                                            </text>
+                                        </items>
+                                    </column>
+                                </items>
+                            </columns>
+                        </items>
+                    </properties>
+                </items>
+            </tabs>
+        </items>
+    </content>
+</jcr:root>

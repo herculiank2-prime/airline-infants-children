@@ -1,4 +1,4 @@
-// Live layout: title, full-bleed image with a curved top-right corner, introduction, then the "On this page" list.
+// Live layout: title, full-bleed image with a curved top-right corner, introduction, then the links container holding the jump links component.
 .cmp-hero {
     display: grid;
     margin-bottom: $section-spacing;
@@ -61,57 +61,8 @@
     }
 }
 
-.cmp-hero__jumplinks {
+.cmp-hero__links {
     order: 4;
-    padding-left: 1.5rem;
-    border-left: 2px solid $color-brand;
-
-    @media (min-width: $breakpoint-desktop) {
-        padding-left: 2.5rem;
-    }
-}
-
-.cmp-hero__jumplinks-title {
-    margin: 0 0 1rem;
-    font-size: 1.625rem;
-    font-weight: 400;
-}
-
-.cmp-hero__jumplinks-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-    columns: 1;
-    column-gap: 3rem;
-
-    @media (min-width: $breakpoint-tablet) {
-        columns: 2;
-    }
-
-    @media (min-width: $breakpoint-desktop) {
-        columns: 3;
-    }
-}
-
-.cmp-hero__jumplinks-item {
-    break-inside: avoid;
-}
-
-.cmp-hero__jumplink {
-    display: inline-block;
-    padding: .5rem 0;
-    font-size: 1.125rem;
-    color: $color-foreground;
-    text-decoration: none;
-
-    &::after {
-        @include chevron;
-        transform: rotate(135deg);
-    }
-
-    &:hover {
-        text-decoration: underline;
-    }
 }
 
 .cmp-hero__author-warning {

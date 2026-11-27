@@ -29,6 +29,9 @@ test.describe("Accessibility and layout (PT-02, SD-08, EN-04, EN-06)", () => {
         await expect(page.locator("header")).toHaveCount(1);
         await expect(page.locator("footer")).toHaveCount(1);
         await expect(page.locator("nav").first()).toBeAttached();
+        const mainNav = page.locator("header").getByRole("navigation", { name: "Main" });
+        await expect(mainNav.getByRole("link")).toHaveText(["Flights", "Travel", "Shop", "Banking & Insurance", "Frequent Flyer"]);
+        await expect(page.getByRole("navigation", { name: "On this page" })).toBeAttached();
 
         await page.keyboard.press("Tab");
         const skip = page.locator(":focus");

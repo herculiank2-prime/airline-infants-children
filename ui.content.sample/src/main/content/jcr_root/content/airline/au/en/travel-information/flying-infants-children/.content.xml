@@ -23,9 +23,10 @@
                     sling:resourceType="airline/components/hero"
                     fileReference="/content/dam/airline/travel-information/infants-children/hero-crew-girl-onboard.jpg"
                     id="hero"
-                    introduction="We love having young flyers on board. Whether they're flying with you or travelling alone, here's all you need to know – from booking a flight to the onboard experience."
-                    jumpLinksTitle="On this page">
-                    <jumpLinks jcr:primaryType="nt:unstructured">
+                    introduction="We love having young flyers on board. Whether they're flying with you or travelling alone, here's all you need to know – from booking a flight to the onboard experience.">
+                    <links jcr:primaryType="nt:unstructured" sling:resourceType="airline/components/container" layout="simple">
+                    <jumplinks jcr:primaryType="nt:unstructured" sling:resourceType="airline/components/jumplinks" title="On this page">
+                    <links jcr:primaryType="nt:unstructured">
                         <item0
                             jcr:primaryType="nt:unstructured"
                             anchor="bluey"
@@ -70,7 +71,7 @@
                             jcr:primaryType="nt:unstructured"
                             anchor="boarding-security"
                             label="Boarding and security"/>
-                    </jumpLinks>
+                    </links></jumplinks></links>
                 </hero>
                 <content
                     jcr:primaryType="nt:unstructured"

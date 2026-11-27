@@ -11,8 +11,16 @@
             sling:resourceType="wcm/core/components/policies/mapping">
             <airline jcr:primaryType="nt:unstructured">
                 <components jcr:primaryType="nt:unstructured">
-                    <navigation
-                        cq:policy="airline/components/navigation/policy_header_nav"
+                    <container
+                        cq:policy="airline/components/container/policy_xf_group"
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wcm/core/components/policies/mapping"/>
+                    <list
+                        cq:policy="airline/components/list/policy_default"
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="wcm/core/components/policies/mapping"/>
+                    <button
+                        cq:policy="airline/components/button/policy_default"
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="wcm/core/components/policies/mapping"/>
                     <text
