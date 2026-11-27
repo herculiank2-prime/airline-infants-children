@@ -6,20 +6,21 @@ flowchart LR
     crawler(["Search engines and AI crawlers<br/>[External system] [E]"])
     consumer(["Non-AEM consumer<br/>e.g. airline app<br/>[External system] [N]"])
 
-    platform["Airline web platform<br/>AEM as a Cloud Service (Sites + Assets)<br/>behind Adobe-managed CDN<br/>[Software system] [C]"]
+    platform["Airline web platform<br/>AEM as a Cloud Service (Sites + Assets)<br/>Author, Preview, Publish, Dispatcher,<br/>Adobe-managed CDN<br/>[Software system] [C]"]
 
     analytics["Adobe Analytics<br/>via AEP Tags + ACDL<br/>[External system] [E]"]
     salesforce["Salesforce<br/>Joey Club membership<br/>[External system] [E]"]
     cloudmgr["Adobe Cloud Manager<br/>CI/CD + quality gates<br/>[External system] [E]"]
 
     author -- "I-01 author pages, fragments, assets<br/>HTTPS + Adobe IMS [E]" --> platform
-    legal -. "I-14 approve infant-rule fragments<br/>AEM workflow [N, designed]" .-> platform
+    legal -. "I-14 review on Preview, approve in workflow<br/>[N, designed]" .-> platform
     visitor -- "I-05 read page<br/>HTTPS [C]" --> platform
-    crawler -- "I-08 crawl HTML + FAQPage JSON-LD<br/>HTTPS [C]" --> platform
+    visitor -. "I-09 Joey Club enquiry<br/>HTTPS POST [N, designed]" .-> platform
+    crawler -- "I-08 crawl HTML + FAQPage JSON-LD, sitemap<br/>HTTPS [C]" --> platform
     consumer -- "I-07 persisted GraphQL query<br/>HTTPS GET [N]" --> platform
     visitor -- "I-06 interaction events<br/>ACDL -> Tags beacon [C]" --> analytics
-    platform -. "I-10 Joey Club enquiry<br/>REST + OAuth 2.0 [N, designed]" .-> salesforce
-    cloudmgr -- "I-11 build, test, deploy<br/>Git + pipelines [C]" --> platform
+    platform -. "I-10 enquiry upsert<br/>REST + OAuth 2.0 [N, designed]" .-> salesforce
+    cloudmgr -- "I-11 code + Dispatcher pipelines [C]<br/>I-16 CDN config pipeline [N, designed]" --> platform
 
     subgraph legend["Legend"]
         direction TB

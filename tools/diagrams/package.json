@@ -1,0 +1,9 @@
+{
+  "name": "airline-diagram-tools",
+  "private": true,
+  "description": "Renders docs/diagrams/*.mmd to SVG with mermaid-cli (MIT) using the system Edge/Chrome.",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@mermaid-js/mermaid-cli": "11.12.0"
+  }
+}

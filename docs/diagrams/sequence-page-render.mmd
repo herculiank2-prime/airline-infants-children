@@ -1,4 +1,5 @@
 %% Page request on publish: CDN -> Dispatcher -> AEM Publish. Integrations I-05, I-08, I-12.
+%% Freshness budget (A-02): Dispatcher TTL 60 s + CDN 150 s + CDN SWR 30 s + browser 60 s = 300 s worst case.
 sequenceDiagram
     autonumber
     participant B as Browser / crawler
@@ -8,27 +9,27 @@ sequenceDiagram
     participant TQ as TravelQuestionService
     participant CF as Content Fragments (DAM)
 
-    B->>CDN: GET /content/airline/au/en/travel-information/flying-infants-children.html (I-05 / I-08)
-    alt CDN hit (age < s-maxage 300 s)
+    B->>CDN: GET /au/en/travel-information/flying-infants-children.html (I-05 / I-08)
+    alt CDN hit (age < Surrogate-Control max-age 150 s, +30 s SWR)
         CDN-->>B: 200 cached HTML
-    else CDN miss
-        CDN->>D: origin fetch
-        alt Dispatcher cache valid (stat file + TTL)
-            D-->>CDN: 200 cached HTML
+    else CDN miss / expired
+        CDN->>D: origin fetch (I-05)
+        alt Dispatcher cache valid (stat file + 60 s TTL)
+            D-->>CDN: 200 cached HTML (+ Age)
         else stale or missing
-            D->>P: render request (filters allow .html, no selectors)
-            P->>P: Page v3 + customheaderlibs: FaqStructuredData model
+            D->>P: render /content/airline/au/en/... (filters allow .html, no selectors)
+            P->>P: Page v3 head: FaqStructuredData model
             P->>TQ: findQuestions(selection from travelquestions resource)
-            TQ->>CF: list folder children / filter by tags (bounded traversal)
+            TQ->>CF: descendants of folder / exact-tag match (<= 100 assets)
             CF-->>TQ: travel-question fragments
-            TQ-->>P: ordered List<TravelQuestion>
-            P->>P: HeroBanner, Teaser (delegate), TravelQuestionsAccordion models
+            TQ-->>P: ordered List<TravelQuestion> (cached per request)
+            P->>P: HeroBanner, Teaser (delegate), TravelQuestionsAccordion models (same cached list)
             P->>P: include header/footer XFs (I-12)
-            P-->>D: 200 HTML + JSON-LD, Cache-Control max-age=60, s-maxage=300
-            D->>D: store in cache (enableTTL honours max-age)
+            P-->>D: 200 HTML + JSON-LD<br/>Cache-Control: max-age=60<br/>Surrogate-Control: max-age=150, stale-while-revalidate=30, stale-if-error=86400<br/>Surrogate-Key: airline-page-<hash>
+            D->>D: store in cache (enableTTL honours max-age=60)
             D-->>CDN: 200 HTML + security headers
         end
-        CDN-->>B: 200 HTML
+        CDN-->>B: 200 HTML (Surrogate-* stripped)
     end
     B->>CDN: GET versioned clientlibs (1 year, immutable) and hero rendition (eager, fetchpriority=high)
     B->>CDN: GET teaser image via Core Image (lazy)

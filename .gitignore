@@ -104,3 +104,6 @@ reports/
 
 # Others
 dispatcher/src/conf.d/variables/default.vars
+
+# Local diagram tooling
+tools/diagrams/puppeteer-config.json

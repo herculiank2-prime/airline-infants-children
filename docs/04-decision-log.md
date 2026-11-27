@@ -39,15 +39,29 @@ Format: context → options → decision → trade-offs → consequences. Status
 
 ## ADR-004 — Caching and invalidation of fragment-driven content
 
-- **Context.** Page HTML embeds fragment content. Publishing a fragment invalidates Dispatcher stat files only along `/content/dam/...` (statfileslevel 2), so cached pages keep the old answer. Legal needs changes visible within 5 minutes (A-02).
+- **Context.** Page HTML embeds fragment and XF content. Publishing a fragment invalidates Dispatcher stat files only along `/content/dam/...` (statfileslevel 2), so cached pages keep the old answer. Legal needs changes visible within 300 s worst case (A-02).
 - **Options.**
   - (a) Lower `statfileslevel` so any activation flushes all HTML.
-  - (b) TTL bound: HTML cached ≤ 300 s at Dispatcher (`enableTTL` + `max-age` from AEM) and CDN (`s-maxage=300`).
-  - (c) Targeted invalidation: on fragment publish, resolve referencing pages and send SCD `INVALIDATE` + CDN purge (I-13).
+  - (b) TTL budget across all layers.
+  - (c) Targeted invalidation: on fragment/XF publish, resolve referencing pages, then SCD `INVALIDATE` + CDN purge by `Surrogate-Key` (I-13).
   - (d) Load fragments client-side via the persisted query.
 - **Decision.** (b) built now, (c) designed (story S-14).
-- **Trade-offs.** (b) is simple, has no new moving parts and bounds staleness at 5 min. It costs more origin renders (one per page per 5 min per Dispatcher), which is negligible for this page. (a) flushes the whole site on every DAM publish, causing cache-hit collapse. (c) gives instant freshness but needs a reference resolver, service user and CDN purge key. (d) hurts LCP and SEO, and the JSON-LD would no longer be server-rendered (SE-01).
-- **Consequences.** `HtmlCacheHeadersFilter` (publish only) emits `Cache-Control: max-age=60, s-maxage=300, stale-while-revalidate=300, stale-if-error=86400` for `/content/airline/**.html`. Dispatcher `/enableTTL "1"` honours it. Persisted queries use the same 300 s.
+- **Budget (AR-01).** The worst case is when each layer fetches just before the previous one expires:
+
+  Dispatcher TTL 60 + CDN `max-age` 150 + CDN `stale-while-revalidate` 30 + browser `max-age` 60 = **300 s**.
+
+  - `DISABLE_DEFAULT_CACHING` is defined in `global.vars`, so the Adobe CDN default (300 s for HTML) does not apply and the project owns every header.
+  - The CDN keeps `Age`, so a browser does not cache a 149 s-old object for another 60 s beyond the budget.
+  - `stale-if-error=86400` is outside the budget on purpose: it only applies when the origin is failing, and serving the last good legal copy is better than an error page.
+- **Trade-offs.** (b) is simple and has no new moving parts. It costs more origin renders (about one per page per minute per Dispatcher), which is negligible for this page. (a) flushes the whole site on every DAM publish, causing cache-hit collapse. (c) gives near-instant freshness but needs a reference resolver, a service user and a CDN purge key. (d) hurts LCP and SEO, and the JSON-LD would no longer be server-rendered (SE-01).
+- **Why the AEM filter emits the headers, not Dispatcher `mod_headers` (AR-23).** `enableTTL` reads `Cache-Control` from the AEM response. `mod_headers` values are added after caching, so the Dispatcher TTL would not see them.
+- **Consequences.**
+  - `HtmlCacheHeadersFilter` (publish only; GET/HEAD, `.html`, status 200, set lazily) emits:
+    - `Cache-Control: max-age=60`
+    - `Surrogate-Control: max-age=150, stale-while-revalidate=30, stale-if-error=86400`
+    - `Surrogate-Key: airline-page-<hash>`, which is ready for I-13.
+  - Dispatcher `/enableTTL "1"` honours the AEM headers, and `/headers` passes `Surrogate-*` through.
+  - Persisted queries use the same values.
 
 ## ADR-005 — Joey Club enquiry reaches Salesforce through an AEM servlet, synchronously, with bounded retries
 
@@ -71,7 +85,12 @@ Format: context → options → decision → trade-offs → consequences. Status
   - (d) Independent NZ site.
 - **Decision.** (a), with market tags on fragments.
 - **Trade-offs.** (a) is cheap now (~2 days) and inherits structure and component configuration. Local differences break inheritance per component. Moving later to language masters costs re-parenting (~3–5 days). (b) has the lowest long-term cost but restructures a live AU site now. (c) does not apply (same language). (d) duplicates legally reviewed content.
-- **Consequences.** Fragments stay shared. NZ-only rules are new fragments tagged `airline:market/nz`, and the NZ accordion uses tag mode. Core XF localisation resolves NZ header/footer automatically.
+- **Consequences (revised after AR-06).**
+  - **Both markets use tag mode with *all*** (audience + market). This is already true for the AU demo page.
+  - A shared rule is one fragment tagged `market/au` and `market/nz`. A market-specific variant is a separate fragment with the same `sortOrder` and only its market tag, and the shared fragment loses that market's tag.
+  - The rollout config `airline-nz-rollout` excludes the accordion's `tags` property from inheritance. The NZ author sets `market/nz` once.
+  - Core XF localisation resolves the NZ header/footer automatically.
+  - Persisted query `travel-questions-by-tags-all` serves both markets.
 
 ---
 
@@ -84,7 +103,11 @@ Format: context → options → decision → trade-offs → consequences. Status
   - (c) Dynamic Media URLs.
 - **Decision.** (a).
 - **Trade-offs.** (a) gives full control of eager loading, `fetchpriority` and dimensions, all unit-testable, but depends on renditions existing (processing profile). (b) is lazy by default, and getting eager plus `fetchpriority` needs policy tweaks and a second resource. (c) is not runnable locally (Q-02).
-- **Consequences.** A processing profile must produce `cq5dam.web.640.640` and `cq5dam.web.1280.1280`. If none exist, the model falls back to the original.
+- **Consequences (revised after AR-11).**
+  - The processing profile `airline-web` produces `cq5dam.web.640.640`, `cq5dam.web.960.960` and `cq5dam.web.1280.1280`.
+  - The **original is never in `srcset`**, so a 4 MB upload cannot become the LCP image. If no rendition exists, `src` is the largest available web rendition, or the hero renders text only (and edit mode warns).
+  - Rendition URLs are unversioned, so they are cached for 1 day. Dispatcher is invalidated on asset publish, and a rights takedown triggers a CDN purge.
+  - **Production path:** if Dynamic Media with OpenAPI is licensed (Q-02), swap the URL builder in `HeroBannerImpl` for DM delivery URLs. That gives AVIF/WebP, smart crop and versioned URLs that can be cached for a year. The model interface does not change.
 
 ## ADR-008 — Landmarks through a container proxy with a policy-driven element
 
@@ -140,8 +163,10 @@ Format: context → options → decision → trade-offs → consequences. Status
   - (a) Accordion component emits its own JSON-LD in the body.
   - (b) Page `customheaderlibs.html` + `FaqStructuredData` aggregating all `travelquestions` components on the page.
 - **Decision.** (b).
-- **Trade-offs.** (b) guarantees a single FAQPage even with two accordions and keeps the head as the metadata home. It costs a second call to `TravelQuestionService` per accordion (bounded, ≤ 200 nodes). (a) can produce multiple FAQPage blocks.
-- **Consequences.** Both models build `QuestionSelection` from the same resource properties via one factory, so the outputs cannot diverge.
+- **Trade-offs.** (b) guarantees a single FAQPage even with two accordions and keeps the head as the metadata home. The head renders before the body, so it runs the selection first, and the accordion reuses that result from a request attribute (one scan per selection per request, ≤ 100 assets). (a) can produce multiple FAQPage blocks.
+- **Consequences.**
+  - Both models build `QuestionSelection` from the same resource properties via one factory, so the outputs cannot diverge.
+  - FAQPage is for semantics and answer engines. Google restricts FAQ rich results to authoritative government and health sites, so no rich-result uplift is claimed (A-08).
 
 ## ADR-015 — Dispatcher allow-list instead of including `default_filters.any`
 
@@ -153,7 +178,7 @@ Format: context → options → decision → trade-offs → consequences. Status
 ## ADR-016 — `sortOrder` field on the travel-question model
 
 - **Context.** GraphQL cannot sort by JCR node order. The accordion and the persisted query must return the same order (HD-02).
-- **Decision.** Add an optional integer `sortOrder`. Sort by `sortOrder`, then `question`.
+- **Decision.** Add a **required** integer `sortOrder` (default 100). Sort by `sortOrder`, then `question` using case-sensitive natural string order in both Java and GraphQL, so the two engines agree (AR-02).
 - **Consequences.** A small departure from "question, answer and tags", recorded in the README departures table.
 
 ## ADR-017 — Namespaced data-layer event names
@@ -161,4 +186,41 @@ Format: context → options → decision → trade-offs → consequences. Status
 - **Context.** Core Components already push `cmp:click`, `cmp:show` and `cmp:hide`. DL-01 asks for event names that match the design.
 - **Decision.** `airline:accordion:expand`, `airline:accordion:collapse`, `airline:teaser:click`, with `eventInfo.path = component.<id>`.
 - **Trade-offs.** Clear ownership and no double counting with Core events, but Tags rules must subscribe to our names.
-- **Consequences.** The contract lives in SOLUTION_DESIGN §8.3, and Playwright tests assert the exact names.
+- **Consequences.** The contract lives in SOLUTION_DESIGN §8.3, and Playwright tests assert the exact names. Item IDs come from `ComponentUtils.generateId` on the fragment path, so they survive reordering (AR-20). `eventInfo.trigger` separates clicks from find-in-page reveals.
+
+## ADR-018 — Collapsed accordion panels use `hidden="until-found"`
+
+- **Context.** Answers must be in the HTML for crawlers and JSON-LD parity. The collapsed state must be rendered on the server (no CLS). Users searching the page with Ctrl+F should find text inside collapsed panels.
+- **Options.**
+  - (a) `hidden` attribute.
+  - (b) CSS-only collapse (`max-height: 0`).
+  - (c) `hidden="until-found"` + `beforematch` handler.
+  - (d) `<details>`/`<summary>`.
+- **Decision.** (c).
+- **Trade-offs.**
+  - (c) keeps panels out of the accessibility tree while collapsed (like `hidden`) and lets find-in-page reveal them. Browsers without support treat it as plain `hidden`, so it degrades safely.
+  - (b) leaves collapsed content in the accessibility tree.
+  - (d) does not provide the heading + button semantics of the WAI-ARIA accordion pattern, and analytics hooks differ.
+- **Consequences.**
+  - `beforematch` sets `aria-expanded="true"` and pushes `airline:accordion:expand` with `trigger: "find-in-page"`.
+  - Without JS, a `<noscript><style>` in the page head shows all panels, so the content is never locked away.
+
+## ADR-019 — Demo content in a separate `ui.content.sample` package
+
+- **Context.** The exercise ships sample pages, fragments and images (EN-02). In a real programme, code packages must never overwrite authored content (AR-05).
+- **Options.**
+  - (a) Everything in `ui.content` with `mode="merge"`.
+  - (b) Split code-owned structure (`ui.content`: templates, policies, CF model, persisted queries, tags) from demo content (`ui.content.sample`).
+- **Decision.** (b).
+- **Trade-offs.** (b) has one more module, but the filter modes become honest: `update` for templates/policies, `replace` for the model and queries, and `merge` for sample content. Production drops the sample embed from `all`.
+- **Consequences.** The README says how to exclude the sample package. Filter roots for DAM and tags are explicit paths, not `/content/dam/airline`.
+
+## ADR-020 — Hero in the template structure, not the allowed-components list
+
+- **Context.** HB-01 requires exactly one `h1`. If the hero is a freely addable component, authors can add two, or none (AR-24).
+- **Options.**
+  - (a) Allowed component plus an author guideline.
+  - (b) A single unlocked hero node in the template structure.
+- **Decision.** (b).
+- **Trade-offs.** (b) guarantees one hero per page. Authors cannot remove it, only leave it empty, in which case it renders nothing and the page lacks an `h1`. The empty state shows an editor warning, and Playwright asserts one `h1` on the demo page.
+- **Consequences.** The `content` container allows only teaser and travel questions.
