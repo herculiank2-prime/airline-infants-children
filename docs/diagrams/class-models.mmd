@@ -1,0 +1,116 @@
+%% Core bundle: Sling Models and services (package com.airline.travel.core).
+classDiagram
+    direction LR
+    class Component {
+        <<Core interface>>
+        +getId() String
+        +getData() ComponentData
+    }
+    class HeroBanner {
+        <<interface>>
+        +getTitle() String
+        +getIntroduction() String
+        +getImage() HeroImage
+        +getJumpLinks() List~JumpLink~
+        +isEmpty() boolean
+    }
+    class HeroBannerImpl {
+        -fileReference, altText, isDecorative
+        -resolveAlt() DAM dc:description fallback
+    }
+    class HeroImage {
+        +getSrc() String
+        +getSrcset() String
+        +getWidth() int
+        +getHeight() int
+        +getAlt() String
+        +isDecorative() boolean
+    }
+    class JumpLink {
+        +getLabel() String
+        +getAnchor() String
+    }
+    class Teaser {
+        <<Core interface>>
+    }
+    class TeaserImpl {
+        -delegate Teaser (via ResourceSuperType)
+        +getLink() Link (adds rel noopener noreferrer)
+        +getActions() List~ListItem~
+        +getLinkRel() String
+    }
+    class TravelQuestionsAccordion {
+        <<interface>>
+        +getHeading() String
+        +getHeadingElement() String
+        +getItemHeadingElement() String
+        +getItems() List~AccordionItem~
+        +isEmpty() boolean
+    }
+    class TravelQuestionsAccordionImpl
+    class AccordionItem {
+        +getId() String
+        +getQuestion() String
+        +getAnswerHtml() String
+        +getData() ComponentData
+    }
+    class FaqStructuredData {
+        <<interface>>
+        +getJson() String
+        +isEmpty() boolean
+    }
+    class FaqStructuredDataImpl {
+        -finds travelquestions resources on the page
+    }
+    class FaqSchemaBuilder {
+        +build(List~TravelQuestion~) String
+    }
+    class TravelQuestionService {
+        <<interface>>
+        +findQuestions(ResourceResolver, QuestionSelection) List~TravelQuestion~
+    }
+    class TravelQuestionServiceImpl {
+        <<OSGi component>>
+        -Config allowedRootPath, modelPath, maxItems
+    }
+    class QuestionSelection {
+        <<value>>
+        +mode FOLDER|TAGS
+        +folderPath, rootPath
+        +tagIds, matchAll, limit
+        +fromValueMap(ValueMap) QuestionSelection
+    }
+    class TravelQuestion {
+        <<value>>
+        +path, question, answerHtml
+        +tags, sortOrder
+    }
+    class HtmlCacheHeadersFilter {
+        <<Sling filter, publish only>>
+        -Config pathPattern, maxAge, sMaxAge
+    }
+    class LandmarkContainer {
+        <<interface>>
+        +getLandmarkElement() String
+    }
+    class LandmarkContainerImpl {
+        -policy landmarkElement (header|main|footer|section|aside|div)
+    }
+    LandmarkContainer <|.. LandmarkContainerImpl
+
+    Component <|-- HeroBanner
+    Component <|-- TravelQuestionsAccordion
+    HeroBanner <|.. HeroBannerImpl
+    HeroBannerImpl --> HeroImage
+    HeroBannerImpl --> JumpLink
+    Teaser <|.. TeaserImpl
+    TeaserImpl ..> Teaser : delegates
+    TravelQuestionsAccordion <|.. TravelQuestionsAccordionImpl
+    TravelQuestionsAccordionImpl --> AccordionItem
+    TravelQuestionsAccordionImpl ..> TravelQuestionService
+    TravelQuestionsAccordionImpl ..> QuestionSelection
+    FaqStructuredData <|.. FaqStructuredDataImpl
+    FaqStructuredDataImpl ..> TravelQuestionService
+    FaqStructuredDataImpl ..> FaqSchemaBuilder
+    TravelQuestionService <|.. TravelQuestionServiceImpl
+    TravelQuestionServiceImpl --> TravelQuestion

@@ -1,0 +1,23 @@
+%% I-13 (designed only) - publishing a travel-question fragment refreshes the pages that render it.
+%% Built today: TTL bound (HTML max 5 min at Dispatcher and CDN). Designed: targeted invalidation.
+sequenceDiagram
+    autonumber
+    actor A as Author / Legal approver
+    participant AU as AEM Author
+    participant L as FragmentPublishListener (designed)
+    participant R as ReferenceResolver (designed)
+    participant SCD as Sling Content Distribution
+    participant D as Dispatcher
+    participant CDN as Adobe CDN
+
+    A->>AU: Approve + publish fragment /content/dam/airline/travel-questions/infants/... (I-14 -> I-03)
+    AU->>SCD: ADD fragment (existing replication)
+    SCD->>D: invalidate /content/dam/... (stat files under /content/dam only)
+    AU-->>L: replication event (topic com/day/cq/replication)
+    L->>R: which pages render this fragment?
+    R->>R: query travelquestions components where folderPath is an ancestor<br/>OR tags intersect the fragment tags
+    R-->>L: page paths
+    L->>SCD: INVALIDATE page paths (agent "publish")
+    SCD->>D: delete cached HTML for those pages
+    L->>CDN: purge by surrogate key "page-<hash>" (CDN purge API, key in Cloud Manager secret)
+    Note over D,CDN: Fallback if any step fails: TTL bound (Dispatcher max-age 300 s, CDN s-maxage 300 s)

@@ -1,0 +1,46 @@
+%% SD-11 Joey Club enquiry (designed only). Integrations I-09 (browser -> AEM) and I-10 (AEM -> Salesforce).
+sequenceDiagram
+    autonumber
+    actor U as Parent (browser)
+    participant CDN as CDN / Dispatcher
+    participant S as AEM Publish<br/>JoeyClubEnquiryServlet
+    participant V as EnquiryValidator
+    participant T as Token cache<br/>(in-memory)
+    participant SF as Salesforce REST API
+    participant DL as ACDL (browser)
+
+    U->>U: Client-side validation (required, formats, consent) - UX only
+    U->>CDN: POST /content/airline/au/en/joey-club.enquiry.json (I-09)<br/>JSON + CSRF token + bot-check token
+    Note over CDN: Filter allows only POST + selector "enquiry" + ext "json"<br/>never cached; CDN rate limit rule per IP
+    CDN->>S: forward
+    S->>V: Server-side validation (authoritative): schema, lengths, allow-lists, consent, bot-check verify
+    alt invalid
+        V-->>S: errors (field codes only)
+        S-->>U: 400 { errors: [field codes] }
+    else valid
+        S->>T: get OAuth access token
+        alt no cached token or expired
+            T->>SF: POST /oauth2/token (client credentials)<br/>client id/secret from Cloud Manager secret env vars via OSGi $[secret:...]
+            SF-->>T: access token (cached until expiry - 60 s)
+        end
+        loop up to 3 attempts, backoff 200 ms / 800 ms, total budget 4 s
+            S->>SF: POST /services/data/vXX.X/sobjects/Joey_Club_Enquiry__c (I-10)<br/>Idempotency key = UUID per submission
+            alt 2xx
+                SF-->>S: 201 { id }
+            else 401
+                S->>T: evict token, refresh once
+            else 429 / 5xx / timeout
+                SF-->>S: retryable error
+            else other 4xx
+                SF-->>S: non-retryable (stop)
+            end
+        end
+        alt created
+            S-->>U: 202 { reference }
+            U->>DL: push airline:joeyclub:enquiry-submitted (no PII)
+        else exhausted / non-retryable
+            S->>S: log correlation ID + status (no PII), increment metric -> alert
+            S-->>U: 503 friendly message + retry option
+        end
+    end
+    Note over S,SF: PII travels only browser -> AEM (memory) -> Salesforce.<br/>Never written to JCR, logs, Dispatcher/CDN cache, ACDL or Analytics.
