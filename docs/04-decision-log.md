@@ -109,16 +109,20 @@ Format: context → options → decision → trade-offs → consequences. Status
   - Rendition URLs are unversioned, so they are cached for 1 day. Dispatcher is invalidated on asset publish, and a rights takedown triggers a CDN purge.
   - **Production path:** if Dynamic Media with OpenAPI is licensed (Q-02), swap the URL builder in `HeroBannerImpl` for DM delivery URLs. That gives AVIF/WebP, smart crop and versioned URLs that can be cached for a year. The model interface does not change.
 
-## ADR-008 — Landmarks through a container proxy with a policy-driven element
+## ADR-008 — Landmarks through the Style System's default element (revised during build)
 
 - **Context.** PT-02 needs `header`, `nav`, `main` and `footer` landmarks. Core Container v1 renders `<div>` (with an optional ARIA role).
 - **Options.**
   - (a) Use Core's `roleAttribute` (`banner`/`main`/`contentinfo`).
   - (b) Proxy container overriding `responsiveGrid.html`/`simple.html` with `data-sly-element` from a policy.
   - (c) Override page `body.html`.
-- **Decision.** (b).
-- **Trade-offs.** (b) produces semantic elements (preferred over roles, per the first rule of ARIA use) for two small HTL overrides and a model, but must be kept in sync with Core container HTL on upgrade. (a) has no code but uses ARIA where native HTML exists. (c) couples the page to the structure.
-- **Consequences.** `data-sly-element` only accepts an allow-list of elements, and the model normalises anything else to `div`.
+  - (d) Policy property `cq:styleDefaultElement` (AEM Style System), which turns the component's wrapper element into `header`/`main`/`footer`.
+- **Decision.** v1.1 chose (b). **Revised during the build to (d).** The generated archetype policies already use `cq:styleDefaultElement` for the header XF, footer XF and main container, and the platform renders it on publish.
+- **Trade-offs.** (d) is zero code and zero HTL overrides: no upgrade drift with Core container HTL, and it is the archetype's own pattern. The element is the component's wrapper rather than the inner `cmp-container` div, so the skip-link target `id="main-content"` sits on the inner container inside `<main>`. Keyboard focus still lands inside the main landmark. (b) gave the same HTML for ~80 lines of code and an upgrade risk (R-05). (a) uses ARIA where native HTML exists.
+- **Consequences.**
+  - No `LandmarkContainer` model.
+  - The page policy sets `mainContentSelector=main-content`, and Core Page v3 renders the skip link `href="#main-content"` (verified in Core's `body.skiptomaincontent.html` on the SDK).
+  - Playwright asserts one `<main>` that contains `#main-content`, plus one `<header>` and one `<footer>`. This guards R-05 / AR-30.
 
 ## ADR-009 — Archetype 58 post-generate script patched for Windows symlinks
 

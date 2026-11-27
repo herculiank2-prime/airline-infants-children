@@ -391,15 +391,6 @@ classDiagram
         -Config path.pattern, max.age, surrogate.max.age, stale.while.revalidate, stale.if.error
         -GET/HEAD, .html, 200 only. Adds Surrogate-Key
     }
-    class LandmarkContainer {
-        <<interface>>
-        +getLandmarkElement() String
-        +getLandmarkId() String
-    }
-    class LandmarkContainerImpl {
-        -policy landmarkElement header/main/footer/section/aside/div
-    }
-
     Component <|-- HeroBanner
     Component <|-- TravelQuestionsAccordion
     HeroBanner <|.. HeroBannerImpl
@@ -422,7 +413,6 @@ classDiagram
     TravelQuestionService <|.. TravelQuestionServiceImpl
     TravelQuestionServiceImpl --> SelectionResult
     SelectionResult --> TravelQuestion
-    LandmarkContainer <|.. LandmarkContainerImpl
 ```
 <!-- /diagram:class-models -->
 
@@ -434,7 +424,7 @@ classDiagram
 flowchart TB
     subgraph conf["/conf/airline [C] (ui.content)"]
         tpl["settings/wcm/templates/travel-information-page [N] (filter: update)<br/>structure: header XF (locked), main > hero (single, unlocked), content (editable), footer XF (locked)"]
-        pol["settings/wcm/policies [C] (filter: update)<br/>page, landmark containers, content (teaser + travelquestions), teaser titleType=h2, travelquestions h2/h3"]
+        pol["settings/wcm/policies [C] (filter: update)<br/>page, header/main/footer (cq:styleDefaultElement), content (teaser + travelquestions), teaser titleType=h2, travelquestions h2/h3"]
         cfm["settings/dam/cfm/models/travel-question [N] (filter: replace)<br/>question*, answer* (rich text), tags, sortOrder*"]
         pq["settings/graphql/persistentQueries [N] (filter: replace)<br/>travel-questions-by-folder, -by-tag, -by-tags-all"]
         ca["sling:configs DataLayerConfig enabled=true [E]"]
@@ -489,7 +479,7 @@ flowchart TB
 | Module | Contents added by this work |
 |---|---|
 | `core` | Sling Models (`models`, `models.impl`), `services` (`TravelQuestionService`), `filters.HtmlCacheHeadersFilter`, `structureddata.FaqSchemaBuilder`, `richtext.RichTextSanitizer`, unit tests and JaCoCo gate |
-| `ui.apps` | Components `hero`, `travelquestions`; proxies `page`, `container` (landmark), `teaser`, `image`, `text`, `title`, `navigation`, `experiencefragment`, `xfpage`; HTL, dialogs; `clientlib-site` (from `ui.frontend`) |
+| `ui.apps` | Components `hero`, `travelquestions`; proxies `page`, `container`, `teaser`, `image`, `text`, `title`, `navigation`, `experiencefragment`, `xfpage`; HTL, dialogs; `clientlib-site` (from `ui.frontend`) |
 | `ui.config` | `TravelQuestionServiceImpl` (all run modes); `HtmlCacheHeadersFilter` and CORS policy `CORSPolicyImpl~airline-graphql` (`config.publish`); resource-resolver mapping for short URLs (`config.publish`); log config |
 | `ui.content` | **Code-owned structure:** template `travel-information-page` + policies (`mode="update"`); CF model `travel-question` and persisted queries (`mode="replace"`); tags `airline:` (`mode="merge"`); root folders |
 | `ui.content.sample` (new, ADR-019) | **Demo content:** pages, XF content, six fragments, DAM images. Filter roots are explicit and use `mode="merge"`. Embedded in `all` for this exercise; excluded from production by dropping the embed |
@@ -597,13 +587,14 @@ Core Page v3 proxy. `customheaderlibs.html` adds the FAQPage JSON-LD:
 - **Where the data comes from.** `FaqStructuredDataImpl` finds `airline/components/travelquestions` resources under the page's `root` and reuses the request-cached selection.
 - **Other page features.** Title, description, canonical (absolute via the Externalizer), robots, `hreflang` and the skip link (`mainContentSelector`) are Core Page features configured by policy and page properties.
 
-### 3.5 Container — `airline/components/container` (PT-02, ADR-008)
+### 3.5 Container and landmarks — `airline/components/container` (PT-02, ADR-008 revised)
 
-Proxy of Core Container v1. It overrides `responsiveGrid.html` and `simple.html` to use `data-sly-element="${landmark.element}"`.
-- `element` comes from a `LandmarkContainer` model reading the policy property `landmarkElement`. Allowed values are `div|header|main|footer|section|aside`; anything else falls back to `div`.
-- `main` also gets `id="main-content"`, the skip-link target.
+This is the plain Core Container v1 proxy, with no overrides. Landmarks come from the Style System: the policy property `cq:styleDefaultElement` renders the component wrapper as `header` (header XF policy), `main` (main container policy) or `footer` (footer XF policy).
+- The main container has `id="main-content"` in the template structure.
+- The page policy sets `mainContentSelector=main-content`, so Core Page v3 renders the skip link.
+- The header XF contains Core Navigation, which renders `<nav>`.
 
-The template structure uses `header`, `main` and `footer` containers. The header XF contains Core Navigation, which renders `<nav>`. Playwright asserts exactly one `main#main-content`.
+Playwright asserts one `<main>` containing `#main-content`, one `<header>` and one `<footer>`.
 
 ### 3.6 Experience fragments (PT-01, I-12)
 
@@ -642,7 +633,7 @@ No JCR query is used, so there is no index dependency and the cost is predictabl
 
 ## 5. Template and policy strategy (PT-01)
 
-- **Template.** One editable template, `travel-information-page`, based on the archetype `page` template type. Structure: header container (header XF, locked), main container (`id=main-content`) containing the hero (unlocked, single) and `content` (unlocked), and footer container (footer XF, locked).
+- **Template.** One editable template, `travel-information-page`, based on the archetype `page` template type. Structure: header XF (policy element `header`, locked), main container (policy element `main`, `id=main-content`) containing the hero (unlocked, single) and `content` (unlocked), and footer XF (policy element `footer`, locked).
 - **Policies.** Stored in `/conf/airline/settings/wcm/policies` and named by purpose (`airline-content`, `airline-teaser-joeyclub`, and so on). The NZ live copy reuses them because it shares `/conf/airline`.
 - **Allowed components.** The `content` container allows **only** `airline/components/teaser` and `airline/components/travelquestions`.
 - **Templates on new pages.** `cq:allowedTemplates` on `/content/airline` restricts new pages to this template.

@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Code-owned structure only (ADR-019). Demo pages, XFs, fragments and images live in ui.content.sample.
+  update  = deployed definitions win, nodes created by authors under the root are kept
+  replace = the definition in Git is the only truth
+  merge   = only adds what does not exist yet
+-->
 <workspaceFilter version="1.0">
-    <filter root="/conf/airline" mode="merge"/>
-    <filter root="/content/airline" mode="merge"/>
-    <filter root="/content/dam/airline" mode="merge">
-        <exclude pattern="/content/dam/airline(/.*)?"/>
-        <include pattern="/content/dam/airline/jcr:content(/.*)?"/>
-    </filter>
-    <filter root="/content/dam/airline/asset.jpg" mode="merge"/>
-    <filter root="/content/experience-fragments/airline" mode="merge"/>
+    <filter root="/conf/airline/settings/wcm/template-types" mode="update"/>
+    <filter root="/conf/airline/settings/wcm/templates" mode="update"/>
+    <filter root="/conf/airline/settings/wcm/policies" mode="update"/>
+    <filter root="/conf/airline/settings/dam/cfm/models/travel-question" mode="replace"/>
+    <filter root="/conf/airline/settings/graphql/persistentQueries" mode="replace"/>
+    <filter root="/conf/airline/settings/cloudconfigs" mode="merge"/>
+    <filter root="/conf/airline/sling:configs" mode="merge"/>
+    <filter root="/content/cq:tags/airline" mode="merge"/>
 </workspaceFilter>

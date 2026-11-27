@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:tags="[]"
+        cq:template="/conf/airline/settings/wcm/templates/xf-web-variation"
+        cq:xfMasterVariation="{Boolean}true"
+        cq:xfVariantType="web"
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Header"
+        sling:resourceType="airline/components/xfpage">
+        <root
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="airline/components/container"
+            layout="simple">
+            <sitename
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="airline/components/text"
+                text="&lt;p>&lt;a href=&quot;/content/airline/au/en.html&quot;>Airline&lt;/a>&lt;/p>"
+                textIsRich="true"/>
+            <navigation
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="airline/components/navigation"
+                accessibilityLabel="Main"
+                navigationRoot="/content/airline/au/en"
+                skipNavigationRoot="{Boolean}true"
+                structureDepth="{Long}1"
+                structureStart="{Long}0"/>
+        </root>
+    </jcr:content>
+</jcr:root>

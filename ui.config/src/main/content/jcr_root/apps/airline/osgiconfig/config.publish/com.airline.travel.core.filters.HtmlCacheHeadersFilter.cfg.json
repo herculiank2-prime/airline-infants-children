@@ -1,0 +1,7 @@
+{
+  "path.pattern": "^/content/airline/.*",
+  "max.age": 60,
+  "surrogate.max.age": 150,
+  "stale.while.revalidate": 30,
+  "stale.if.error": 86400
+}

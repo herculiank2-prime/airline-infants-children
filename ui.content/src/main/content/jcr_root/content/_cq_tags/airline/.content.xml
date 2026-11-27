@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    jcr:description="Airline travel information tags (audience, topic, market)."
+    jcr:primaryType="cq:Tag"
+    jcr:title="Airline"
+    sling:resourceType="cq/tagging/components/tag">
+    <travel
+        jcr:primaryType="cq:Tag"
+        jcr:title="Travel"
+        sling:resourceType="cq/tagging/components/tag">
+        <infants
+            jcr:description="Infants under 2 years."
+            jcr:primaryType="cq:Tag"
+            jcr:title="Infants"
+            sling:resourceType="cq/tagging/components/tag"/>
+        <children
+            jcr:description="Children 2 to 11 years."
+            jcr:primaryType="cq:Tag"
+            jcr:title="Children"
+            sling:resourceType="cq/tagging/components/tag"/>
+        <booking
+            jcr:primaryType="cq:Tag"
+            jcr:title="Booking"
+            sling:resourceType="cq/tagging/components/tag"/>
+        <seating
+            jcr:primaryType="cq:Tag"
+            jcr:title="Seating"
+            sling:resourceType="cq/tagging/components/tag"/>
+        <medical
+            jcr:primaryType="cq:Tag"
+            jcr:title="Medical"
+            sling:resourceType="cq/tagging/components/tag"/>
+    </travel>
+    <market
+        jcr:primaryType="cq:Tag"
+        jcr:title="Market"
+        sling:resourceType="cq/tagging/components/tag">
+        <au
+            jcr:primaryType="cq:Tag"
+            jcr:title="Australia"
+            sling:resourceType="cq/tagging/components/tag"/>
+        <nz
+            jcr:primaryType="cq:Tag"
+            jcr:title="New Zealand"
+            sling:resourceType="cq/tagging/components/tag"/>
+    </market>
+</jcr:root>

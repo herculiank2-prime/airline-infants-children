@@ -1,0 +1,66 @@
+#
+# Airline publish virtual host. Based on default.vhost; differences are marked "airline:".
+# Cache budget and header owners: SOLUTION_DESIGN.md section 7, ADR-004.
+#
+
+Include conf.d/variables/custom.vars
+
+<VirtualHost *:80>
+	ServerName	"publish"
+	ServerAlias	 "*"
+	DocumentRoot "${DOCROOT}"
+	AllowEncodedSlashes NoDecode
+	<IfModule mod_headers.c>
+		Header add X-Vhost "airline"
+	</IfModule>
+	<Directory />
+		<IfModule disp_apache2.c>
+			ModMimeUsePathInfo On
+			DirectorySlash Off
+			SetHandler dispatcher-handler
+		</IfModule>
+		Options FollowSymLinks
+		AllowOverride None
+		SetOutputFilter DEFLATE
+		SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|webp|avif)$ no-gzip dont-vary
+	</Directory>
+	<Directory "${DOCROOT}">
+		AllowOverride None
+		Require all granted
+	</Directory>
+	<IfModule disp_apache2.c>
+		DispatcherUseProcessedURL	On
+		DispatcherPassError		0
+	</IfModule>
+	<IfModule mod_rewrite.c>
+		RewriteEngine	on
+		Include conf.d/rewrites/rewrite.rules
+		RewriteRule "^(/?)$" "/index.html" [PT]
+	</IfModule>
+
+	<IfModule mod_headers.c>
+		# airline: security headers. HSTS is set at the CDN (cdn.yaml, I-16). X-Frame-Options is set once.
+		Header always set X-Content-Type-Options "nosniff"
+		Header always set X-Frame-Options "SAMEORIGIN"
+		Header always set Referrer-Policy "strict-origin-when-cross-origin"
+		Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=()"
+		Header always set Content-Security-Policy "frame-ancestors 'self'; object-src 'none'; base-uri 'self'"
+		# Strict script-src in report-only mode until the report collector (Q-06) and Tags vendors are confirmed (R-07).
+		Header always set Content-Security-Policy-Report-Only "script-src 'self' https://assets.adobedtm.com"
+
+		# airline: static resources. HTML and persisted-query headers come from AEM (HtmlCacheHeadersFilter,
+		# persisted-query cache config) so the Dispatcher TTL and the CDN read the same values.
+		<LocationMatch "^/etc\.clientlibs/.+\.lc-[0-9a-f]+-lc\.(min\.)?(js|css)$">
+			Header set Cache-Control "max-age=31536000, immutable" "expr=%{REQUEST_STATUS} < 400"
+		</LocationMatch>
+		<LocationMatch "^/etc\.clientlibs/(?!.+\.lc-[0-9a-f]+-lc\.).+$">
+			Header set Cache-Control "max-age=3600" "expr=%{REQUEST_STATUS} < 400"
+		</LocationMatch>
+		<LocationMatch "\.coreimg\.[^/]*/[0-9]+/[^/]+$">
+			Header set Cache-Control "max-age=31536000, immutable" "expr=%{REQUEST_STATUS} < 400"
+		</LocationMatch>
+		<LocationMatch "^/content/dam/airline/.+\.(?i:jpe?g|png|webp|avif|svg)$">
+			Header set Cache-Control "max-age=86400" "expr=%{REQUEST_STATUS} < 400"
+		</LocationMatch>
+	</IfModule>
+</VirtualHost>

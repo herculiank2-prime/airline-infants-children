@@ -110,15 +110,6 @@ classDiagram
         -Config path.pattern, max.age, surrogate.max.age, stale.while.revalidate, stale.if.error
         -GET/HEAD, .html, 200 only. Adds Surrogate-Key
     }
-    class LandmarkContainer {
-        <<interface>>
-        +getLandmarkElement() String
-        +getLandmarkId() String
-    }
-    class LandmarkContainerImpl {
-        -policy landmarkElement header/main/footer/section/aside/div
-    }
-
     Component <|-- HeroBanner
     Component <|-- TravelQuestionsAccordion
     HeroBanner <|.. HeroBannerImpl
@@ -141,4 +132,4 @@ classDiagram
     TravelQuestionService <|.. TravelQuestionServiceImpl
     TravelQuestionServiceImpl --> SelectionResult
     SelectionResult --> TravelQuestion
-    LandmarkContainer <|.. LandmarkContainerImpl
+

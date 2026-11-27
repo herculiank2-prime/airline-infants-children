@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Demonstration content (ADR-019). merge = never overwrites what an author already changed.
+  Production builds drop this package from the "all" embeds.
+-->
+<workspaceFilter version="1.0">
+    <filter root="/content/airline" mode="merge"/>
+    <filter root="/content/experience-fragments/airline" mode="merge"/>
+    <filter root="/content/dam/airline/travel-questions" mode="merge"/>
+    <filter root="/content/dam/airline/travel-information" mode="merge"/>
+</workspaceFilter>

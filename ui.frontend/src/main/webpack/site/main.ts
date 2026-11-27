@@ -1,8 +1,5 @@
-
 // Stylesheets
 import "./main.scss";
 
-// Javascript or Typescript
-import "./**/*.js";
-import "./**/*.ts";
-import '../components/**/*.js';
+// Component scripts. main.ts must not glob its own folder: the self-import makes webpack recurse.
+import "../components/**/*.ts";

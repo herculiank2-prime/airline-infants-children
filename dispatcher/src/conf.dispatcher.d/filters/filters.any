@@ -1,13 +1,32 @@
 #
-# This file contains the filter ACL, and can be customized.
+# Airline filter allow-list (ADR-015). default_filters.any is deliberately NOT included:
+# everything is denied, then only what the travel-information site needs is allowed.
+# Requests are matched after the rewrite rules, so short URLs (/au/en/...) arrive as /content/airline/...
 #
-# By default, it includes the default filter ACL.
-#
 
-$include "./default_filters.any"
+# Deny everything by default
+/0001 { /type "deny" /url "*" }
 
-# Allow components JSON model
-/0101 { /type "allow" /extension "json" /selectors "model" /path "/content/*" }
+# Pages: .html without selectors, never component-level renders
+/0100 { /type "allow" /method '(GET|HEAD)' /path "/content/airline/*" /extension "html" }
+/0101 { /type "deny" /path "/content/*" /selectors '.+' /extension "html" }
+/0102 { /type "deny" /path '.*/(_jcr_content|jcr:content)(/.*)?' /extension "html" }
 
-# Allow manifest.webmanifest files located in the content
-/0102 { /type "allow" /extension "webmanifest" /path "/content/*/manifest" }
+# Sling sitemap (SE-02)
+/0110 { /type "allow" /method "GET" /path "/content/airline/*" /selectors '(sitemap|sitemap-index)' /extension "xml" }
+
+# Client libraries
+/0120 { /type "allow" /method '(GET|HEAD)' /path "/etc.clientlibs/*" /extension '(css|js|png|gif|jpe?g|svg|ico|woff2?)' }
+
+# Core Image adaptive renditions (teaser image) and DAM images
+/0130 { /type "allow" /method '(GET|HEAD)' /path "/content/airline/*" /selectors 'coreimg.*' /extension '(jpe?g|png|gif|webp|svg)' }
+/0131 { /type "allow" /method '(GET|HEAD)' /path "/content/dam/airline/*" /extension '(jpe?g|png|gif|webp|avif|svg)' }
+
+# Persisted GraphQL queries for non-AEM consumers (HD-02, I-07); OPTIONS for CORS pre-flight
+/0140 { /type "allow" /method '(GET|HEAD|OPTIONS)' /url "/graphql/execute.json/airline/*" }
+
+# Favicon
+/0150 { /type "allow" /method "GET" /url "/favicon.ico" }
+
+# Never forward authoring and debug switches from the public internet
+/0190 { /type "deny" /query '.*(wcmmode|debugClientLibs|debug|cq_ck)=.*' }

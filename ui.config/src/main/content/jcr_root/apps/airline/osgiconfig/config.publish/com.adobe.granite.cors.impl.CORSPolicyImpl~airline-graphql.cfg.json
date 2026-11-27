@@ -1,0 +1,9 @@
+{
+  "alloworigin": ["$[env:AIRLINE_GRAPHQL_ALLOWED_ORIGIN;default=https://app.airline.example]"],
+  "allowedpaths": ["/graphql/execute.json/airline/.*"],
+  "supportedheaders": ["Origin", "Accept", "Content-Type", "If-None-Match"],
+  "exposedheaders": ["ETag", "Cache-Control", "Age"],
+  "supportedmethods": ["GET", "HEAD", "OPTIONS"],
+  "maxage": 1800,
+  "supportscredentials": false
+}

@@ -71,6 +71,13 @@
                             <type>zip</type>
                             <target>/apps/airline-packages/content/install</target>
                         </embedded>
+                        <!-- Demonstration content (ADR-019). Remove this embed for production builds. -->
+                        <embedded>
+                            <groupId>com.airline.travel</groupId>
+                            <artifactId>airline-infants-children.ui.content.sample</artifactId>
+                            <type>zip</type>
+                            <target>/apps/airline-packages/content/install</target>
+                        </embedded>
                         <embedded>
                             <groupId>com.airline.travel</groupId>
                             <artifactId>airline-infants-children.ui.config</artifactId>
@@ -187,6 +194,12 @@
         <dependency>
             <groupId>com.airline.travel</groupId>
             <artifactId>airline-infants-children.ui.content</artifactId>
+            <version>${project.version}</version>
+            <type>zip</type>
+        </dependency>
+        <dependency>
+            <groupId>com.airline.travel</groupId>
+            <artifactId>airline-infants-children.ui.content.sample</artifactId>
             <version>${project.version}</version>
             <type>zip</type>
         </dependency>

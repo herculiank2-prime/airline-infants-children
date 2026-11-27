@@ -57,7 +57,7 @@
                     <validatorsSettings>
                         <jackrabbit-filter>
                             <options>
-                                <validRoots>/conf,/content,/content/experience-fragments,/content/dam</validRoots>
+                                <validRoots>/conf,/content,/content/cq:tags,/conf/airline,/conf/airline/settings,/conf/airline/settings/wcm,/conf/airline/settings/dam,/conf/airline/settings/dam/cfm,/conf/airline/settings/dam/cfm/models,/conf/airline/settings/graphql</validRoots>
                             </options>
                         </jackrabbit-filter>
                     </validatorsSettings>

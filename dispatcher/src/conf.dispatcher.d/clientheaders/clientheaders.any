@@ -1,7 +1,5 @@
 #
-# This file contains the request headers, and can be customized.
+# Request headers passed to AEM. Origin is needed by the CORS policy for persisted queries (I-07).
 #
-# By default, it includes the default client headers.
-#
-
 $include "./default_clientheaders.any"
+"Origin"

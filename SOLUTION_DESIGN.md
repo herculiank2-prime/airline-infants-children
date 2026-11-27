@@ -181,7 +181,7 @@ Supporting diagrams are in `docs/02-design.md` §1: page-render sequence, data-l
 | Component | Purpose | Resource type | Base | Data source | Caching |
 |---|---|---|---|---|---|
 | Page | Title, description, canonical, robots, skip link, clientlibs, FAQPage JSON-LD | `airline/components/page` | Core Page v3 proxy + `FaqStructuredData` model | Page properties + CFs | Page HTML (budget §7) |
-| Container (landmark) | Semantic `header`/`main`/`footer` from policy | `airline/components/container` | Core Container v1 proxy, landmark HTL override | Template + policy | Page HTML |
+| Container | Layout; semantic `header`/`main`/`footer` via the Style System `cq:styleDefaultElement` (ADR-008) | `airline/components/container` | Core Container v1 proxy, no override | Template + policy | Page HTML |
 | Experience Fragment | Placeholder header and footer | `airline/components/experiencefragment` | Core XF v2 proxy | XF pages | Included in page HTML. An XF publish reaches pages by TTL (≤ 300 s); I-13 adds targeted invalidation |
 | XF page | Renders XF variations | `airline/components/xfpage` | Core XF page proxy | XF | n/a |
 | Navigation | `<nav>` in the header XF | `airline/components/navigation` | Core Navigation v2 proxy | Page tree | Page HTML |
@@ -223,11 +223,11 @@ Template `travel-information-page` (type `page`). The template and policies are 
 
 | Structure node | Component | Locked | Notes |
 |---|---|---|---|
-| `root/header` | container, element `header` | Yes | Header XF `…/site/header/master` |
-| `root/main` | container, element `main`, `id=main-content` | Yes | Skip-link target |
-| `root/main/hero` | hero | **Unlocked, single instance** | Guarantees exactly one hero, and so one `h1` |
-| `root/main/content` | container | Unlocked | Allowed: `teaser`, `travelquestions` |
-| `root/footer` | container, element `footer` | Yes | Footer XF |
+| `root/experiencefragment-header` | XF, policy element `header` | Yes | Header XF `…/site/header/master` |
+| `root/container` | container, policy element `main`, `id=main-content` | Yes | Skip-link target |
+| `root/container/hero` | hero | **Unlocked, single instance** | Guarantees exactly one hero, and so one `h1` |
+| `root/container/content` | container | Unlocked | Allowed: `teaser`, `travelquestions` |
+| `root/experiencefragment-footer` | XF, policy element `footer` | Yes | Footer XF |
 
 | Policy | Key settings |
 |---|---|

@@ -2,6 +2,10 @@
     "scripts": [
         "create path (sling:OrderedFolder) /content/dam/airline",
         "create path (nt:unstructured) /content/dam/airline/jcr:content",
-        "set properties on /content/dam/airline/jcr:content\n  set cq:conf{String} to /conf/airline\n  set jcr:title{String} to \"Airline Travel Information\"\nend"
+        "set properties on /content/dam/airline/jcr:content\n  set cq:conf{String} to /conf/airline\n  set jcr:title{String} to \"Airline\"\nend",
+        "create path /conf/airline(sling:Folder)/settings(sling:Folder)/wcm(cq:Page)",
+        "create path /conf/airline/settings/dam(sling:Folder)/cfm(cq:Page)/models(cq:Page)",
+        "create path /conf/airline/settings/graphql(sling:Folder)",
+        "set properties on /conf/airline\n  set jcr:title{String} to \"Airline\"\nend"
     ]
 }
