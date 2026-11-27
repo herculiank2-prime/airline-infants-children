@@ -1,0 +1,22 @@
+---
+description: Unit tests (JUnit 5 + AEM Mocks) and UI tests (Playwright + axe)
+globs: core/src/test/**,ui.tests/test-module/**
+alwaysApply: false
+---
+
+# Tests
+
+## Unit tests (core)
+
+- JUnit 5 with `AemContextExtension`. Build content in the test with `context.create()` or JSON fixtures; for fragments use the `Fragments` fixture, which writes the same JCR shape the package installs.
+- Name tests after behaviour (`tagsAllRequiresEveryTag`), and cover the empty, invalid and limit cases as well as the happy path.
+- Don't mock what AEM Mocks provides (resources, ValueMaps, tags). Mock only OSGi services you own.
+- JaCoCo fails the build below 80 % line coverage. Don't add exclusions to pass it.
+
+## UI tests (ui.tests/test-module)
+
+- Playwright with TypeScript. Import `test` and `expect` from `tests/fixtures.ts`, which adds the `consoleErrors` fixture.
+- Navigate with `/content/...` paths: publish mapping is outbound only (ADR-026).
+- Select by role, label or the component's BEM class. Never by generated IDs.
+- Every new page state gets an axe scan (`wcag2a`, `wcag2aa`, `wcag21a`, `wcag21aa`). Serious or critical violations fail.
+- Both projects (`mobile-375`, `desktop-1280`) must pass. Run `npm run lint` (tsc) before committing.

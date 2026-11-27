@@ -1,0 +1,20 @@
+---
+description: Java, Sling Models and OSGi services in the core bundle
+globs: core/src/main/java/**/*.java
+alwaysApply: false
+---
+
+# Java and Sling Models (core)
+
+- Compile target is `release` 11. No records, sealed types or pattern-matching `switch`.
+- Public model interface in `com.airline.travel.core.models`, with the implementation in `models.impl`. Annotate the implementation with `@Model(adaptables = SlingHttpServletRequest.class, adapters = {Interface.class, ComponentExporter.class}, resourceType = ..., defaultInjectionStrategy = OPTIONAL)`.
+- Extending a Core Component: delegate with `@Self @Via(type = ResourceSuperType.class)` and wrap only what changes (see `TeaserImpl`, `RelSafeLink`). Don't copy Core HTL or code.
+- HTL gets ready-to-render values. Selection, sorting, sanitising and ID generation belong in Java.
+- IDs: `ComponentUtils.generateId(prefix, path)` so they are stable across renders and match the data layer.
+- Heading levels come from the template policy, validated to `h2`–`h6`, with a safe default.
+- OSGi services: `@Component` + `@Designate` with a `@ObjectClassDefinition`. Put limits in config (see `TravelQuestionServiceImpl`: allowed root, max items, max fragments scanned) and ship defaults in `ui.config`.
+- Repository paths from authors: normalise them and check they are under an allowed root. Reject `..` and sibling prefixes.
+- Rich text from fragments goes through `RichTextSanitizer` before it is rendered or put into JSON-LD.
+- No `ResourceResolverFactory.getAdministrativeResourceResolver`. Use the request resolver, or a service user defined by repoinit.
+- Logging: SLF4J, parameterised messages, `debug` for expected empty states. Never log PII.
+- Every model or service change needs AEM Mocks tests. Coverage below 80 % fails the build.

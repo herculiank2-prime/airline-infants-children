@@ -1,0 +1,21 @@
+---
+description: HTL components, dialogs and front-end behaviour
+globs: ui.apps/src/main/content/jcr_root/apps/airline/components/**,ui.frontend/src/**
+alwaysApply: false
+---
+
+# HTL components and front end
+
+- Components live in `/apps/airline/components/<name>` with `componentGroup="Airline - Content"`, a `_cq_dialog`, a `_cq_editConfig` if needed, and an HTL file that calls a Sling Model through `data-sly-use`.
+- No logic in HTL beyond tests and loops on model values. Use the context the value needs: `html` only for sanitized rich text, `uri` for links, `attribute` otherwise. `context='unsafe'` is allowed only for the JSON-LD block, which Gson already escapes.
+- Empty component: use `core/wcm/components/commons/v1/templates.html` `placeholder`. Never render broken markup on publish.
+- Accessibility patterns:
+  - one `h1` per page (the hero)
+  - headings from policy
+  - a native `<button>` with `aria-expanded` and `aria-controls` for disclosures
+  - panels with `role="region"`, `aria-labelledby` and `hidden="until-found"` (ADR-018)
+  - images need alt text or must be explicitly decorative
+- Dialog labels and descriptions are written for authors in plain English. Every non-obvious field has a `fieldDescription`.
+- Front end: vanilla TypeScript in `ui.frontend/src/main/webpack/components/`, one file per component, using event listeners delegated from `document` so components added in the editor work without re-initialising. No frameworks.
+- Data layer: push through `pushEvent()` from `datalayer.ts`. Event names are `airline:<component>:<action>`, with `eventInfo.path` set to the component ID (ADR-017).
+- Styles: BEM classes `cmp-<component>__<element>--<modifier>`, mobile first, tested at 375 px and 1280 px.
