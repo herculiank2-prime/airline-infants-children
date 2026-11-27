@@ -1,4 +1,5 @@
 import { pushEvent, readComponentData } from "../site/datalayer";
+import { TRACK_EVENT_ATTR } from "./tracking";
 
 /**
  * Pushes airline:teaser:click for any link inside a teaser (DL-01). One delegated listener covers
@@ -8,7 +9,7 @@ document.addEventListener("click", (event: MouseEvent) => {
     const target = event.target as Element | null;
     const link = target && typeof target.closest === "function" ? target.closest("a[href]") : null;
     const teaser = link ? link.closest(".cmp-teaser") : null;
-    if (!link || !teaser) {
+    if (!link || !teaser || link.closest(`[${TRACK_EVENT_ATTR}]`)) {
         return;
     }
     const data = readComponentData(teaser);

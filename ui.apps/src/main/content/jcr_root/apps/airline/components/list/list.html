@@ -1,0 +1,6 @@
+<!--/* DL-01, ADR-031: adds the authored tracking attributes; renders Core's markup unchanged when none are set. */-->
+<div class="cmp-tracking"
+     data-sly-use.tracking="com.airline.travel.core.models.AnalyticsTracking"
+     data-sly-attribute="${tracking.attributes}"
+     data-sly-unwrap="${!tracking.configured}"
+     data-sly-include="/libs/core/wcm/components/list/v4/list/list.html"></div>

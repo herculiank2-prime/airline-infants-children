@@ -46,4 +46,25 @@ test.describe("Adobe Client Data Layer events (DL-01, ADR-017)", () => {
             linkUrl: joeyClubUrl,
         });
     });
+
+    test("authored tracking on the header Log in button pushes its own event and label (ADR-031)", async ({ page }) => {
+        const login = page.locator("header [data-airline-track-event] a.cmp-button");
+        await expect(login).toHaveText("Log in");
+        await page.evaluate(() => window.addEventListener("click", (e) => e.preventDefault()));
+        await login.click();
+        const events = await airlineEvents(page);
+        expect(events.map((e) => e.event)).toEqual(["airline:header:login"]);
+        expect(events[0].eventInfo).toMatchObject({
+            label: "Header - Log in",
+            title: "Log in",
+            linkUrl: "https://www.qantas.com/en-au/frequent-flyer/log-in",
+        });
+    });
+
+    test("authored tracking on the hero jump links pushes airline:jumplink:click (ADR-031)", async ({ page }) => {
+        await page.locator(".cmp-hero .cmp-jumplinks__link[href='#booking']").click();
+        const events = await airlineEvents(page);
+        expect(events.map((e) => e.event)).toEqual(["airline:jumplink:click"]);
+        expect(events[0].eventInfo).toMatchObject({ label: "Hero - On this page", linkUrl: "#booking", linkText: expect.any(String) });
+    });
 });

@@ -37,7 +37,9 @@
                 sling:resourceType="airline/components/list"
                 id="footer-primary-links"
                 linkItems="{Boolean}true"
-                listFrom="static">
+                listFrom="static"
+                trackingEvent="airline:footer:link"
+                trackingLabel="Footer - primary links">
                 <static jcr:primaryType="nt:unstructured">
                         <item0
                             jcr:primaryType="nt:unstructured"

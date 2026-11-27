@@ -80,7 +80,9 @@
                     jcr:title="Log in"
                     sling:resourceType="airline/components/button"
                     cq:styleIds="[button-primary]"
-                    linkURL="https://www.qantas.com/en-au/frequent-flyer/log-in"/>
+                    linkURL="https://www.qantas.com/en-au/frequent-flyer/log-in"
+                    trackingEvent="airline:header:login"
+                    trackingLabel="Header - Log in"/>
             </actions>
         </root>
     </jcr:content>

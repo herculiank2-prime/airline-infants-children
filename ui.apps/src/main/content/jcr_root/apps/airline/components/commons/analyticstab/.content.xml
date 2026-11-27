@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Analytics"
+    sling:resourceType="granite/ui/components/coral/foundation/container"
+    margin="{Boolean}true">
+    <items jcr:primaryType="nt:unstructured">
+        <trackingEvent
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+            emptyText="airline:header:login"
+            fieldLabel="Tracking event name"
+            fieldDescription="Optional. Pushed to the data layer when a link or button in this component is clicked. Saved in lower case with the airline: prefix. Leave blank for the default event."
+            maxlength="{Long}64"
+            name="./trackingEvent"/>
+        <trackingLabel
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+            fieldLabel="Tracking label"
+            fieldDescription="Optional. A readable name sent with the event, for example Header - Log in."
+            maxlength="{Long}100"
+            name="./trackingLabel"/>
+    </items>
+</jcr:root>

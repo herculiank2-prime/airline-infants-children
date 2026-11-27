@@ -342,3 +342,17 @@ Format: context → options → decision → trade-offs → consequences. Status
   - The HeroBanner API loses its jump-link methods, so the models package moves to 3.0.0.
   - The link checker's transformer is disabled (LinkCheckerTransformerFactory), because it was stripping <a> from external Core Button and List links it couldn't verify.
   - The header logos are Core Images, which the Core Image policy lazy-loads.
+
+## ADR-031 - Author-configurable click tracking through a shared Analytics tab
+
+- **Context.** Click event names were fixed in code (irline:teaser:click, Core's cmp:click). Analysts asked for editable event names and labels per component.
+- **Options.**
+  - (a) Map events in Adobe Launch only.
+  - (b) Add optional "Tracking event name" and "Tracking label" fields to component dialogs, rendered as data attributes and pushed by one delegated listener.
+- **Decision.** (b). The tab is added to Button, List, Teaser and Jump links.
+- **Trade-offs.** (b) puts tracking in authors' hands without a Launch rule per link. It adds a wrapper div and a script override per Core proxy. Authored names could drift from the analytics spec, so names are normalised to lower case in the `airline:` namespace (ADR-017) and capped at 64 characters, with labels capped at 100.
+- **Consequences.**
+  - New `AnalyticsTracking` model; the `models` package moves to 3.1.0.
+  - The proxies' HTL includes Core's script by absolute `/libs` path; a relative path failed to resolve for Teaser v2. The wrapper is unwrapped when nothing is configured, so the default markup is unchanged.
+  - A configured teaser pushes only its custom event, not `airline:teaser:click`. Core's `cmp:click` still fires.
+  - Sample content tracks the header Log in button, the footer primary links and the hero jump links.

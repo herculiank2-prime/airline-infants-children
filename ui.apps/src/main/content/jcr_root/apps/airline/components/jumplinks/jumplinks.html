@@ -1,10 +1,12 @@
 <sly data-sly-use.jumpLinks="com.airline.travel.core.models.JumpLinks"
+     data-sly-use.tracking="com.airline.travel.core.models.AnalyticsTracking"
      data-sly-use.templates="core/wcm/components/commons/v1/templates.html"></sly>
 <nav data-sly-test="${!jumpLinks.empty}"
      id="${jumpLinks.id}"
      class="cmp-jumplinks"
      aria-labelledby="${jumpLinks.id}-title"
-     data-cmp-data-layer="${jumpLinks.data.json}">
+     data-cmp-data-layer="${jumpLinks.data.json}"
+     data-sly-attribute="${tracking.attributes}">
     <p class="cmp-jumplinks__title" id="${jumpLinks.id}-title">${jumpLinks.title}</p>
     <ul class="cmp-jumplinks__list">
         <li class="cmp-jumplinks__item" data-sly-repeat.link="${jumpLinks.links}">
