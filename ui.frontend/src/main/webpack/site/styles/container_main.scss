@@ -1,6 +1,8 @@
 
-//== Container main content style, used on page template
+//== Main container style (policy element "main")
 
 main.container {
-    padding: .5em 1em;
+    max-width: $content-max-width;
+    margin: 0 auto;
+    padding: 0 1rem;
 }

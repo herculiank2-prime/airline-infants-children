@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:tiff="http://ns.adobe.com/tiff/1.0/" xmlns:dam="http://www.day.com/dam/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        jcr:primaryType="dam:AssetContent">
+        <metadata
+            dam:Fileformat="JPEG"
+            dam:MIMEtype="image/jpeg"
+            dc:description="Cartoon kangaroo joey with a backpack and paper plane, surrounded by crayons and activity books"
+            dc:format="image/jpeg"
+            dc:title="Joey Club"
+            jcr:primaryType="nt:unstructured"
+            tiff:ImageLength="{Long}800"
+            tiff:ImageWidth="{Long}1200"/>
+        <related jcr:primaryType="nt:unstructured"/>
+    </jcr:content>
+</jcr:root>

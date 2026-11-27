@@ -19,6 +19,10 @@
                 sling:resourceType="airline/components/container"
                 id="main-content"
                 layout="responsiveGrid">
+                <hero
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="airline/components/hero"
+                    editable="{Boolean}true"/>
                 <content
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="airline/components/container"

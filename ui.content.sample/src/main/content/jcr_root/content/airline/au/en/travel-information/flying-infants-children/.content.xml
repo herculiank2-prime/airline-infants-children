@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0"
+    jcr:primaryType="cq:Page">
+    <jcr:content
+        cq:template="/conf/airline/settings/wcm/templates/travel-information-page"
+        jcr:description="Plan a trip with a baby or young children: booking, seating, what to bring and the Joey Club. Demonstration content for a fictional airline."
+        jcr:primaryType="cq:PageContent"
+        jcr:title="Flying with infants and children"
+        navTitle="Infants and children"
+        pageTitle="Flying with infants and children | Airline (demo)"
+        sling:resourceType="airline/components/page">
+        <root
+            jcr:primaryType="nt:unstructured"
+            sling:resourceType="airline/components/container"
+            layout="responsiveGrid">
+            <container
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="airline/components/container"
+                layout="responsiveGrid">
+                <hero
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="Flying with infants and children"
+                    sling:resourceType="airline/components/hero"
+                    fileReference="/content/dam/airline/travel-information/infants-children/family-hero.jpg"
+                    id="hero"
+                    introduction="Travelling with little ones takes a bit of extra planning. Here is what to know before you book, at the airport and on board."
+                    jumpLinksTitle="On this page">
+                    <jumpLinks jcr:primaryType="nt:unstructured">
+                        <item0
+                            jcr:primaryType="nt:unstructured"
+                            anchor="booking-infants"
+                            label="Booking for infants (under 2 years)"/>
+                        <item1
+                            jcr:primaryType="nt:unstructured"
+                            anchor="joey-club"
+                            label="Joey Club for young flyers"/>
+                    </jumpLinks>
+                </hero>
+                <content
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="airline/components/container"
+                    layout="responsiveGrid">
+                    <joey_club
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Joey Club for young flyers"
+                        jcr:description="&lt;p>Children aged 3 to 12 can join our free kids' club. Members get an activity pack on board, a digital colouring book and a badge for every new destination.&lt;/p>"
+                        sling:resourceType="airline/components/teaser"
+                        actionsEnabled="{Boolean}true"
+                        altValueFromDAM="{Boolean}true"
+                        descriptionFromPage="{Boolean}false"
+                        fileReference="/content/dam/airline/travel-information/infants-children/joey-club.jpg"
+                        id="joey-club"
+                        imageFromPageImage="{Boolean}false"
+                        textIsRich="true"
+                        titleFromPage="{Boolean}false">
+                        <actions jcr:primaryType="nt:unstructured">
+                            <item0
+                                jcr:primaryType="nt:unstructured"
+                                link="https://club.airline.example/joey"
+                                linkTarget="_blank"
+                                text="Find out about the Joey Club (opens in a new tab)"/>
+                        </actions>
+                    </joey_club>
+                </content>
+            </container>
+        </root>
+    </jcr:content>
+</jcr:root>

@@ -1,16 +1,27 @@
 
-//== XF Footer style, used on page template
+//== XF footer style (policy element "footer")
 
 footer.experiencefragment {
-    padding: .5em 1em;
-    border-top: 1px solid $color-foreground;
+    margin-top: 3rem;
+    background: $color-surface;
+    border-top: 1px solid $color-border;
 
-    @media (prefers-color-scheme: dark) {
-        border-color: $color-foreground-dark;
+    .cmp-container {
+        max-width: $content-max-width;
+        margin: 0 auto;
+        padding: 1.5rem 1rem;
     }
 
-    .cmp-separator__horizontal-rule {
-        margin: 0;
-        border: 0;
+    .cmp-text {
+        color: $color-muted;
+        font-size: .875rem;
+
+        ul {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            padding: 0;
+            list-style: none;
+        }
     }
 }

@@ -1,0 +1,37 @@
+<sly data-sly-use.hero="com.airline.travel.core.models.HeroBanner"
+     data-sly-use.templates="core/wcm/components/commons/v1/templates.html"></sly>
+<section data-sly-test="${!hero.empty}"
+         id="${hero.id}"
+         class="cmp-hero${hero.image ? ' cmp-hero--with-image' : ''}${wcmmode.edit ? ' cq-dd-image' : ''}"
+         aria-labelledby="${hero.id}-title"
+         data-cmp-data-layer="${hero.data.json}">
+    <div class="cmp-hero__content">
+        <h1 class="cmp-hero__title" id="${hero.id}-title">${hero.title}</h1>
+        <p class="cmp-hero__introduction" data-sly-test="${hero.introduction}">${hero.introduction}</p>
+        <nav class="cmp-hero__jumplinks" data-sly-test="${hero.jumpLinks.size > 0}" aria-labelledby="${hero.id}-jumplinks">
+            <p class="cmp-hero__jumplinks-title" id="${hero.id}-jumplinks">${hero.jumpLinksTitle}</p>
+            <ul class="cmp-hero__jumplinks-list">
+                <li class="cmp-hero__jumplinks-item" data-sly-repeat.link="${hero.jumpLinks}">
+                    <a class="cmp-hero__jumplink" href="#${link.anchor}">${link.label}</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+    <div class="cmp-hero__media" data-sly-test="${hero.image}">
+        <img class="cmp-hero__image"
+             src="${hero.image.src}"
+             srcset="${hero.image.srcset}"
+             sizes="${hero.image.sizes}"
+             width="${hero.image.width}"
+             height="${hero.image.height}"
+             alt="${hero.image.alt || true}"
+             loading="eager"
+             fetchpriority="high"
+             decoding="async"/>
+    </div>
+    <p class="cmp-hero__author-warning" role="note" data-sly-test="${wcmmode.edit && hero.imageMissingAlt}">
+        The image is hidden on the published page because it has no alternative text. Add alternative text,
+        add a description to the asset, or mark the image as decorative.
+    </p>
+</section>
+<sly data-sly-call="${templates.placeholder @ isEmpty=hero.empty, classAppend='cmp-hero'}"></sly>

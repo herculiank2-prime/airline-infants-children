@@ -127,6 +127,13 @@ Import-Package: javax.annotation;version=0.0.0,*
             <groupId>uk.org.lidalia</groupId>
             <artifactId>slf4j-test</artifactId>
             <scope>test</scope>
+            <!-- commons-lang3 3.1 would shadow the SDK copy that Core Components need (StringUtils.isAllBlank). -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-lang3</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>com.adobe.aem</groupId>
@@ -153,11 +160,6 @@ Import-Package: javax.annotation;version=0.0.0,*
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit-addons</groupId>
-            <artifactId>junit-addons</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

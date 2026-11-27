@@ -18,7 +18,12 @@ package com.airline.travel.core.testcontext;
 import static com.adobe.cq.wcm.core.components.testing.mock.ContextPlugins.CORE_COMPONENTS;
 import static org.apache.sling.testing.mock.caconfig.ContextPlugins.CACONFIG;
 
+import org.apache.sling.api.resource.Resource;
+import org.apache.sling.caconfig.ConfigurationBuilder;
 import org.apache.sling.testing.mock.sling.ResourceResolverType;
+import org.mockito.Mockito;
+
+import com.adobe.cq.wcm.core.components.internal.DataLayerConfig;
 
 import io.wcm.testing.mock.aem.junit5.AemContext;
 import io.wcm.testing.mock.aem.junit5.AemContextBuilder;
@@ -55,6 +60,17 @@ public final class AppAemContext {
                 .plugin(CACONFIG)
                 .plugin(CORE_COMPONENTS)
                 .afterSetUp(SETUP_CALLBACK);
+    }
+
+    /**
+     * Turns the Adobe Client Data Layer context-aware configuration on for every resource.
+     */
+    public static void enableDataLayer(AemContext context) {
+        DataLayerConfig config = Mockito.mock(DataLayerConfig.class);
+        Mockito.when(config.enabled()).thenReturn(true);
+        ConfigurationBuilder builder = Mockito.mock(ConfigurationBuilder.class);
+        Mockito.when(builder.as(DataLayerConfig.class)).thenReturn(config);
+        context.registerAdapter(Resource.class, ConfigurationBuilder.class, builder);
     }
 
     /**

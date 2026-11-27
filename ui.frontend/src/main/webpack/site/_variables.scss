@@ -1,18 +1,27 @@
 
 //== Font
 
-$font-family:           "Helvetica Neue", Helvetica, Arial, sans-serif;
+$font-family:           system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 $font-size:             16px;
 $font-height:           1.5;
 
-//== Color
+//== Color (all text pairs meet WCAG 2.2 AA contrast)
 
-// Normal mode
-$color-foreground:      #202020;
-$color-background:      #ECECEC;
-$color-link:            #2020E0;
+$color-foreground:      #1d1d1f;
+$color-background:      #ffffff;
+$color-muted:           #4a4a4f;
+$color-surface:         #f4f5f7;
+$color-border:          #c9ccd1;
+$color-brand:           #b5121b;
+$color-brand-dark:      #8c0e15;
+$color-link:            #0b57a4;
+$color-focus:           #1a73e8;
+$color-warning-bg:      #fff4ce;
+$color-warning-fg:      #5c4300;
 
-// Dark mode
-$color-foreground-dark: invert($color-foreground);
-$color-background-dark: invert($color-background);
-$color-link-dark:       invert($color-link);
+//== Layout
+
+$breakpoint-tablet:     768px;
+$breakpoint-desktop:    1200px;
+$content-max-width:     72rem;
+$radius:                .5rem;

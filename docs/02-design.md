@@ -518,7 +518,7 @@ The hero is placed **in the template structure** as a single unlocked component,
   - Otherwise **no fallback to `dc:title`**. Asset titles are often file names, which are worse than nothing.
 
   If no alt resolves on a non-decorative image, `isImageMissingAlt()` is true: in edit mode the author sees a warning; on publish the image is **not rendered**. Text never depends on the image, so the page is still complete.
-- **`srcset`** contains only `cq5dam.web.<w>.<h>.*` renditions (640, 960, 1280 from the `airline-web` processing profile), ordered by width, and **never the original** (AR-11). `src` = the 960 rendition. `sizes="(min-width: 1200px) 50vw, 100vw"`. `width`/`height` come from the selected rendition's dimensions (parsed from the rendition name), falling back to `tiff:` metadata.
+- **`srcset`** contains only `cq5dam.web.<w>.<h>.*` renditions (640, 960, 1280 from the `airline-web` processing profile), ordered by width, and **never the original** (AR-11). `src` = the 960 rendition. `sizes="(min-width: 1200px) 50vw, 100vw"`. `width`/`height` use the original's `tiff:` aspect ratio applied to the rendition width, falling back to the height in the rendition name. If two renditions share a width (the SDK's DAM workflow adds `cq5dam.web.1280.1280.jpeg`, which is 1280 px wide), the first by name is used. The local SDK has no asset microservices, so the sample package ships the 640/960/1280 renditions, built by `scripts/prepare-sample-images.ps1`.
 
 **HTL.** `<section class="cmp-hero">` contains:
 - `<h1>` and `<p>`

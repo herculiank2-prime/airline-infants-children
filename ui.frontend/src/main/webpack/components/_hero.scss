@@ -1,0 +1,77 @@
+.cmp-hero {
+    display: grid;
+    gap: 1.5rem;
+    padding: 1.5rem 0;
+
+    @media (min-width: $breakpoint-desktop) {
+        &--with-image {
+            grid-template-columns: 1fr 1fr;
+            align-items: center;
+        }
+    }
+}
+
+.cmp-hero__title {
+    margin: 0 0 .75rem;
+    font-size: 2rem;
+    line-height: 1.2;
+
+    @media (min-width: $breakpoint-tablet) {
+        font-size: 2.75rem;
+    }
+}
+
+.cmp-hero__introduction {
+    margin: 0 0 1.25rem;
+    font-size: 1.125rem;
+    color: $color-muted;
+}
+
+.cmp-hero__jumplinks {
+    border-left: 4px solid $color-brand;
+    padding-left: 1rem;
+}
+
+.cmp-hero__jumplinks-title {
+    margin: 0 0 .5rem;
+    font-weight: 700;
+}
+
+.cmp-hero__jumplinks-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.cmp-hero__jumplinks-item + .cmp-hero__jumplinks-item {
+    margin-top: .25rem;
+}
+
+.cmp-hero__jumplink {
+    display: inline-block;
+    padding: .25rem 0;
+}
+
+.cmp-hero__media {
+    order: -1;
+
+    @media (min-width: $breakpoint-desktop) {
+        order: 0;
+    }
+}
+
+.cmp-hero__image {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: $radius;
+}
+
+.cmp-hero__author-warning {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: .75rem 1rem;
+    background: $color-warning-bg;
+    color: $color-warning-fg;
+    border-radius: $radius;
+}
