@@ -1,0 +1,144 @@
+%% Core bundle: Sling Models, services and filters (package com.airline.travel.core). Impact: all [N].
+classDiagram
+    direction LR
+    class Component {
+        <<Core interface>>
+        +getId() String
+        +getData() ComponentData
+    }
+    class HeroBanner {
+        <<interface>>
+        +getTitle() String
+        +getIntroduction() String
+        +getImage() HeroImage
+        +getJumpLinksTitle() String
+        +getJumpLinks() List~JumpLink~
+        +isImageMissingAlt() boolean
+        +isEmpty() boolean
+    }
+    class HeroBannerImpl {
+        -alt: author alt, else DAM dc:description, else none
+        -renditions 640/960/1280 only, never the original
+    }
+    class HeroImage {
+        +getSrc() String
+        +getSrcset() String
+        +getSizes() String
+        +getWidth() int
+        +getHeight() int
+        +getAlt() String
+        +isDecorative() boolean
+    }
+    class JumpLink {
+        +getLabel() String
+        +getAnchor() String
+    }
+    class Teaser {
+        <<Core interface>>
+    }
+    class TeaserImpl {
+        -delegate Teaser via ResourceSuperType
+        +getLink() RelSafeLink
+        +getActions() List~RelSafeListItem~
+    }
+    class RelSafeLink {
+        <<decorator of Core Link>>
+        +getHtmlAttributes() adds rel noopener noreferrer once, for target _blank
+    }
+    class RelSafeListItem {
+        <<decorator of Core ListItem>>
+        +getLink() RelSafeLink
+    }
+    class TravelQuestionsAccordion {
+        <<interface>>
+        +getHeading() String
+        +getHeadingElement() String
+        +getItemHeadingElement() String
+        +getItems() List~AccordionItem~
+        +isExpandFirst() boolean
+        +isTruncated() boolean
+        +isEmpty() boolean
+    }
+    class TravelQuestionsAccordionImpl
+    class AccordionItem {
+        +getId() String  from fragment path
+        +getQuestion() String
+        +getAnswerHtml() String  allow-listed
+        +getData() ComponentData
+    }
+    class FaqStructuredData {
+        <<interface>>
+        +getJson() String
+        +isEmpty() boolean
+    }
+    class FaqStructuredDataImpl {
+        -reuses request-cached selection results
+    }
+    class FaqSchemaBuilder {
+        +build(List~TravelQuestion~) String  Gson HTML-safe
+    }
+    class RichTextSanitizer {
+        +sanitize(String) String  p ul ol li a-href strong b em i br
+    }
+    class TravelQuestionService {
+        <<interface>>
+        +find(ResourceResolver, QuestionSelection) SelectionResult
+    }
+    class TravelQuestionServiceImpl {
+        <<OSGi component>>
+        -Config allowed.root.path, model.path, max.items, max.fragments.scanned
+    }
+    class QuestionSelection {
+        <<value>>
+        +mode FOLDER descendants or TAGS exact IDs
+        +folderPath, rootPath
+        +tagIds, matchAll, limit
+        +fromValueMap(ValueMap) QuestionSelection
+    }
+    class SelectionResult {
+        <<value>>
+        +questions List~TravelQuestion~  sortOrder, question
+        +truncated boolean
+    }
+    class TravelQuestion {
+        <<value>>
+        +path, question, answerHtml
+        +tags, sortOrder
+    }
+    class HtmlCacheHeadersFilter {
+        <<Sling filter, publish only>>
+        -Config path.pattern, max.age, surrogate.max.age, stale.while.revalidate, stale.if.error
+        -GET/HEAD, .html, 200 only. Adds Surrogate-Key
+    }
+    class LandmarkContainer {
+        <<interface>>
+        +getLandmarkElement() String
+        +getLandmarkId() String
+    }
+    class LandmarkContainerImpl {
+        -policy landmarkElement header/main/footer/section/aside/div
+    }
+
+    Component <|-- HeroBanner
+    Component <|-- TravelQuestionsAccordion
+    HeroBanner <|.. HeroBannerImpl
+    HeroBannerImpl --> HeroImage
+    HeroBannerImpl --> JumpLink
+    Teaser <|.. TeaserImpl
+    TeaserImpl ..> Teaser : delegates
+    TeaserImpl --> RelSafeLink
+    TeaserImpl --> RelSafeListItem
+    RelSafeListItem --> RelSafeLink
+    TravelQuestionsAccordion <|.. TravelQuestionsAccordionImpl
+    TravelQuestionsAccordionImpl --> AccordionItem
+    TravelQuestionsAccordionImpl ..> TravelQuestionService
+    TravelQuestionsAccordionImpl ..> QuestionSelection
+    TravelQuestionsAccordionImpl ..> RichTextSanitizer
+    FaqStructuredData <|.. FaqStructuredDataImpl
+    FaqStructuredDataImpl ..> TravelQuestionService
+    FaqStructuredDataImpl ..> FaqSchemaBuilder
+    FaqSchemaBuilder ..> RichTextSanitizer
+    TravelQuestionService <|.. TravelQuestionServiceImpl
+    TravelQuestionServiceImpl --> SelectionResult
+    SelectionResult --> TravelQuestion
+    LandmarkContainer <|.. LandmarkContainerImpl

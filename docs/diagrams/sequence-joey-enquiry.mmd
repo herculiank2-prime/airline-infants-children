@@ -1,0 +1,46 @@
+%% SD-11 Joey Club enquiry (designed only). Integrations I-09 (browser -> AEM) and I-10 (AEM -> Salesforce).
+sequenceDiagram
+    autonumber
+    actor U as Parent (browser)
+    participant CDN as CDN / Dispatcher
+    participant S as AEM Publish<br/>JoeyClubEnquiryServlet
+    participant V as EnquiryValidator
+    participant T as Token cache<br/>(in-memory)
+    participant SF as Salesforce REST API
+    participant DL as ACDL (browser)
+
+    U->>U: Client-side validation (required, formats, consent) - UX only
+    U->>CDN: POST /content/airline/au/en/joey-club.enquiry.json (I-09)<br/>JSON + CSRF token + bot-check token + consentVersion
+    Note over CDN: CDN traffic-filter rate limit per IP (I-16)<br/>Dispatcher allows only POST + selector "enquiry" + ext "json", never cached
+    CDN->>S: forward (Sling Referrer Filter: allowed hosts only)
+    S->>V: Server-side validation (authoritative): schema, 8 KB limit, lengths, allow-lists,<br/>consent + consent text version, bot-check verify (vendor: open question)
+    alt invalid
+        V-->>S: errors (field codes only)
+        S-->>U: 400 { errors: [field codes] }
+    else valid
+        S->>T: get OAuth access token
+        alt no cached token or expired
+            T->>SF: POST /services/oauth2/token (client credentials)<br/>secrets = Cloud Manager secret env vars via $[secret:...]<br/>egress via AEMaaCS dedicated egress IP (Advanced Networking)
+            SF-->>T: access token (cached until expiry - 60 s)
+        end
+        loop up to 3 attempts, backoff 200 ms / 800 ms, total budget 4 s
+            S->>SF: PATCH /services/data/vXX.X/sobjects/Joey_Club_Enquiry__c/External_Id__c/{uuid} (I-10)<br/>External ID upsert = idempotent retries
+            alt 200 / 201
+                SF-->>S: created or updated
+            else 401
+                S->>T: evict token, refresh once
+            else 429 / 5xx / timeout
+                SF-->>S: retryable error
+            else other 4xx
+                SF-->>S: non-retryable (stop)
+            end
+        end
+        alt created
+            S-->>U: 202 { reference } (Cache-Control: no-store)
+            U->>DL: push airline:joeyclub:enquiry-submitted (no PII)
+        else exhausted / non-retryable
+            S->>S: log correlation ID + status (no PII), increment metric -> alert
+            S-->>U: 503 friendly message + retry option
+        end
+    end
+    Note over S,SF: PII travels only browser -> AEM (memory) -> Salesforce.<br/>Never written to JCR, logs, Dispatcher/CDN cache, ACDL or Analytics.

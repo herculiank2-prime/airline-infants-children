@@ -1,0 +1,63 @@
+%% C4 Level 2 - Container view. Impact coding: [E] existing, [N] new, [C] changed. Dashed = designed only.
+flowchart LR
+    author(["Content authors<br/>[Person] [E]"])
+    legal(["Legal reviewer<br/>[Person] [E]"])
+    browser(["Visitor browser<br/>HTML + ACDL + clientlibs<br/>[Container: web page] [C]"])
+    crawler(["Search engines and AI crawlers<br/>[E]"])
+    consumer(["Non-AEM consumer<br/>[N]"])
+
+    subgraph aem["AEM as a Cloud Service environment [C]"]
+        direction LR
+        authorTier["AEM Author<br/>Sites editor, editable template,<br/>hero / teaser / travel-questions<br/>[Container: Java/OSGi] [C]"]
+        assets["AEM Assets (DAM)<br/>hero + Joey Club images,<br/>alt text in dc:description<br/>[Container] [C]"]
+        cf["Content Fragments<br/>model travel-question,<br/>6 infant-booking fragments<br/>[Container] [N]"]
+        preview["AEM Preview<br/>pre-publish review URL<br/>[Container] [E]"]
+        publish["AEM Publish<br/>HTL render, Sling Models,<br/>FAQPage JSON-LD, GraphQL,<br/>cache-header filter<br/>[Container: Java/OSGi] [C]"]
+        dispatcher["Dispatcher (Apache httpd)<br/>allow-list filters, cache + TTL,<br/>security headers<br/>[Container] [C]"]
+        cdn["Adobe-managed CDN<br/>Surrogate-Control TTL;<br/>rate limit + purge key (designed)<br/>[Container] [C]"]
+    end
+
+    tags["AEP Tags library<br/>rules on airline:* events<br/>[Container] [C]"]
+    analytics["Adobe Analytics<br/>[External] [E]"]
+    salesforce["Salesforce REST API<br/>Joey Club enquiry<br/>[External] [E]"]
+    cloudmgr["Cloud Manager<br/>full-stack, web-tier, config pipelines<br/>[External] [E]"]
+    git["Git repository<br/>this project<br/>[N]"]
+
+    author -- "I-01 HTTPS + IMS [E]" --> authorTier
+    authorTier -- "I-02 in-repo CF + asset read/write [C]" --> cf
+    authorTier -- "I-02 [C]" --> assets
+    authorTier -- "I-15 publish to Preview [E]" --> preview
+    legal -. "I-14 review Preview URL, approve workflow [N, designed]" .-> authorTier
+    authorTier -- "I-03 publish: Sling Content Distribution [E]" --> publish
+    authorTier -. "I-13 fragment/XF publish -> targeted invalidate [N, designed]" .-> dispatcher
+    authorTier -. "I-13 purge by Surrogate-Key [N, designed]" .-> cdn
+    publish -- "I-04 cache invalidation on activation [E]" --> dispatcher
+    publish -- "I-12 header/footer XF include [C]" --> publish
+    dispatcher -- "I-05 render request on cache miss [C]" --> publish
+    cdn -- "I-05 origin fetch [C]" --> dispatcher
+    browser -- "I-05 HTML, CSS/JS, images HTTPS [C]" --> cdn
+    crawler -- "I-08 HTML + JSON-LD + sitemap [C]" --> cdn
+    consumer -- "I-07 GET /graphql/execute.json/airline/... [N]" --> cdn
+    browser -- "I-06 ACDL events [C]" --> tags
+    tags -- "I-06 beacon HTTPS [C]" --> analytics
+    browser -. "I-09 POST enquiry JSON [N, designed]" .-> cdn
+    publish -. "I-10 REST upsert + OAuth 2.0 [N, designed]" .-> salesforce
+    git -- "I-11 [C]" --> cloudmgr
+    cloudmgr -- "I-11 deploy code + Dispatcher config [C]" --> aem
+    cloudmgr -. "I-16 cdn.yaml config pipeline [N, designed]" .-> cdn
+
+    subgraph legend["Legend"]
+        direction TB
+        lE["[E] Existing"]:::existing
+        lC["[C] Changed"]:::changed
+        lN["[N] New"]:::new
+        lD["Dashed = designed only"]:::note
+    end
+
+    classDef existing fill:#eceff1,stroke:#607d8b,color:#263238
+    classDef changed fill:#fff3e0,stroke:#ef6c00,color:#3e2723
+    classDef new fill:#e8f5e9,stroke:#2e7d32,color:#1b5e20
+    classDef note fill:#ffffff,stroke:#9e9e9e,stroke-dasharray: 4 3,color:#424242
+    class author,legal,crawler,analytics,salesforce,cloudmgr,preview existing
+    class browser,authorTier,assets,publish,dispatcher,tags,cdn changed
+    class cf,consumer,git new

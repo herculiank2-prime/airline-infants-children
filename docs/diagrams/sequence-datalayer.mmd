@@ -1,0 +1,21 @@
+%% DL-01 / I-06 - Adobe Client Data Layer event contract.
+sequenceDiagram
+    autonumber
+    actor U as Visitor
+    participant ACC as travelquestions.ts
+    participant TSR as teaser.ts
+    participant DL as window.adobeDataLayer (ACDL)
+    participant TAGS as AEP Tags rules
+    participant AA as Adobe Analytics
+
+    Note over DL: On load Core registers component state from data-cmp-data-layer:<br/>component.<id> = { @type, dc:title, parentId }<br/>item IDs derive from the fragment path (stable when order changes)
+    U->>ACC: click / Enter / Space on item header button
+    ACC->>ACC: toggle aria-expanded, panel hidden="until-found" or visible
+    ACC->>DL: push { event: "airline:accordion:expand" | "airline:accordion:collapse",<br/>eventInfo: { path: "component.<itemId>", componentId, title, parentId, trigger: "click" } }
+    U->>ACC: browser find-in-page reveals a collapsed answer (beforematch)
+    ACC->>DL: push airline:accordion:expand with trigger: "find-in-page"
+    U->>TSR: click teaser link / CTA
+    TSR->>DL: push { event: "airline:teaser:click",<br/>eventInfo: { path: "component.<teaserId>", componentId, title, linkUrl } }
+    Note over DL,TAGS: Core also pushes cmp:click for the teaser - Tags rules subscribe to airline:* only
+    DL->>TAGS: event listener (ACDL extension, rule per event name)
+    TAGS->>AA: s.tl() link-tracking beacon (eVar: componentId, title)

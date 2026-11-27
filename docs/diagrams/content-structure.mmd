@@ -1,0 +1,51 @@
+%% SD-07 JCR content structure. Impact coding: [N] new, [C] changed, [E] existing. Package in brackets.
+flowchart TB
+    subgraph conf["/conf/airline [C] (ui.content)"]
+        tpl["settings/wcm/templates/travel-information-page [N] (filter: update)<br/>structure: header XF (locked), main > hero (single, unlocked), content (editable), footer XF (locked)"]
+        pol["settings/wcm/policies [C] (filter: update)<br/>page, landmark containers, content (teaser + travelquestions), teaser titleType=h2, travelquestions h2/h3"]
+        cfm["settings/dam/cfm/models/travel-question [N] (filter: replace)<br/>question*, answer* (rich text), tags, sortOrder*"]
+        pq["settings/graphql/persistentQueries [N] (filter: replace)<br/>travel-questions-by-folder, -by-tag, -by-tags-all"]
+        ca["sling:configs DataLayerConfig enabled=true [E]"]
+    end
+    subgraph content["/content/airline/au/en [C]"]
+        home["en (home, sling:sitemapRoot) [C] (ui.content)"]
+        ti["travel-information [N] (ui.content.sample)"]
+        page["flying-infants-children [N]<br/>hero, teaser (Joey Club), travelquestions (tags: infants AND market/au)"]
+        states["component-states [N]<br/>empty hero, decorative image, folder-mode accordion (noindex)"]
+    end
+    subgraph xf["/content/experience-fragments/airline/au/en/site [C] (ui.content)"]
+        hdr["header/master - placeholder site name + navigation [C]"]
+        ftr["footer/master - placeholder links [C]"]
+    end
+    subgraph dam["/content/dam/airline [C] (ui.content.sample)"]
+        img["travel-information/infants-children/<br/>family-hero.jpg, joey-club.jpg [N]<br/>dc:title, dc:description (alt), cq:tags, tiff:ImageWidth/Length,<br/>renditions 640 / 960 / 1280"]
+        tq["travel-questions/infants [N]<br/>6 x travel-question fragments, cq:conf=/conf/airline"]
+    end
+    subgraph tags["/content/cq:tags/airline [N] (ui.content)"]
+        t1["travel/infants, travel/children, travel/booking,<br/>travel/seating, travel/medical, market/au, market/nz"]
+    end
+    home --> ti --> page
+    ti --> states
+    page -. cq:template .-> tpl
+    tpl -. policies .-> pol
+    page -. XF include .-> hdr
+    page -. XF include .-> ftr
+    page -. fileReference .-> img
+    page -. tags / folderPath .-> tq
+    tq -. cq:model .-> cfm
+    tq -. tags .-> t1
+    pq -. queries model .-> cfm
+
+    subgraph legend["Legend"]
+        direction TB
+        lE["[E] Existing"]:::existing
+        lC["[C] Changed"]:::changed
+        lN["[N] New"]:::new
+    end
+
+    classDef existing fill:#eceff1,stroke:#607d8b
+    classDef changed fill:#fff3e0,stroke:#ef6c00
+    classDef new fill:#e8f5e9,stroke:#2e7d32
+    class ca existing
+    class home,hdr,ftr,pol changed
+    class tpl,cfm,pq,ti,page,states,img,tq,t1 new

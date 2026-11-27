@@ -1,0 +1,23 @@
+%% I-13 (designed only) - publishing a travel-question fragment or XF refreshes the pages that render it.
+%% Built today: TTL bound (worst case 300 s across Dispatcher, CDN and browser). Designed: targeted invalidation.
+sequenceDiagram
+    autonumber
+    actor A as Author / Legal approver
+    participant AU as AEM Author
+    participant J as FragmentInvalidationJob<br/>(Sling Job, designed)
+    participant R as ReferenceResolver (designed)
+    participant SCD as Sling Content Distribution
+    participant D as Dispatcher
+    participant CDN as Adobe CDN
+
+    A->>AU: Approve (I-14) and publish fragment /content/dam/airline/travel-questions/... (I-03)
+    AU->>SCD: ADD fragment (existing)
+    SCD->>D: invalidate /content/dam/... (stat files under /content/dam only) (I-04)
+    AU-->>J: replication event -> enqueue job topic airline/invalidation/fragment (at-least-once, 3 retries)
+    J->>R: which pages render this fragment?
+    R->>R: indexed lookup: property index airline-travelquestions-custom-1<br/>on folderPath / tags of travelquestions resources
+    R-->>J: page paths (+ persisted query paths /graphql/execute.json/airline/*)
+    J->>SCD: INVALIDATE page and query paths (service user airline-invalidation via repoinit)
+    SCD->>D: delete cached HTML + query JSON
+    J->>CDN: purge Surrogate-Key airline-page-<hash> (+ airline-pq) using purge key from Cloud Manager secret (I-16)
+    Note over D,CDN: Fallback if any step fails: TTL bound (300 s worst case)
