@@ -1,0 +1,17 @@
+query TravelQuestionsByTagsAll($audience: String!, $market: String!, $limit: Int = 20) {
+  travelQuestionList(
+    filter: {
+      tags: {
+        _logOp: AND
+        _expressions: [
+          { value: $audience, _operator: EQUALS, _apply: AT_LEAST_ONCE }
+          { value: $market, _operator: EQUALS, _apply: AT_LEAST_ONCE }
+        ]
+      }
+    }
+    sort: "sortOrder ASC, question ASC"
+    limit: $limit
+  ) {
+    items { _path question answer { html plaintext } tags sortOrder }
+  }
+}

@@ -228,3 +228,46 @@ Format: context → options → decision → trade-offs → consequences. Status
 - **Decision.** (b).
 - **Trade-offs.** (b) guarantees one hero per page. Authors cannot remove it, only leave it empty, in which case it renders nothing and the page lacks an `h1`. The empty state shows an editor warning, and Playwright asserts one `h1` on the demo page.
 - **Consequences.** The `content` container allows only teaser and travel questions.
+
+## ADR-021 — Keep `scripts/aem-http.ps1` as the shared local AEM HTTP helper
+
+- **Context.** An earlier, parallel session left an untracked `scripts/aem-http.ps1`. This session owns the repository and the instance now and needed reliable scripted calls to the local SDK (Sling POST, package manager, persisted-query `PUT`). `Invoke-WebRequest` in Windows PowerShell 5.1 hides error bodies and cannot set some headers cleanly.
+- **Options.**
+  - (a) Delete it and use ad hoc `curl.exe` calls.
+  - (b) Keep and commit it as a dot-sourced helper.
+  - (c) Replace it with a Node or Python CLI.
+- **Decision.** (b). It was reviewed line by line: basic auth, `Referer` and CSRF token, form or raw bodies, status and body returned without throwing.
+- **Trade-offs.** (b) is small, has no dependencies and matches the PowerShell scripts already in `scripts/`. It uses the SDK's default `admin`/`admin` and must never point at a shared environment. Its `StringContent` adds `charset=utf-8`, which the persisted-query endpoint rejects, so that one call sets the content type itself. (a) repeats auth and CSRF handling everywhere. (c) adds a runtime for a local convenience.
+- **Consequences.** Used for content clean-up and verification in PR-004 to PR-006. GraphQL checks use `curl.exe`, because .NET normalises `%2F` in URLs (ADR-022).
+
+## ADR-022 — Persisted-query variables: encode the whole tail or nothing
+
+- **Context.** The v1.1 design (§7) showed `…/travel-questions-by-tags-all;audience=airline%3Atravel%2Finfants;market=…`. On the SDK that request returns a validation error (`market` is null) or an empty list: AEM splits on the raw `;` and `/` but does not decode the values the same way.
+- **Options.**
+  - (a) Encode the values only (design v1.1).
+  - (b) Encode the whole `;name=value` tail, including `;` and `=`.
+  - (c) Leave the tail unencoded.
+  - (d) POST the variables in a JSON body.
+- **Decision.** Document (b) as the contract and allow (c) for readability in examples. Measured on author and publish: (b) and (c) return the six items; (a) fails.
+- **Trade-offs.** (b) is what Adobe recommends for CDN cache keys and works with any HTTP client. (c) breaks with tag IDs that contain characters outside the URL path set. (d) is not cacheable at the CDN.
+- **Consequences.** README, Playwright contract test and design §7 use (b). Clients must not double-encode (`%253A` returns no items).
+
+## ADR-023 — Read fragments through the JCR resource tree, not the Content Fragment API
+
+- **Context.** The design said each asset is "adapted to `ContentFragment`". The service walks up to 100 assets per request on publish and must be unit-testable with AEM Mocks.
+- **Options.**
+  - (a) `resource.adaptTo(ContentFragment.class)`, then `getElement("question")`.
+  - (b) Read `jcr:content/data/@cq:model` and `jcr:content/data/master` as a `ValueMap`.
+- **Decision.** (b).
+- **Trade-offs.** (b) is one property read per field with no adapter cost, and the test fixture writes exactly the JCR shape the package installs. It couples the service to the structured-fragment layout (`data/master`, `_strucVersion` 2). (a) is the supported API and hides the layout, but adds adapter overhead per asset and needs more mock set-up.
+- **Consequences.** If Adobe changes the storage layout, only `TravelQuestionServiceImpl.read()` changes. The upgrade checklist includes running the service tests against the new SDK.
+
+## ADR-024 — GraphQL endpoint and persisted queries are code-owned
+
+- **Context.** On a clean SDK, persisting a query fails until `/conf/airline/settings/graphql/persistentQueries` and an endpoint for the `airline` configuration exist. Authors normally create both in the Configuration Browser and GraphiQL.
+- **Options.**
+  - (a) Manual set-up steps in the README.
+  - (b) Ship the endpoint (`/content/cq:graphql/airline/endpoint`, `merge`) and the queries (`replace`) in `ui.content`.
+- **Decision.** (b), keeping EN-02's "no manual steps".
+- **Trade-offs.** (b) makes the query text reviewable in Git and identical in every environment. Queries edited in GraphiQL on an environment are overwritten on the next deploy, which is intended. The query text is stored as a binary property (`_jcr_data.binary`), so diffs show it as a file.
+- **Consequences.** Change a query by editing its `.binary` file. The endpoint must be published with the queries for publish-side `execute.json` (done by the package install on publish).

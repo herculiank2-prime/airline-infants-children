@@ -1,0 +1,81 @@
+.cmp-travelquestions {
+    margin: 2rem 0;
+    scroll-margin-top: 1rem;
+}
+
+.cmp-travelquestions__heading {
+    margin: 0 0 1rem;
+    font-size: 1.5rem;
+    line-height: 1.25;
+}
+
+.cmp-travelquestions__item {
+    border-top: 1px solid $color-border;
+
+    &:last-child {
+        border-bottom: 1px solid $color-border;
+    }
+}
+
+.cmp-travelquestions__item-heading {
+    margin: 0;
+    font-size: 1rem;
+}
+
+.cmp-travelquestions__button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    width: 100%;
+    min-height: 44px;
+    padding: 1rem 0;
+    border: 0;
+    background: none;
+    color: $color-foreground;
+    font: inherit;
+    font-weight: 700;
+    text-align: left;
+    cursor: pointer;
+
+    &:hover .cmp-travelquestions__question {
+        text-decoration: underline;
+    }
+}
+
+.cmp-travelquestions__icon {
+    flex: none;
+    width: .75rem;
+    height: .75rem;
+    border-right: 2px solid currentColor;
+    border-bottom: 2px solid currentColor;
+    transform: rotate(45deg);
+
+    [aria-expanded="true"] > & {
+        transform: rotate(-135deg);
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        transition: transform .15s ease-out;
+    }
+}
+
+// No display rule on the panel itself: it would override hidden="until-found" (AR-21).
+.cmp-travelquestions__panel {
+    padding: 0 0 1rem;
+    color: $color-foreground;
+
+    p {
+        margin: 0 0 .75rem;
+    }
+
+    a {
+        color: $color-link;
+    }
+}
+
+.cmp-travelquestions__author-warning {
+    padding: .75rem 1rem;
+    background: $color-warning-bg;
+    color: $color-warning-fg;
+}

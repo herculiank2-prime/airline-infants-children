@@ -624,7 +624,7 @@ Both are included in the template structure as locked components. An XF publish 
 **Fragment selection logic (`TravelQuestionServiceImpl`).** This semantic is shared with the persisted queries (AR-02); see `SOLUTION_DESIGN.md` §8.1.
 1. **Validate.** `folderPath` / `rootPath` must be equal to or below `allowed.root.path`, otherwise the result is empty with a WARN log. This stops authors pointing at arbitrary DAM trees.
 2. **Walk.** Depth-first walk of descendants of the folder (folder mode) or of `rootPath` (tag mode). Only `sling:Folder`/`sling:OrderedFolder`/`nt:folder` nodes are descended into; `dam:Asset` nodes are visited but not entered. The walk stops after **`max.fragments.scanned` = 100** assets; if it stops early, `truncated=true` and a WARN log is written.
-3. **Filter by model.** Each asset is adapted to `ContentFragment` and kept only if `jcr:content/data/@cq:model` equals `model.path`.
+3. **Filter by model.** Each asset is kept only if `jcr:content/data/@cq:model` equals `model.path`; fields are read from `jcr:content/data/master` (ADR-023).
 4. **Tag mode.** The fragment's `tags` element values are compared to the selected tag IDs by **exact ID**. *Any* = at least one match; *all* = every selected tag present. Child tags do not match their parent, and asset `cq:tags` is ignored. This matches what GraphQL can express.
 5. **Required fields.** Fragments with a blank `question` or `answer` are skipped. The model marks both required, so this only guards against inconsistent data.
 6. **Sort and limit.** Sort by `sortOrder` (required; missing = `Integer.MAX_VALUE` as defence), then `question` with case-sensitive `String.compareTo`. That is the same order as the GraphQL `sort: "sortOrder ASC, question ASC"`. The limit is min(dialog max, `max.items`).
@@ -687,10 +687,10 @@ The other two queries:
 - `travel-questions-by-folder` filters `_path` with `STARTS_WITH $folder` (with a trailing `/`).
 - `travel-questions-by-tag` uses one tag expression.
 
-**Requests.** Variables are URL-encoded:
+**Requests.** Encode the whole variable tail, including `;` and `=` (ADR-022; encoding only the values fails):
 
 ```
-GET /graphql/execute.json/airline/travel-questions-by-tags-all;audience=airline%3Atravel%2Finfants;market=airline%3Amarket%2Fau
+GET /graphql/execute.json/airline/travel-questions-by-tags-all%3Baudience%3Dairline%3Atravel%2Finfants%3Bmarket%3Dairline%3Amarket%2Fau
 ```
 
 **Caching.**

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:dam="http://www.day.com/dam/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0"
+    jcr:mixinTypes="[mix:referenceable]"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        cq:name="infants-international-flights"
+        cq:parentPath="/content/dam/airline/travel-questions/infants"
+        jcr:description="Placeholder copy for a fictional airline. Not legal advice."
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="Infants on international flights"
+        contentFragment="{Boolean}true">
+        <data
+            cq:model="/conf/airline/settings/dam/cfm/models/travel-question"
+            _strucVersion="{Long}2"
+            jcr:primaryType="nt:unstructured">
+            <master
+                jcr:mixinTypes="[cq:Taggable]"
+                jcr:primaryType="nt:unstructured"
+                answer="&lt;p&gt;On international flights an infant on your lap pays a reduced fare, usually 10% of the adult fare plus taxes.&lt;/p&gt;&lt;p&gt;Every infant needs their own passport and any visas the destination requires. Check the entry rules for each country on your trip.&lt;/p&gt;"
+                answer_x0040_ContentType="text/html"
+                cq:tags="[airline:travel/infants,airline:market/au,airline:market/nz]"
+                question="Infants on international flights"
+                sortOrder="{Long}20"
+                tags="[airline:travel/infants,airline:market/au,airline:market/nz]"/>
+        </data>
+        <metadata
+            jcr:mixinTypes="[cq:Taggable]"
+            jcr:primaryType="nt:unstructured"/>
+        <related jcr:primaryType="nt:unstructured"/>
+    </jcr:content>
+</jcr:root>

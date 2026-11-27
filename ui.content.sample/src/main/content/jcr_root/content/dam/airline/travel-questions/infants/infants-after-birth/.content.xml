@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:dam="http://www.day.com/dam/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0"
+    jcr:mixinTypes="[mix:referenceable]"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        cq:name="infants-after-birth"
+        cq:parentPath="/content/dam/airline/travel-questions/infants"
+        jcr:description="Placeholder copy for a fictional airline. Not legal advice."
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="How soon can infants travel after birth?"
+        contentFragment="{Boolean}true">
+        <data
+            cq:model="/conf/airline/settings/dam/cfm/models/travel-question"
+            _strucVersion="{Long}2"
+            jcr:primaryType="nt:unstructured">
+            <master
+                jcr:mixinTypes="[cq:Taggable]"
+                jcr:primaryType="nt:unstructured"
+                answer="&lt;p&gt;Healthy babies can usually fly from 7 days old. If your baby was born early or needs medical care, ask your doctor first and contact us for a medical clearance.&lt;/p&gt;"
+                answer_x0040_ContentType="text/html"
+                cq:tags="[airline:travel/infants,airline:market/au,airline:market/nz]"
+                question="How soon can infants travel after birth?"
+                sortOrder="{Long}50"
+                tags="[airline:travel/infants,airline:market/au,airline:market/nz]"/>
+        </data>
+        <metadata
+            jcr:mixinTypes="[cq:Taggable]"
+            jcr:primaryType="nt:unstructured"/>
+        <related jcr:primaryType="nt:unstructured"/>
+    </jcr:content>
+</jcr:root>

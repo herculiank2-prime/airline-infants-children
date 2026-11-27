@@ -1,0 +1,6 @@
+{
+    "allowed.root.path": "/content/dam/airline/travel-questions",
+    "model.path": "/conf/airline/settings/dam/cfm/models/travel-question",
+    "max.items": 20,
+    "max.fragments.scanned": 100
+}

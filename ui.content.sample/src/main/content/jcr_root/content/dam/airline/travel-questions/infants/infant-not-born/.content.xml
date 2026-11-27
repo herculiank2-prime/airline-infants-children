@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:jcr="http://www.jcp.org/jcr/1.0" xmlns:nt="http://www.jcp.org/jcr/nt/1.0" xmlns:dam="http://www.day.com/dam/1.0" xmlns:cq="http://www.day.com/jcr/cq/1.0" xmlns:mix="http://www.jcp.org/jcr/mix/1.0"
+    jcr:mixinTypes="[mix:referenceable]"
+    jcr:primaryType="dam:Asset">
+    <jcr:content
+        cq:name="infant-not-born"
+        cq:parentPath="/content/dam/airline/travel-questions/infants"
+        jcr:description="Placeholder copy for a fictional airline. Not legal advice."
+        jcr:primaryType="dam:AssetContent"
+        jcr:title="My infant isn&apos;t born yet, how do I book?"
+        contentFragment="{Boolean}true">
+        <data
+            cq:model="/conf/airline/settings/dam/cfm/models/travel-question"
+            _strucVersion="{Long}2"
+            jcr:primaryType="nt:unstructured">
+            <master
+                jcr:mixinTypes="[cq:Taggable]"
+                jcr:primaryType="nt:unstructured"
+                answer="&lt;p&gt;Book your own flights now, then add your infant after they are born. Call us or use Manage booking with their name and date of birth.&lt;/p&gt;&lt;p&gt;If you expect to travel late in pregnancy, read our guidance for expectant mothers before you book.&lt;/p&gt;"
+                answer_x0040_ContentType="text/html"
+                cq:tags="[airline:travel/infants,airline:market/au,airline:market/nz]"
+                question="My infant isn&apos;t born yet, how do I book?"
+                sortOrder="{Long}60"
+                tags="[airline:travel/infants,airline:market/au,airline:market/nz]"/>
+        </data>
+        <metadata
+            jcr:mixinTypes="[cq:Taggable]"
+            jcr:primaryType="nt:unstructured"/>
+        <related jcr:primaryType="nt:unstructured"/>
+    </jcr:content>
+</jcr:root>

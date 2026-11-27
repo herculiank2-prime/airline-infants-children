@@ -1,0 +1,31 @@
+<sly data-sly-use.accordion="com.airline.travel.core.models.TravelQuestionsAccordion"
+     data-sly-use.templates="core/wcm/components/commons/v1/templates.html"></sly>
+<section data-sly-test="${!accordion.empty}"
+         id="${accordion.id}"
+         class="cmp-travelquestions"
+         aria-labelledby="${accordion.id}-heading"
+         data-cmp-data-layer="${accordion.data.json}">
+    <h2 data-sly-element="${accordion.headingElement}" class="cmp-travelquestions__heading"
+        id="${accordion.id}-heading" data-sly-test="${accordion.heading}">${accordion.heading}</h2>
+    <div class="cmp-travelquestions__item" data-sly-repeat.item="${accordion.items}"
+         data-cmp-data-layer="${item.data.json}">
+        <h3 data-sly-element="${accordion.itemHeadingElement}" class="cmp-travelquestions__item-heading">
+            <button type="button" class="cmp-travelquestions__button"
+                    id="${item.id}-button"
+                    aria-controls="${item.id}-panel"
+                    aria-expanded="${item.expanded ? 'true' : 'false'}"
+                    data-item-id="${item.id}">
+                <span class="cmp-travelquestions__question">${item.question}</span>
+                <span class="cmp-travelquestions__icon" aria-hidden="true"></span>
+            </button>
+        </h3>
+        <div class="cmp-travelquestions__panel" role="region"
+             id="${item.id}-panel"
+             aria-labelledby="${item.id}-button"
+             hidden="${item.expanded ? false : 'until-found'}">${item.answerHtml @ context='html'}</div>
+    </div>
+</section>
+<p class="cmp-travelquestions__author-warning" role="note" data-sly-test="${wcmmode.edit && accordion.truncated}">
+    Some travel questions may be missing: the search stopped after the maximum number of assets. Choose a smaller folder or more specific tags.
+</p>
+<sly data-sly-call="${templates.placeholder @ isEmpty=accordion.empty, classAppend='cmp-travelquestions'}"></sly>

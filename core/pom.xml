@@ -123,6 +123,13 @@ Import-Package: javax.annotation;version=0.0.0,*
     </build>
 
     <dependencies>
+        <!-- The SDK API jar carries only Gson's exported packages; Gson needs its internal ones at test runtime. -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.13.1</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>uk.org.lidalia</groupId>
             <artifactId>slf4j-test</artifactId>

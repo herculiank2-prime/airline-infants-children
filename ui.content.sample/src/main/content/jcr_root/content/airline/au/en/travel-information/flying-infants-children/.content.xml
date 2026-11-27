@@ -40,6 +40,17 @@
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="airline/components/container"
                     layout="responsiveGrid">
+                    <booking_infants
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="airline/components/travelquestions"
+                        expandFirst="{Boolean}false"
+                        heading="Booking for infants (under 2 years)"
+                        id="booking-infants"
+                        maxItems="{Long}20"
+                        rootPath="/content/dam/airline/travel-questions"
+                        source="tags"
+                        tagMatch="all"
+                        tags="[airline:travel/infants,airline:market/au]"/>
                     <joey_club
                         jcr:primaryType="nt:unstructured"
                         jcr:title="Joey Club for young flyers"

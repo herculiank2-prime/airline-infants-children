@@ -1,0 +1,9 @@
+query TravelQuestionsByFolder($folder: ID!, $limit: Int = 20) {
+  travelQuestionList(
+    filter: { _path: { _expressions: [{ value: $folder, _operator: STARTS_WITH }] } }
+    sort: "sortOrder ASC, question ASC"
+    limit: $limit
+  ) {
+    items { _path question answer { html plaintext } tags sortOrder }
+  }
+}

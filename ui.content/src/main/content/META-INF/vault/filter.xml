@@ -14,4 +14,5 @@
     <filter root="/conf/airline/settings/cloudconfigs" mode="merge"/>
     <filter root="/conf/airline/sling:configs" mode="merge"/>
     <filter root="/content/cq:tags/airline" mode="merge"/>
+    <filter root="/content/cq:graphql/airline" mode="merge"/>
 </workspaceFilter>

@@ -18,3 +18,10 @@
 </sly>
 
 <sly data-sly-resource="${'contexthub' @ resourceType='granite/contexthub/components/contexthub'}"/>
+
+<!--/* SE-01 / ADR-014. HTL has no JSON context; the model's Gson output escapes < > & = ' as \uXXXX. */-->
+<script type="application/ld+json" data-sly-use.faq="com.airline.travel.core.models.FaqStructuredData"
+        data-sly-test="${!faq.empty}">${faq.json @ context='unsafe'}</script>
+
+<!--/* ADR-018: without JavaScript every answer is shown and the toggle icon is hidden. */-->
+<noscript><style>.cmp-travelquestions__panel[hidden]{display:block}.cmp-travelquestions__icon{display:none}</style></noscript>

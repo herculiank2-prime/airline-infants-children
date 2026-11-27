@@ -1,0 +1,9 @@
+query TravelQuestionsByTag($tag: String!, $limit: Int = 20) {
+  travelQuestionList(
+    filter: { tags: { _expressions: [{ value: $tag, _operator: EQUALS, _apply: AT_LEAST_ONCE }] } }
+    sort: "sortOrder ASC, question ASC"
+    limit: $limit
+  ) {
+    items { _path question answer { html plaintext } tags sortOrder }
+  }
+}
