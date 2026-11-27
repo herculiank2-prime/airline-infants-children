@@ -1,75 +1,122 @@
+// Live layout: title, full-bleed image with a curved top-right corner, introduction, then the "On this page" list.
 .cmp-hero {
     display: grid;
-    gap: 1.5rem;
-    padding: 1.5rem 0;
+    margin-bottom: $section-spacing;
 
     @media (min-width: $breakpoint-desktop) {
-        &--with-image {
-            grid-template-columns: 1fr 1fr;
-            align-items: center;
-        }
+        margin-bottom: $section-spacing-desktop;
     }
+}
+
+.cmp-hero__content {
+    display: contents;
 }
 
 .cmp-hero__title {
-    margin: 0 0 .75rem;
-    font-size: 2rem;
-    line-height: 1.2;
+    order: 1;
+    margin: 1rem 0 2rem;
+    font-size: 2.5rem;
+    font-weight: 300;
+    line-height: 1.15;
 
-    @media (min-width: $breakpoint-tablet) {
-        font-size: 2.75rem;
+    @media (min-width: $breakpoint-desktop) {
+        margin: 1.5rem 0 2.5rem;
+        font-size: 3.75rem;
     }
 }
 
-.cmp-hero__introduction {
-    margin: 0 0 1.25rem;
-    font-size: 1.125rem;
-    color: $color-muted;
-}
-
-.cmp-hero__jumplinks {
-    border-left: 4px solid $color-brand;
-    padding-left: 1rem;
-}
-
-.cmp-hero__jumplinks-title {
-    margin: 0 0 .5rem;
-    font-weight: 700;
-}
-
-.cmp-hero__jumplinks-list {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.cmp-hero__jumplinks-item + .cmp-hero__jumplinks-item {
-    margin-top: .25rem;
-}
-
-.cmp-hero__jumplink {
-    display: inline-block;
-    padding: .25rem 0;
-}
-
 .cmp-hero__media {
-    order: -1;
+    order: 2;
+    margin: 0 (-$page-gutter);
 
     @media (min-width: $breakpoint-desktop) {
-        order: 0;
+        margin: 0 (-$page-gutter-desktop);
     }
 }
 
 .cmp-hero__image {
     display: block;
     width: 100%;
-    height: auto;
-    border-radius: $radius;
+    height: 240px;
+    object-fit: cover;
+    border-radius: 0 $radius-feature 0 0;
+
+    @media (min-width: $breakpoint-desktop) {
+        height: 472px;
+        border-radius: 0 6rem 0 0;
+    }
+}
+
+.cmp-hero__introduction {
+    order: 3;
+    margin: 2.5rem 0;
+    max-width: 56rem;
+    font-size: 1.375rem;
+    font-weight: 300;
+    line-height: 1.45;
+
+    @media (min-width: $breakpoint-desktop) {
+        margin: 3.5rem 0;
+        font-size: 1.75rem;
+    }
+}
+
+.cmp-hero__jumplinks {
+    order: 4;
+    padding-left: 1.5rem;
+    border-left: 2px solid $color-brand;
+
+    @media (min-width: $breakpoint-desktop) {
+        padding-left: 2.5rem;
+    }
+}
+
+.cmp-hero__jumplinks-title {
+    margin: 0 0 1rem;
+    font-size: 1.625rem;
+    font-weight: 400;
+}
+
+.cmp-hero__jumplinks-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    columns: 1;
+    column-gap: 3rem;
+
+    @media (min-width: $breakpoint-tablet) {
+        columns: 2;
+    }
+
+    @media (min-width: $breakpoint-desktop) {
+        columns: 3;
+    }
+}
+
+.cmp-hero__jumplinks-item {
+    break-inside: avoid;
+}
+
+.cmp-hero__jumplink {
+    display: inline-block;
+    padding: .5rem 0;
+    font-size: 1.125rem;
+    color: $color-foreground;
+    text-decoration: none;
+
+    &::after {
+        @include chevron;
+        transform: rotate(135deg);
+    }
+
+    &:hover {
+        text-decoration: underline;
+    }
 }
 
 .cmp-hero__author-warning {
-    grid-column: 1 / -1;
-    margin: 0;
+    order: 5;
+    margin: 1rem 0 0;
     padding: .75rem 1rem;
     background: $color-warning-bg;
     color: $color-warning-fg;

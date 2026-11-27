@@ -6,9 +6,9 @@
         <metadata
             dam:Fileformat="JPEG"
             dam:MIMEtype="image/jpeg"
-            dc:description="A parent holding a smiling baby by an aircraft window while a young child looks out at the clouds"
+            dc:description="Seat map showing window and middle seats where an inflatable cube can be used on widebody aircraft"
             dc:format="image/jpeg"
-            dc:title="Family on a flight"
+            dc:title="Widebody seat locations"
             jcr:primaryType="nt:unstructured"
             tiff:ImageLength="{Long}1067"
             tiff:ImageWidth="{Long}1600"/>

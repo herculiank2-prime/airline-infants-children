@@ -2,7 +2,11 @@
 //== Main container style (policy element "main")
 
 main.container {
-    max-width: $content-max-width;
+    max-width: calc(#{$content-max-width} + 2 * #{$page-gutter-desktop});
     margin: 0 auto;
-    padding: 0 1rem;
+    padding: 0 $page-gutter;
+
+    @media (min-width: $breakpoint-desktop) {
+        padding: 0 $page-gutter-desktop;
+    }
 }

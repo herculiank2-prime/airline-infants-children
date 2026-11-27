@@ -45,13 +45,15 @@ test.describe("Travel questions accordion (AC-01, ADR-018)", () => {
     });
 
     test("find-in-page text is in the HTML while collapsed", async ({ page }) => {
-        const html = await page.content();
-        expect(html).toContain("approved child restraint");
+        const panel = page.locator(".cmp-travelquestions__panel").first();
+        await expect(panel).toHaveAttribute("hidden", "until-found");
+        expect((await panel.textContent())?.trim().length).toBeGreaterThan(0);
     });
 
-    test("hero jump link targets the accordion section", async ({ page }) => {
-        const link = page.locator(".cmp-hero__jumplink", { hasText: "Booking for infants" });
-        await expect(link).toHaveAttribute("href", "#booking-infants");
-        await expect(page.locator("#booking-infants")).toHaveCount(1);
+    test("hero jump link targets the booking section that holds the accordion", async ({ page }) => {
+        const link = page.locator(".cmp-hero__jumplink", { hasText: "Booking for infants and children" });
+        await expect(link).toHaveAttribute("href", "#booking");
+        await expect(page.locator("#booking")).toHaveCount(1);
+        await expect(page.locator("#booking-infants .cmp-travelquestions")).toHaveCount(1);
     });
 });

@@ -19,6 +19,9 @@
                 sling:resourceType="airline/components/container"
                 id="main-content"
                 layout="responsiveGrid">
+                <breadcrumb
+                    jcr:primaryType="nt:unstructured"
+                    sling:resourceType="airline/components/breadcrumb"/>
                 <hero
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="airline/components/hero"

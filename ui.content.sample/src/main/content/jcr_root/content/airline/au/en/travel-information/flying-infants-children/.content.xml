@@ -3,11 +3,11 @@
     jcr:primaryType="cq:Page">
     <jcr:content
         cq:template="/conf/airline/settings/wcm/templates/travel-information-page"
-        jcr:description="Plan a trip with a baby or young children: booking, seating, what to bring and the Joey Club. Demonstration content for a fictional airline."
+        jcr:description="A guide for flying with infants, children, or for children flying alone. Learn about baggage allowances, strollers, bassinets, and children's entertainment."
         jcr:primaryType="cq:PageContent"
         jcr:title="Flying with infants and children"
-        navTitle="Infants and children"
-        pageTitle="Flying with infants and children | Airline (demo)"
+        navTitle="Flying with infants and children"
+        pageTitle="Flying with infants and children | Qantas AU"
         sling:resourceType="airline/components/page">
         <root
             jcr:primaryType="nt:unstructured"
@@ -21,43 +21,96 @@
                     jcr:primaryType="nt:unstructured"
                     jcr:title="Flying with infants and children"
                     sling:resourceType="airline/components/hero"
-                    fileReference="/content/dam/airline/travel-information/infants-children/family-hero.jpg"
+                    fileReference="/content/dam/airline/travel-information/infants-children/hero-crew-girl-onboard.jpg"
                     id="hero"
-                    introduction="Travelling with little ones takes a bit of extra planning. Here is what to know before you book, at the airport and on board."
+                    introduction="We love having young flyers on board. Whether they're flying with you or travelling alone, here's all you need to know – from booking a flight to the onboard experience."
                     jumpLinksTitle="On this page">
                     <jumpLinks jcr:primaryType="nt:unstructured">
                         <item0
                             jcr:primaryType="nt:unstructured"
-                            anchor="booking-infants"
-                            label="Booking for infants (under 2 years)"/>
+                            anchor="bluey"
+                            label="Qantas and Bluey"/>
                         <item1
                             jcr:primaryType="nt:unstructured"
                             anchor="joey-club"
-                            label="Joey Club for young flyers"/>
+                            label="Joey Club"/>
+                        <item2
+                            jcr:primaryType="nt:unstructured"
+                            anchor="entertainment"
+                            label="Inflight entertainment for kids"/>
+                        <item3
+                            jcr:primaryType="nt:unstructured"
+                            anchor="childrens-meals"
+                            label="Infant and children’s meals"/>
+                        <item4
+                            jcr:primaryType="nt:unstructured"
+                            anchor="alone"
+                            label="Children travelling alone"/>
+                        <item5
+                            jcr:primaryType="nt:unstructured"
+                            anchor="support-children"
+                            label="Support for children with disability and additional needs"/>
+                        <item6
+                            jcr:primaryType="nt:unstructured"
+                            anchor="booking"
+                            label="Booking for infants and children"/>
+                        <item7
+                            jcr:primaryType="nt:unstructured"
+                            anchor="bassinets-car-seats"
+                            label="Bassinets and child car seats"/>
+                        <item8
+                            jcr:primaryType="nt:unstructured"
+                            anchor="baggage"
+                            label="Baggage"/>
+                        <item9
+                            jcr:primaryType="nt:unstructured"
+                            anchor="devices"
+                            label="Inflight comfort devices"/>
+                        <item10
+                            jcr:primaryType="nt:unstructured"
+                            anchor="boarding-security"
+                            label="Boarding and security"/>
                     </jumpLinks>
                 </hero>
                 <content
                     jcr:primaryType="nt:unstructured"
                     sling:resourceType="airline/components/container"
                     layout="responsiveGrid">
-                    <booking_infants
+                    <alert
                         jcr:primaryType="nt:unstructured"
-                        sling:resourceType="airline/components/travelquestions"
-                        expandFirst="{Boolean}false"
-                        heading="Booking for infants (under 2 years)"
-                        id="booking-infants"
-                        maxItems="{Long}20"
-                        rootPath="/content/dam/airline/travel-questions"
-                        source="tags"
-                        tagMatch="all"
-                        tags="[airline:travel/infants,airline:market/au]"/>
-                    <joey_club
+                        sling:resourceType="airline/components/text"
+                        text="&lt;p&gt;&lt;strong&gt;Inflatable cubes can now be used onboard.&lt;/strong&gt; They are the only comfort devices currently approved, so other devices, including hard shell bed boxes and leg hammocks will need to stay at home. See our comfort device &lt;a href=&quot;#devices&quot;&gt;guidelines&lt;/a&gt; before you fly.&lt;/p&gt;"
+                        textIsRich="true"
+                        cq:styleIds="[text-alert]"/>
+                    <bluey
                         jcr:primaryType="nt:unstructured"
-                        jcr:title="Joey Club for young flyers"
-                        jcr:description="&lt;p>Children aged 3 to 12 can join our free kids' club. Members get an activity pack on board, a digital colouring book and a badge for every new destination.&lt;/p>"
+                        jcr:title="Qantas and Bluey"
+                        jcr:description="&lt;p&gt;We&apos;ve partnered with &lt;em&gt;Bluey&lt;/em&gt;, the much-loved Australian show, to create some special moments for travelling families.&lt;/p&gt;&lt;p&gt;Check out the &lt;em&gt;Bluey&lt;/em&gt; planes and see what&apos;s in store for our littlest travellers.&lt;/p&gt;"
                         sling:resourceType="airline/components/teaser"
                         actionsEnabled="{Boolean}true"
                         altValueFromDAM="{Boolean}true"
+                        cq:styleIds="[teaser-image-right]"
+                        descriptionFromPage="{Boolean}false"
+                        fileReference="/content/dam/airline/travel-information/infants-children/bluey-bingo-plane.jpg"
+                        id="bluey"
+                        imageFromPageImage="{Boolean}false"
+                        textIsRich="true"
+                        titleFromPage="{Boolean}false">
+                        <actions jcr:primaryType="nt:unstructured">
+                            <item0
+                                jcr:primaryType="nt:unstructured"
+                                link="https://www.qantas.com/en-au/travel-information/flying-infants-children/bluey"
+                                text="Explore Qantas and Bluey"/>
+                        </actions>
+                    </bluey>
+                    <joey_club
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Joey Club"
+                        jcr:description="&lt;p&gt;&lt;strong&gt;Join our club designed just for kids.&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Meet our Joey Club family, aiming to make flying fun for our little travellers. Together with our inflight kids&apos; kits, Joey Club zones in select lounges and activities, they&apos;ll be ready to embrace the magic of travel.&lt;/p&gt;"
+                        sling:resourceType="airline/components/teaser"
+                        actionsEnabled="{Boolean}true"
+                        altValueFromDAM="{Boolean}true"
+                        cq:styleIds="[teaser-image-left]"
                         descriptionFromPage="{Boolean}false"
                         fileReference="/content/dam/airline/travel-information/infants-children/joey-club.jpg"
                         id="joey-club"
@@ -67,11 +120,265 @@
                         <actions jcr:primaryType="nt:unstructured">
                             <item0
                                 jcr:primaryType="nt:unstructured"
-                                link="https://club.airline.example/joey"
-                                linkTarget="_blank"
-                                text="Find out about the Joey Club (opens in a new tab)"/>
+                                link="https://www.qantas.com/en-au/travel-information/flying-infants-children/joey-club"
+                                text="Find out about the Joey Club"/>
                         </actions>
                     </joey_club>
+                    <entertainment
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Inflight entertainment for kids"
+                        jcr:description="&lt;p&gt;With dedicated kid&apos;s movies, TV and radio channels, games and audiobooks on select flights there’s plenty to keep the little ones entertained.&lt;/p&gt;"
+                        sling:resourceType="airline/components/teaser"
+                        actionsEnabled="{Boolean}true"
+                        altValueFromDAM="{Boolean}true"
+                        cq:styleIds="[teaser-image-right]"
+                        descriptionFromPage="{Boolean}false"
+                        fileReference="/content/dam/airline/travel-information/infants-children/child-watching-ife.jpg"
+                        id="entertainment"
+                        imageFromPageImage="{Boolean}false"
+                        textIsRich="true"
+                        titleFromPage="{Boolean}false">
+                        <actions jcr:primaryType="nt:unstructured">
+                            <item0
+                                jcr:primaryType="nt:unstructured"
+                                link="https://www.qantas.com/en-au/onboard/entertainment#kids-entertainment"
+                                text="Explore inflight entertainment"/>
+                        </actions>
+                    </entertainment>
+                    <meals
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Infant and children&apos;s meals"
+                        jcr:description="&lt;p&gt;You can request a baby or child meal after making your booking on selected flights. Please request their meal at least 24 hours before your flight.&lt;/p&gt;"
+                        sling:resourceType="airline/components/teaser"
+                        actionsEnabled="{Boolean}true"
+                        altValueFromDAM="{Boolean}true"
+                        cq:styleIds="[teaser-image-left]"
+                        descriptionFromPage="{Boolean}false"
+                        fileReference="/content/dam/airline/travel-information/infants-children/mother-child-dining.jpg"
+                        id="childrens-meals"
+                        imageFromPageImage="{Boolean}false"
+                        textIsRich="true"
+                        titleFromPage="{Boolean}false">
+                        <actions jcr:primaryType="nt:unstructured">
+                            <item0
+                                jcr:primaryType="nt:unstructured"
+                                link="https://www.qantas.com/en-au/onboard/inflight-dining/dietary-required-meals#options"
+                                text="More about meals for infants and children"/>
+                            <item1
+                                jcr:primaryType="nt:unstructured"
+                                link="https://www.qantas.com/en-au/manage-booking"
+                                text="Request an infant or child meal"/>
+                        </actions>
+                    </meals>
+                    <alone
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Children travelling alone"
+                        jcr:description="&lt;p&gt;We&apos;ll be there to look after young flyers travelling alone. Find out how to book, check in, and everything else you&apos;ll need to know about unaccompanied minors and children travelling alone. We&apos;ll make sure they arrive safely to meet their nominated pick-up person at their destination.&lt;/p&gt;"
+                        sling:resourceType="airline/components/teaser"
+                        actionsEnabled="{Boolean}true"
+                        altValueFromDAM="{Boolean}true"
+                        cq:styleIds="[teaser-image-right]"
+                        descriptionFromPage="{Boolean}false"
+                        fileReference="/content/dam/airline/travel-information/infants-children/crew-welcoming-child.jpg"
+                        id="alone"
+                        imageFromPageImage="{Boolean}false"
+                        textIsRich="true"
+                        titleFromPage="{Boolean}false">
+                        <actions jcr:primaryType="nt:unstructured">
+                            <item0
+                                jcr:primaryType="nt:unstructured"
+                                link="https://www.qantas.com/en-au/travel-information/flying-infants-children/unaccompanied"
+                                text="More about children travelling alone"/>
+                        </actions>
+                    </alone>
+                    <support
+                        jcr:primaryType="nt:unstructured"
+                        jcr:title="Support for children with disability and additional needs"
+                        jcr:description="&lt;p&gt;We&apos;re here to help make your child&apos;s journey easier and more comfortable. We support children travelling with disability and additional support needs, including:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;autistic children,&lt;/li&gt;&lt;li&gt;children who are blind or have low vision,&lt;/li&gt;&lt;li&gt;children who are deaf or have hearing loss,&lt;/li&gt;&lt;li&gt;children with reduced mobility, and&lt;/li&gt;&lt;li&gt;children with hidden disability.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;If your child may benefit from extra support, let us know before you travel by completing our &lt;a href=&quot;https://www.qantas.com/en-au/travel-information/specific-needs-assistance/accessibility-medical-inclusion-requests&quot;&gt;accessibility, medical and inclusion service request form&lt;/a&gt;.&lt;/p&gt;&lt;p&gt;Flying can involve new new environments and routines that may feel challenging for some children. For tips on preparing your child for air travel, including managing sensory needs and changes to routine, see &lt;a href=&quot;https://www.aspect.org.au/about-autism/information-sheets/individuals-and-families-info-sheets#:~:text=Preparing%20your%20Autistic%20child%20for%20air%20travel&quot;&gt;Aspect Australia&apos;s guide&lt;/a&gt; to travelling with autistic children.&lt;/p&gt;&lt;p&gt;We’ve also partnered with Hidden Disabilities Sunflower to help children who may need additional support during their journey. Learn more about the &lt;a href=&quot;https://www.qantas.com/en-au/travel-information/specific-needs-assistance/hidden-disability#sunflower&quot;&gt;Sunflower program and airport assistance&lt;/a&gt;.&lt;/p&gt;"
+                        sling:resourceType="airline/components/teaser"
+                        actionsEnabled="{Boolean}false"
+                        altValueFromDAM="{Boolean}true"
+                        cq:styleIds="[teaser-image-left]"
+                        descriptionFromPage="{Boolean}false"
+                        fileReference="/content/dam/airline/travel-information/infants-children/mother-child-terminal.jpg"
+                        id="support-children"
+                        imageFromPageImage="{Boolean}false"
+                        textIsRich="true"
+                        titleFromPage="{Boolean}false"
+                        titleType="h3"/>
+                    <booking
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="airline/components/container"
+                        id="booking"
+                        layout="simple">
+                        <intro
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="airline/components/text"
+                            text="&lt;h2&gt;Booking for infants and children&lt;/h2&gt;&lt;p&gt;When making a booking for children, ensure you choose the correct passenger types (child or infant) and add the child’s date of birth. This will ensure they receive a ticket where required and they’re charged the correct amount, as some taxes, fees and charges may not apply to children, even when the adult fare applies.&lt;/p&gt;"
+                            textIsRich="true"
+                            cq:styleIds="[text-intro]"/>
+                    </booking>
+                    <booking_infants
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="airline/components/container"
+                        cq:styleIds="[section-grey]"
+                        id="booking-infants"
+                        layout="simple">
+                        <intro
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="airline/components/text"
+                            text="&lt;h2&gt;Booking for infants (under 2 years)&lt;/h2&gt;&lt;p&gt;Learn how to book babies on a flight and whether they’ll need a seat, bassinet or to sit on your lap.&lt;/p&gt;"
+                            textIsRich="true"/>
+                        <infant_questions
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="airline/components/travelquestions"
+                            expandFirst="{Boolean}false"
+                            id="infant-questions"
+                            maxItems="{Long}20"
+                            rootPath="/content/dam/airline/travel-questions"
+                            source="tags"
+                            tagMatch="all"
+                            tags="[airline:travel/infants,airline:market/au]"/>
+                    </booking_infants>
+                    <children
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="airline/components/container"
+                        id="children"
+                        layout="simple">
+                        <intro
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="airline/components/text"
+                            text="&lt;h3&gt;Booking for children and young passengers (2-17 years)&lt;/h3&gt;&lt;h4&gt;Children 2 to 11 years inclusive&lt;/h4&gt;&lt;p&gt;If you’re flying with children two years and older, they’ll need their own seat and ticket to travel domestically or internationally.&lt;/p&gt;"
+                            textIsRich="true"/>
+                        <young_passengers
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="airline/components/text"
+                            text="&lt;h4&gt;Young passengers 12 to 17 years inclusive&lt;/h4&gt;&lt;p&gt;Between these ages, children are booked on an adult fare, and are considered a adult.&lt;/p&gt;&lt;p&gt;For bookings from the United Kingdom, young passengers between 12 to 15 years must be booked as a youth.&lt;/p&gt;&lt;p&gt;If your child is travelling alone, they maybe eligible for the following options:&lt;/p&gt;&lt;ol&gt;&lt;li&gt;If your child is 12 – 15 years old they can travel as an &apos;unaccompanied minor&apos; (supervision fee applies), or&lt;/li&gt;&lt;li&gt;be registered as a ‘young passenger’.&lt;/li&gt;&lt;/ol&gt;&lt;p&gt;&lt;a href=&quot;https://www.qantas.com/en-au/travel-information/flying-infants-children/unaccompanied&quot;&gt;Learn more about children travelling alone&lt;/a&gt;&lt;/p&gt;"
+                            textIsRich="true"
+                            cq:styleIds="[text-card]"/>
+                        <fares
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="airline/components/text"
+                            text="&lt;h3&gt;Child fares&lt;/h3&gt;&lt;h4&gt;Australian domestic fares&lt;/h4&gt;&lt;p&gt;Children and infants occupying a seat travel at 100% of the adult fare.&lt;/p&gt;&lt;h4&gt;International fares&lt;/h4&gt;&lt;p&gt;Children travel internationally for between 75% and 100% of the adult fare (plus taxes and surcharges) dependent on class of travel and destination. Check the applicable fare rules.&lt;/p&gt;"
+                            textIsRich="true"/>
+                    </children>
+                    <bassinets
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="airline/components/container"
+                        id="bassinets-car-seats"
+                        layout="simple">
+                        <intro
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="airline/components/text"
+                            text="&lt;h2&gt;Bassinets and child car seats&lt;/h2&gt;&lt;p&gt;Infants are usually booked without their own seat on a flight, so a bassinet can be a great way to give adults a helping hand on longer flights. Some child car seats and restraints can be used on board, but they need to be pre-approved. Here’s what you need to know.&lt;/p&gt;&lt;h3&gt;Bassinets for babies&lt;/h3&gt;&lt;p&gt;A limited number of bassinets are available on international flights and select domestic flights flown on Boeing 787, A380 and A330 aircraft, subject to availability.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;If you’re flying international Economy, a bassinet is available for a charge, which applies to the seat with bassinet only.&lt;/li&gt;&lt;li&gt;If you’re travelling internationally in First, Business or Premium Economy a bassinet seat is complimentary.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;When travelling domestically, you can request a Seat with Bassinet at the airport, or when travelling on international flights you can book one through &lt;a href=&quot;https://www.qantas.com/en-au/manage-booking&quot;&gt;Manage booking&lt;/a&gt;.&lt;/p&gt;&lt;h4&gt;Requirements for using a bassinet&lt;/h4&gt;&lt;p&gt;Infants must:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;be booked and travelling with an adult (parent or guardian),&lt;/li&gt;&lt;li&gt;be less than two years old,&lt;/li&gt;&lt;li&gt;weigh less than 11kg, and&lt;/li&gt;&lt;li&gt;be able to lie flat in the bassinet at the time of travel. Bassinets on Qantas aircraft are approximately 71cm long, 31cm wide, and 26cm deep.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;If your infant doesn’t comfortably fit within these specifications, they’ll need to travel in the lap of the accompanying adult. In this case, you may be moved from your bassinet seat to accommodate other customers travelling with infants.&lt;/p&gt;"
+                            textIsRich="true"/>
+                        <car_seats
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="airline/components/text"
+                            text="&lt;h4&gt;Child car seats and restraint systems&lt;/h4&gt;&lt;p&gt;If you’d like to use a child car seat or restraint system on board, you’ll need to pay the child fare for a seat, and your child seat or restraint must meet specific safety standards. Booster seats are not permitted, and use of top tether or rear facing may be limited.&lt;/p&gt;&lt;p&gt;Please review the standards for car seats or restraints, and make sure you show airport staff your items when you arrive for final approval. Cabin Crew will inspect the car seat when boarding before use.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.qantas.com/en-au/travel-information/flying-infants-children/restraints&quot;&gt;More about child car seat and restraint systems&lt;/a&gt;&lt;/p&gt;"
+                            textIsRich="true"
+                            cq:styleIds="[text-card]"/>
+                    </bassinets>
+                    <baggage
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="airline/components/container"
+                        id="baggage"
+                        layout="simple">
+                        <intro
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="airline/components/text"
+                            text="&lt;h2&gt;Baggage&lt;/h2&gt;&lt;p&gt;We know there’s a lot to carry when you’re travelling with children. That’s why you can bring additional infant or child items when travelling with us.&lt;/p&gt;&lt;h3&gt;Infant and child allowances&lt;/h3&gt;&lt;h4&gt;For infants (under 2 years)&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;Carry-on baggage: infants don’t have their own carry-on allowance, but the accompanying adult can bring a small bag with nappies or essentials in addition to their carry-on allowance.&lt;/li&gt;&lt;li&gt;Checked baggage: the checked allowance depends on your destination and the cabin you’re flying in, but will always include three additional infant items such as a collapsible stroller or cot.&lt;/li&gt;&lt;/ul&gt;"
+                            textIsRich="true"/>
+                        <children_allowance
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="airline/components/text"
+                            text="&lt;h4&gt;For children (2 to 11 years)&lt;/h4&gt;&lt;ul&gt;&lt;li&gt;Children have the same carry-on and checked baggage allowances as adults.&lt;/li&gt;&lt;li&gt;You can also bring up to two additional child items, such as a car seat or stroller.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Note: if you want to bring these items please review our carry-on and checked baggage allowances for dimensions, weight and exceptions before you fly.&lt;/p&gt;&lt;p&gt;To confirm your baggage allowance, visit &lt;a href=&quot;https://www.qantas.com/en-au/manage-booking&quot;&gt;Manage booking&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.qantas.com/en-au/baggage/carry-on#infants-children&quot;&gt;Review carry-on allowances for infants and children&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.qantas.com/en-au/baggage/checked#infants-children&quot;&gt;Review checked allowances for infants and children&lt;/a&gt;&lt;/p&gt;"
+                            textIsRich="true"
+                            cq:styleIds="[text-card]"/>
+                        <strollers
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="airline/components/text"
+                            text="&lt;h4&gt;Strollers&lt;/h4&gt;&lt;p&gt;&lt;strong&gt;Checked baggage&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;A stroller counts as a complimentary infant or child item, in addition to your checked baggage allowance. While you may be able to bring it as carry-on, checking it in can often be easier.&lt;/p&gt;&lt;p&gt;All major Australian airports have strollers available for use once you&apos;ve checked in your own stroller.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;Carry-on baggage&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Strollers are counted as a piece of the accompanying adult’s carry-on baggage allowance. If you’re taking your stroller as carry-on, make sure its collapsed dimensions and weight meet the carry-on allowance. If it doesn’t, you’ll have to check it in. The collapsed size requirements for strollers are:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Weight: up to 7kg (15lb)&lt;/li&gt;&lt;li&gt;Total size: 56cm (22in) height + 36cm (14in) width + 23cm (9in) depth&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Note: strollers aren&apos;t permitted to be gate checked or brought as carry-on when travelling on Dash 8 or Embraer E190 aircraft and will need to be checked in on these flights.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.qantas.com/en-au/baggage/carry-on#infants-children&quot;&gt;More about carry-on baggage allowances&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.qantas.com/en-au/baggage/checked#infants-children&quot;&gt;More about checked baggage allowances&lt;/a&gt;&lt;/p&gt;"
+                            textIsRich="true"
+                            cq:styleIds="[text-card]"/>
+                    </baggage>
+                    <devices
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="airline/components/container"
+                        id="devices"
+                        layout="simple">
+                        <intro
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="airline/components/text"
+                            text="&lt;h2&gt;Inflight comfort devices&lt;/h2&gt;&lt;p&gt;You can now bring onboard inflatable cubes as one item within you or your child’s carry-on baggage allowance. Inflatable cubes sit securely on the floor space in front of the seat. Once onboard, our cabin crew will check that your device is suitable for use. If it doesn’t meet the guidelines below, you won’t be able to use it during the flight.&lt;/p&gt;&lt;h3&gt;Inflatable cube guidelines&lt;/h3&gt;&lt;p&gt;Before you fly, make sure your inflatable cube:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Inflates manually – cubes with a battery powered pump or self-inflating battery-operated cubes can’t be used onboard.&lt;/li&gt;&lt;li&gt;Has a quick-release valve or another way to release air quickly if needed. The valve should face the aisle.&lt;/li&gt;&lt;li&gt;Still lets you fasten, unfasten and tighten your child&apos;s seatbelt as normal.&lt;/li&gt;&lt;li&gt;Fits within the space in front of your seat, so it doesn’t affect other passengers’ comfort, entertainment screens, tray table use, seat recline, legroom or access to their seat.&lt;/li&gt;&lt;li&gt;Won’t risk damage to seats, tray tables, entertainment screens, air vents, seat mechanisms, or emergency equipment.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Once onboard, you’ll need to set up and pack away your cube when required. You’ll also need to pack it away whenever the seatbelt sign is on, which may mean deflating it first.&lt;/p&gt;&lt;h3&gt;Where you can use an inflatable cube&lt;/h3&gt;&lt;p&gt;Inflatable cubes can only be used in Economy and Premium Economy cabins, and can’t be used in emergency exits or bulkhead rows. If your travelling group or family occupies a whole block of seats (for example, seats D, E, F and G in Economy on our A330), you can bring up to two inflatable cubes.&lt;/p&gt;&lt;p&gt;If the specified seating isn’t available on your flight, the device can’t be used. The seats you can use a cube in depend on your aircraft:&lt;/p&gt;"
+                            textIsRich="true"/>
+                        <seat_locations
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="airline/components/container"
+                            cq:styleIds="[section-two-col]"
+                            layout="simple">
+                            <widebody
+                                jcr:primaryType="nt:unstructured"
+                                jcr:title="Widebody aircraft seat locations"
+                                jcr:description="&lt;p&gt;&lt;strong&gt;Airbus A380, A330 or Boeing 787&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Can be used in window or middle seats.&lt;/p&gt;"
+                                sling:resourceType="airline/components/teaser"
+                                actionsEnabled="{Boolean}false"
+                                altValueFromDAM="{Boolean}true"
+                                cq:styleIds="[teaser-stacked]"
+                                descriptionFromPage="{Boolean}false"
+                                fileReference="/content/dam/airline/travel-information/infants-children/cube-seating-widebody.jpg"
+                                id="widebody-seats"
+                                imageFromPageImage="{Boolean}false"
+                                textIsRich="true"
+                                titleFromPage="{Boolean}false"
+                                titleType="h4"/>
+                            <narrowbody
+                                jcr:primaryType="nt:unstructured"
+                                jcr:title="Narrowbody aircraft seat locations"
+                                jcr:description="&lt;p&gt;&lt;strong&gt;Airbus A321XLR, A220, A319, A320, Boeing 737, Dash 8, E190 and Fokker 100&lt;/strong&gt;&lt;/p&gt;&lt;p&gt;Can be used in window seats.&lt;/p&gt;"
+                                sling:resourceType="airline/components/teaser"
+                                actionsEnabled="{Boolean}false"
+                                altValueFromDAM="{Boolean}true"
+                                cq:styleIds="[teaser-stacked]"
+                                descriptionFromPage="{Boolean}false"
+                                fileReference="/content/dam/airline/travel-information/infants-children/cube-seating-narrowbody.jpg"
+                                id="narrowbody-seats"
+                                imageFromPageImage="{Boolean}false"
+                                textIsRich="true"
+                                titleFromPage="{Boolean}false"
+                                titleType="h4"/>
+                        </seat_locations>
+                    </devices>
+                    <boarding
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="airline/components/container"
+                        id="boarding-security"
+                        layout="simple">
+                        <intro
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="airline/components/text"
+                            text="&lt;h2&gt;Boarding and security&lt;/h2&gt;&lt;p&gt;Some extra things to know when travelling with infants and children.&lt;/p&gt;"
+                            textIsRich="true"/>
+                        <airport
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="airline/components/text"
+                            text="&lt;h3&gt;At the airport&lt;/h3&gt;&lt;p&gt;&lt;strong&gt;Priority boarding&lt;/strong&gt;: if you’re travelling internationally with an infant, you’ll be invited to board early. This gives you and your family extra time to settle in before take-off.&lt;/p&gt;&lt;p&gt;&lt;strong&gt;SmartGate passport control&lt;/strong&gt;: children aged seven years and older can now use the automated border control systems called SmartGates at some Australian international airports – if they’re traveling with an adult, are over 1.1m tall and have a valid ePassport.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.abf.gov.au/entering-and-leaving-australia/smartgate&quot;&gt;See SmartGate criteria for children&lt;/a&gt;&lt;/p&gt;"
+                            textIsRich="true"
+                            cq:styleIds="[text-card,text-icon-airport]"/>
+                        <liquids
+                            jcr:primaryType="nt:unstructured"
+                            sling:resourceType="airline/components/text"
+                            text="&lt;h3&gt;Bringing liquids, aerosols, gels and powders on board&lt;/h3&gt;&lt;p&gt;The amount of liquids, aerosols, gels and powders you can travel with depends on whether you’re carrying them onboard or checking them in and whether you’re travelling from an Australian domestic or international airport. When travelling with infants and children:&lt;/p&gt;&lt;ul&gt;&lt;li&gt;There’s no limit to the amount of organic powder you can bring, such as powdered baby formula.&lt;/li&gt;&lt;li&gt;There are limits to the quantity of liquids, aerosols or gel products you can carry on board for your infant or toddler when travelling internationally or domestically from an international airport.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;Airport security screening officers will ensure limits are adhered to.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.abf.gov.au/entering-and-leaving-australia/can-you-bring-it-in/bring-on-a-plane&quot;&gt;Learn about what you can take on board&lt;/a&gt;&lt;/p&gt;"
+                            textIsRich="true"
+                            cq:styleIds="[text-card,text-icon-baby-bottle]"/>
+                    </boarding>
+                    <related
+                        jcr:primaryType="nt:unstructured"
+                        sling:resourceType="airline/components/text"
+                        text="&lt;h2&gt;Related information&lt;/h2&gt;&lt;ul&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/manage-booking&quot;&gt;Manage booking&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/travel-information/flying-infants-children/joey-club&quot;&gt;Joey Club&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/travel-information/flying-infants-children/unaccompanied&quot;&gt;Children flying alone&lt;/a&gt;&lt;/li&gt;&lt;li&gt;&lt;a href=&quot;https://www.qantas.com/en-au/help/contact-us&quot;&gt;Contact us&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;"
+                        textIsRich="true"
+                        cq:styleIds="[text-related]"
+                        id="related-information"/>
                 </content>
             </container>
         </root>

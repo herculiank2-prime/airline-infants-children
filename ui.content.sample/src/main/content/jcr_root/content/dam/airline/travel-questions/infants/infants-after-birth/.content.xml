@@ -5,7 +5,7 @@
     <jcr:content
         cq:name="infants-after-birth"
         cq:parentPath="/content/dam/airline/travel-questions/infants"
-        jcr:description="Placeholder copy for a fictional airline. Not legal advice."
+        jcr:description="Copy from qantas.com, used with permission (ADR-029)."
         jcr:primaryType="dam:AssetContent"
         jcr:title="How soon can infants travel after birth?"
         contentFragment="{Boolean}true">
@@ -16,7 +16,7 @@
             <master
                 jcr:mixinTypes="[cq:Taggable]"
                 jcr:primaryType="nt:unstructured"
-                answer="&lt;p&gt;Healthy babies can usually fly from 7 days old. If your baby was born early or needs medical care, ask your doctor first and contact us for a medical clearance.&lt;/p&gt;"
+                answer="&lt;ul&gt;&lt;li&gt;Up to 48 hours after birth – too young to travel.&lt;/li&gt;&lt;li&gt;Three to seven days after birth – travel can be requested by completing our medical clearance form.&lt;/li&gt;&lt;li&gt;Eight days or more – infants older born prematurely or with complications should complete our medical clearance form. Healthy infants may travel without medical clearance.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;If you require medical clearance for your infant, download the form and once it’s been completed by your treating doctor, you can request clearance to travel via our online medical request form. Ensure you attach the completed Medical Clearance Form and allow at least 48 hours to receive clearance to travel.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.qantas.com/adobe/assets/urn:aaid:aem:4542b4d2-06e5-4eb3-a689-32e96bdbf28c/original/as/qantas-medical-clearance-guidelines.pdf&quot;&gt;Download the Medical Clearance Form and Guidelines (PDF)&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.qantas.com/en-au/travel-information/specific-needs-assistance/accessibility-medical-inclusion-requests&quot;&gt;Submit your request for clearance to travel&lt;/a&gt;&lt;/p&gt;"
                 answer_x0040_ContentType="text/html"
                 cq:tags="[airline:travel/infants,airline:market/au,airline:market/nz]"
                 question="How soon can infants travel after birth?"

@@ -9,7 +9,7 @@ export const QUESTIONS = [
     "Booking a seat for your infant",
     "Travelling with more than one infant per adult",
     "How soon can infants travel after birth?",
-    "My infant isn't born yet, how do I book?",
+    "My infant isn\u2019t born yet, how do I book?",
 ];
 
 export type DataLayerEvent = { event: string; eventInfo: Record<string, unknown> };

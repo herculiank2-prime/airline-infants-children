@@ -2,26 +2,77 @@
 //== XF footer style (policy element "footer")
 
 footer.experiencefragment {
-    margin-top: 3rem;
+    margin-top: $section-spacing;
     background: $color-surface;
-    border-top: 1px solid $color-border;
+
+    @media (min-width: $breakpoint-desktop) {
+        margin-top: $section-spacing-desktop;
+    }
 
     .cmp-container {
         max-width: $content-max-width;
         margin: 0 auto;
-        padding: 1.5rem 1rem;
+        padding: 2.5rem $page-gutter 3rem;
+
+        @media (min-width: $breakpoint-desktop) {
+            padding: 3rem $page-gutter-desktop 4rem;
+        }
     }
 
     .cmp-text {
-        color: $color-muted;
-        font-size: .875rem;
+        color: $color-foreground;
+
+        p, li {
+            font-size: 1rem;
+        }
 
         ul {
             display: flex;
             flex-wrap: wrap;
-            gap: 1rem;
+            gap: .5rem 2rem;
+            margin: 0 0 1.5rem;
             padding: 0;
             list-style: none;
         }
+
+        a {
+            color: $color-foreground;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
+    }
+
+    .text:first-child .cmp-text {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid $color-border;
+        margin-bottom: 1.5rem;
+
+        p { margin: 0; }
+    }
+
+    .site-logo {
+        display: block;
+        width: 203px;
+        height: 40px;
+        overflow: hidden;
+        text-indent: 100%;
+        white-space: nowrap;
+        background: url("#{$clientlib-images}/qantas-logo.svg") left center / contain no-repeat;
+    }
+
+    .back-to-top::after {
+        @include chevron($color-foreground);
+        transform: rotate(-45deg);
+    }
+
+    .text:last-child p:last-child {
+        color: $color-muted;
+        font-size: .875rem;
     }
 }

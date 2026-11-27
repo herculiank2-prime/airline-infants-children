@@ -1,64 +1,93 @@
+// Live "image-and-text" block: half-width image with an 8/8/8/64 px radius beside a light H2 and red text links.
 .cmp-teaser {
     display: grid;
-    gap: 1rem;
-    margin: 2rem 0;
-    padding: 1.5rem;
-    background: $color-surface;
-    border-radius: $radius;
+    gap: 2rem;
+    align-items: center;
+    margin: 0 0 $section-spacing;
 
     @media (min-width: $breakpoint-tablet) {
-        grid-template-columns: 2fr 1fr;
-        align-items: center;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+    }
+
+    @media (min-width: $breakpoint-desktop) {
+        margin-bottom: $section-spacing-desktop;
     }
 }
 
-.cmp-teaser__image {
-    order: -1;
+.cmp-teaser__image img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 3 / 2;
+    object-fit: cover;
+    border-radius: $radius $radius $radius $radius-feature;
+}
 
+.cmp-teaser--image-right .cmp-teaser__image {
     @media (min-width: $breakpoint-tablet) {
-        order: 0;
+        order: 2;
     }
+}
 
-    img {
-        display: block;
-        width: 100%;
-        height: auto;
-        border-radius: $radius;
-    }
+.cmp-teaser--stacked .cmp-teaser {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: start;
+    margin-bottom: 0;
 }
 
 .cmp-teaser__title {
-    margin: 0 0 .5rem;
-    font-size: 1.5rem;
-    line-height: 1.25;
+    margin: 0 0 1.5rem;
+}
+
+h3.cmp-teaser__title {
+    font-size: 1.75rem;
+
+    @media (min-width: $breakpoint-desktop) {
+        font-size: 2.5rem;
+    }
 }
 
 .cmp-teaser__description {
-    color: $color-muted;
-
-    p {
+    p, li {
         margin: 0 0 1rem;
+    }
+
+    ul {
+        margin: 0 0 1rem;
+        padding-left: 1.25rem;
+    }
+
+    a {
+        color: $color-foreground;
     }
 }
 
 .cmp-teaser__action-container {
     display: flex;
-    flex-wrap: wrap;
-    gap: .75rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: .25rem;
+    margin-top: .5rem;
 }
 
 .cmp-teaser__action-link {
     display: inline-block;
-    padding: .75rem 1.25rem;
+    padding: .5rem 0;
     min-height: 44px;
     box-sizing: border-box;
-    background: $color-brand;
-    color: #fff;
+    color: $color-brand;
+    font-size: 1.125rem;
     font-weight: 700;
     text-decoration: none;
-    border-radius: $radius;
+
+    &::after {
+        @include chevron;
+    }
 
     &:hover {
-        background: $color-brand-dark;
+        color: $color-brand-dark;
+        text-decoration: underline;
     }
 }

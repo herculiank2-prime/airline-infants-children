@@ -16,7 +16,7 @@ test.describe("Adobe Client Data Layer events (DL-01, ADR-017)", () => {
             expect(eventInfo.componentId).toBe(itemId);
             expect(eventInfo.path).toBe(`component.${itemId}`);
             expect(eventInfo.title).toBe(QUESTIONS[2]);
-            expect(eventInfo.parentId).toBe("booking-infants");
+            expect(eventInfo.parentId).toBe("infant-questions");
             expect(eventInfo.trigger).toBe("click");
         }
     });
@@ -30,21 +30,20 @@ test.describe("Adobe Client Data Layer events (DL-01, ADR-017)", () => {
         expect(state).toMatchObject({ "@type": "airline/components/travelquestions/item", "dc:title": QUESTIONS[0] });
     });
 
-    test("clicking the Joey Club link pushes airline:teaser:click", async ({ page, context }) => {
+    test("clicking the Joey Club link pushes airline:teaser:click", async ({ page }) => {
+        const joeyClubUrl = "https://www.qantas.com/en-au/travel-information/flying-infants-children/joey-club";
         const link = page.locator("#joey-club a[href]").first();
-        await expect(link).toHaveAttribute("target", "_blank");
-        await expect(link).toHaveAttribute("rel", /noopener/);
-        await context.route("https://club.airline.example/**", (route) => route.fulfill({ body: "ok" }));
-        const popup = page.waitForEvent("popup");
+        await expect(link).toHaveAttribute("href", joeyClubUrl);
+        // The teaser listener is delegated from document; window sees the click after it and keeps the page.
+        await page.evaluate(() => window.addEventListener("click", (e) => e.preventDefault()));
         await link.click();
-        await (await popup).close();
         const events = await airlineEvents(page);
         const click = events.find((e) => e.event === "airline:teaser:click");
         expect(click?.eventInfo).toMatchObject({
             componentId: "joey-club",
             path: "component.joey-club",
-            title: "Joey Club for young flyers",
-            linkUrl: "https://club.airline.example/joey",
+            title: "Joey Club",
+            linkUrl: joeyClubUrl,
         });
     });
 });

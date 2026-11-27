@@ -1,2 +1,142 @@
-.cmp-text {}
-.cmp-text__paragraph {}
+.cmp-text {
+    ul, ol {
+        padding-left: 1.5rem;
+    }
+
+    li {
+        margin-bottom: .5rem;
+    }
+
+    a {
+        color: $color-foreground;
+    }
+
+    p > a:only-child:not(:has(img)):not(.site-logo) {
+        color: $color-brand;
+        font-weight: 700;
+        text-decoration: none;
+
+        &::after {
+            @include chevron;
+        }
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+// Live "in-page-alert": information banner under the hero.
+.cmp-text--alert .cmp-text {
+    position: relative;
+    margin: 0 0 $section-spacing;
+    padding: 1.25rem 1.5rem 1.25rem 4rem;
+    background: $color-info-bg;
+    border: 1px solid $color-info-border;
+    border-radius: $radius;
+
+    &::before {
+        content: "i";
+        position: absolute;
+        top: 1.25rem;
+        left: 1.5rem;
+        width: 1.5rem;
+        height: 1.5rem;
+        border-radius: 50%;
+        background: $color-info-border;
+        color: #fff;
+        font-weight: 700;
+        line-height: 1.5rem;
+        text-align: center;
+    }
+
+    p {
+        margin: 0;
+    }
+
+    @media (min-width: $breakpoint-desktop) {
+        margin-bottom: $section-spacing-desktop;
+    }
+}
+
+.cmp-text--intro .cmp-text > p:first-of-type,
+.cmp-section > .cmp-container > .text:first-child .cmp-text > h2 + p {
+    font-size: 1.25rem;
+    font-weight: 300;
+
+    @media (min-width: $breakpoint-desktop) {
+        font-size: 1.5rem;
+    }
+}
+
+// Live "icon-and-text": bordered card inside a section.
+.cmp-text--card .cmp-text {
+    margin: 2rem 0;
+    padding: 2rem;
+    border: 1px solid $color-border;
+    border-radius: $radius $radius $radius 2rem;
+    background: $color-background;
+
+    > :last-child {
+        margin-bottom: 0;
+    }
+
+}
+
+// Decorative card icons come from CSS: the rich-text sanitizer strips loading="lazy" from inline images.
+.cmp-text--icon-airport .cmp-text,
+.cmp-text--icon-baby-bottle .cmp-text {
+    &::before {
+        content: "";
+        display: block;
+        width: 56px;
+        height: 56px;
+        margin-bottom: 1rem;
+        background: center / contain no-repeat;
+    }
+}
+
+.cmp-text--icon-airport .cmp-text::before {
+    background-image: url("#{$clientlib-images}/icon-airport.svg");
+}
+
+.cmp-text--icon-baby-bottle .cmp-text::before {
+    background-image: url("#{$clientlib-images}/icon-baby-bottle.svg");
+}
+
+// Live "link-list": related information.
+.cmp-text--related .cmp-text {
+    margin-top: $section-spacing;
+
+    ul {
+        display: grid;
+        gap: 0 3rem;
+        padding: 0;
+        list-style: none;
+
+        @media (min-width: $breakpoint-tablet) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    li {
+        margin: 0;
+        border-bottom: 1px solid $color-border;
+    }
+
+    a {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.25rem 0;
+        text-decoration: none;
+
+        &::after {
+            @include chevron;
+        }
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}

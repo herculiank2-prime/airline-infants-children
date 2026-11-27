@@ -34,13 +34,40 @@
                     <jcr:content jcr:primaryType="nt:unstructured"/>
                 </policy_main>
                 <policy_content
-                    jcr:description="Travel information content area: Joey Club teaser and travel questions only."
+                    jcr:description="Travel information content area: sections, rich text, image-and-text teasers and travel questions."
                     jcr:primaryType="nt:unstructured"
                     jcr:title="Travel Information Content"
                     sling:resourceType="wcm/core/components/policy/policy"
-                    components="[/apps/airline/components/teaser,/apps/airline/components/travelquestions]">
+                    components="[/apps/airline/components/teaser,/apps/airline/components/travelquestions,/apps/airline/components/text,/apps/airline/components/container]">
                     <jcr:content jcr:primaryType="nt:unstructured"/>
                 </policy_content>
+                <policy_section
+                    jcr:description="Page section: groups a heading, text, teasers and travel questions (ADR-029)."
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="Content Section"
+                    sling:resourceType="wcm/core/components/policy/policy"
+                    components="[/apps/airline/components/teaser,/apps/airline/components/travelquestions,/apps/airline/components/text,/apps/airline/components/container]"
+                    layout="simple">
+                    <jcr:content jcr:primaryType="nt:unstructured"/>
+                    <cq:styleGroups jcr:primaryType="nt:unstructured">
+                        <item0
+                            cq:styleGroupLabel="Section"
+                            jcr:primaryType="nt:unstructured">
+                            <cq:styles jcr:primaryType="nt:unstructured">
+                                <item0
+                                    cq:styleClasses="cmp-section--grey"
+                                    cq:styleId="section-grey"
+                                    cq:styleLabel="Grey offset section"
+                                    jcr:primaryType="nt:unstructured"/>
+                                <item1
+                                    cq:styleClasses="cmp-section--two-col"
+                                    cq:styleId="section-two-col"
+                                    cq:styleLabel="Two columns"
+                                    jcr:primaryType="nt:unstructured"/>
+                            </cq:styles>
+                        </item0>
+                    </cq:styleGroups>
+                </policy_section>
                 <policy_xf_root
                     jcr:description="Experience fragment root: site name, navigation and footer text."
                     jcr:primaryType="nt:unstructured"
@@ -111,7 +138,75 @@
                         <lists jcr:primaryType="nt:unstructured" features="*"/>
                     </rtePlugins>
                 </policy_footer_text>
+                <policy_content_text
+                    jcr:description="Section copy: headings H2-H4, lists, links and the alert, card and related-links styles."
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="Content Text"
+                    sling:resourceType="wcm/core/components/policy/policy">
+                    <jcr:content jcr:primaryType="nt:unstructured"/>
+                    <cq:styleGroups jcr:primaryType="nt:unstructured">
+                        <item0
+                            cq:styleGroupLabel="Presentation"
+                            jcr:primaryType="nt:unstructured">
+                            <cq:styles jcr:primaryType="nt:unstructured">
+                                <item0
+                                    cq:styleClasses="cmp-text--alert"
+                                    cq:styleId="text-alert"
+                                    cq:styleLabel="Information alert"
+                                    jcr:primaryType="nt:unstructured"/>
+                                <item1
+                                    cq:styleClasses="cmp-text--card"
+                                    cq:styleId="text-card"
+                                    cq:styleLabel="Card"
+                                    jcr:primaryType="nt:unstructured"/>
+                                <item2
+                                    cq:styleClasses="cmp-text--related"
+                                    cq:styleId="text-related"
+                                    cq:styleLabel="Related links"
+                                    jcr:primaryType="nt:unstructured"/>
+                                <item3
+                                    cq:styleClasses="cmp-text--intro"
+                                    cq:styleId="text-intro"
+                                    cq:styleLabel="Section introduction"
+                                    jcr:primaryType="nt:unstructured"/>
+                            </cq:styles>
+                        </item0>
+                        <item1
+                            cq:styleGroupLabel="Card icon"
+                            jcr:primaryType="nt:unstructured">
+                            <cq:styles jcr:primaryType="nt:unstructured">
+                                <item0
+                                    cq:styleClasses="cmp-text--icon-airport"
+                                    cq:styleId="text-icon-airport"
+                                    cq:styleLabel="Airport"
+                                    jcr:primaryType="nt:unstructured"/>
+                                <item1
+                                    cq:styleClasses="cmp-text--icon-baby-bottle"
+                                    cq:styleId="text-icon-baby-bottle"
+                                    cq:styleLabel="Baby bottle"
+                                    jcr:primaryType="nt:unstructured"/>
+                            </cq:styles>
+                        </item1>
+                    </cq:styleGroups>
+                    <rtePlugins jcr:primaryType="nt:unstructured">
+                        <format jcr:primaryType="nt:unstructured" features="bold,italic"/>
+                        <links jcr:primaryType="nt:unstructured" features="modifylink,unlink"/>
+                        <lists jcr:primaryType="nt:unstructured" features="*"/>
+                        <paraformat jcr:primaryType="nt:unstructured" features="*"/>
+                    </rtePlugins>
+                </policy_content_text>
             </text>
+            <breadcrumb jcr:primaryType="nt:unstructured">
+                <policy_default
+                    jcr:primaryType="nt:unstructured"
+                    jcr:title="Breadcrumb"
+                    sling:resourceType="wcm/core/components/policy/policy"
+                    hideCurrent="{Boolean}false"
+                    showHidden="{Boolean}false"
+                    startLevel="{Long}3">
+                    <jcr:content jcr:primaryType="nt:unstructured"/>
+                </policy_default>
+            </breadcrumb>
             <teaser jcr:primaryType="nt:unstructured">
                 <policy_joeyclub
                     jcr:description="Promotional teaser: H2 title fixed by policy, no pretitle, one or more CTAs (TS-01)."
@@ -123,11 +218,34 @@
                     imageDelegate="airline/components/image"
                     imageLinkHidden="{Boolean}true"
                     pretitleHidden="{Boolean}true"
-                    showTitleType="{Boolean}false"
+                    showTitleType="{Boolean}true"
                     titleHidden="{Boolean}false"
                     titleLinkHidden="{Boolean}true"
                     titleType="h2">
                     <jcr:content jcr:primaryType="nt:unstructured"/>
+                    <cq:styleGroups jcr:primaryType="nt:unstructured">
+                        <item0
+                            cq:styleGroupLabel="Image position"
+                            jcr:primaryType="nt:unstructured">
+                            <cq:styles jcr:primaryType="nt:unstructured">
+                                <item0
+                                    cq:styleClasses="cmp-teaser--image-left"
+                                    cq:styleId="teaser-image-left"
+                                    cq:styleLabel="Image left"
+                                    jcr:primaryType="nt:unstructured"/>
+                                <item1
+                                    cq:styleClasses="cmp-teaser--image-right"
+                                    cq:styleId="teaser-image-right"
+                                    cq:styleLabel="Image right"
+                                    jcr:primaryType="nt:unstructured"/>
+                                <item2
+                                    cq:styleClasses="cmp-teaser--stacked"
+                                    cq:styleId="teaser-stacked"
+                                    cq:styleLabel="Image above text"
+                                    jcr:primaryType="nt:unstructured"/>
+                            </cq:styles>
+                        </item0>
+                    </cq:styleGroups>
                 </policy_joeyclub>
             </teaser>
             <travelquestions jcr:primaryType="nt:unstructured">

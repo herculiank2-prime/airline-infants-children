@@ -5,7 +5,7 @@
     <jcr:content
         cq:name="more-than-one-infant"
         cq:parentPath="/content/dam/airline/travel-questions/infants"
-        jcr:description="Placeholder copy for a fictional airline. Not legal advice."
+        jcr:description="Copy from qantas.com, used with permission (ADR-029)."
         jcr:primaryType="dam:AssetContent"
         jcr:title="Travelling with more than one infant per adult"
         contentFragment="{Boolean}true">
@@ -16,7 +16,7 @@
             <master
                 jcr:mixinTypes="[cq:Taggable]"
                 jcr:primaryType="nt:unstructured"
-                answer="&lt;p&gt;An adult can hold only one infant on their lap. If you are travelling with two infants, book a seat for the second infant and bring an approved child restraint.&lt;/p&gt;&lt;p&gt;Contact us before you book so we can seat you together.&lt;/p&gt;"
+                answer="&lt;p&gt;When booking online one infant can be booked per adult.&lt;/p&gt;&lt;p&gt;If more than one infant is travelling with the same adult, each additional infant must occupy a seat and be restrained in an approved &lt;a href=&quot;https://www.qantas.com/en-au/travel-information/flying-infants-children#bassinets-car-seats&quot;&gt;child car seat or restraint&lt;/a&gt;. If this applies to you, please contact us to arrange your booking.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.qantas.com/en-au/help/contact-us&quot;&gt;Contact us to make a booking&lt;/a&gt;&lt;/p&gt;"
                 answer_x0040_ContentType="text/html"
                 cq:tags="[airline:travel/infants,airline:market/au,airline:market/nz]"
                 question="Travelling with more than one infant per adult"

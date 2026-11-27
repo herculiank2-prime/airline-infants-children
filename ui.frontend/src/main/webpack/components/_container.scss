@@ -1,1 +1,45 @@
-.cmp-container {}
+// Page sections (container policy "Content Section").
+.container.cmp-section--grey,
+.container.cmp-section--plain {
+    display: block;
+}
+
+// Sections are the containers authored with an anchor id.
+main .aem-Grid > .container:has(> .cmp-container[id]):not(.cmp-section--two-col) {
+    margin-bottom: $section-spacing;
+
+    @media (min-width: $breakpoint-desktop) {
+        margin-bottom: $section-spacing-desktop;
+    }
+}
+
+// Live "offset-section background-grey": full-bleed grey band.
+// Padding percentages resolve against the parent width, so the content box keeps
+// the parent's width while the background spans the viewport. The width selector
+// has to outrank the layout grid's (0,4,0) column width rule.
+.aem-Grid.aem-Grid > .aem-GridColumn.cmp-section--grey.cmp-section--grey,
+.cmp-section--grey {
+    width: 100vw;
+}
+
+.cmp-section--grey {
+    box-sizing: border-box;
+    margin-left: calc(50% - 50vw);
+    padding: 3rem calc(50vw - 50%);
+    background: $color-surface;
+
+    @media (min-width: $breakpoint-desktop) {
+        padding-top: 5rem;
+        padding-bottom: 5rem;
+    }
+}
+
+.cmp-section--two-col > .cmp-container {
+    display: grid;
+    gap: 2.5rem;
+    margin-top: 2rem;
+
+    @media (min-width: $breakpoint-tablet) {
+        grid-template-columns: 1fr 1fr;
+    }
+}

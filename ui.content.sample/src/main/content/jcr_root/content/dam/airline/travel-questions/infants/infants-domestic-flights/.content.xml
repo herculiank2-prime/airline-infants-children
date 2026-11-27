@@ -5,7 +5,7 @@
     <jcr:content
         cq:name="infants-domestic-flights"
         cq:parentPath="/content/dam/airline/travel-questions/infants"
-        jcr:description="Placeholder copy for a fictional airline. Not legal advice."
+        jcr:description="Copy from qantas.com, used with permission (ADR-029)."
         jcr:primaryType="dam:AssetContent"
         jcr:title="Infants on domestic flights"
         contentFragment="{Boolean}true">
@@ -16,7 +16,7 @@
             <master
                 jcr:mixinTypes="[cq:Taggable]"
                 jcr:primaryType="nt:unstructured"
-                answer="&lt;p&gt;On domestic flights an infant under 2 years can travel on your lap at no charge. One infant may travel on the lap of each adult aged 16 or over.&lt;/p&gt;&lt;p&gt;Add your infant when you book so we can plan for them on board. You will need their full name and date of birth.&lt;/p&gt;"
+                answer="&lt;ul&gt;&lt;li&gt;Infants can travel on their parent or guardian’s tickets when sitting on their lap.&lt;/li&gt;&lt;li&gt;Infants requiring their own seat will need a separate ticket and you’ll need to contact us to book this.&lt;/li&gt;&lt;li&gt;Bassinets are only available on Australian domestic flights operated by A330 aircraft and can be requested at check-in, subject to availability.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;a href=&quot;https://www.qantas.com/en-au/onboard/seat-selection#bassinet&quot;&gt;More about bassinets&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.qantas.com/en-au/help/contact-us&quot;&gt;Contact us to make a booking&lt;/a&gt;&lt;/p&gt;"
                 answer_x0040_ContentType="text/html"
                 cq:tags="[airline:travel/infants,airline:market/au,airline:market/nz]"
                 question="Infants on domestic flights"

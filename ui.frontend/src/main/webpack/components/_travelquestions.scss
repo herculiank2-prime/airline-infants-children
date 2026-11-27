@@ -10,16 +10,16 @@
 }
 
 .cmp-travelquestions__item {
-    border-top: 1px solid $color-border;
-
-    &:last-child {
-        border-bottom: 1px solid $color-border;
-    }
+    margin-bottom: .5rem;
+    padding: 0 1.5rem;
+    background: $color-background;
+    border-radius: $radius;
 }
 
 .cmp-travelquestions__item-heading {
     margin: 0;
-    font-size: 1rem;
+    font-size: 1.125rem;
+    font-weight: 500;
 }
 
 .cmp-travelquestions__button {
@@ -29,12 +29,12 @@
     gap: 1rem;
     width: 100%;
     min-height: 44px;
-    padding: 1rem 0;
+    padding: 1.25rem 0;
     border: 0;
     background: none;
     color: $color-foreground;
     font: inherit;
-    font-weight: 700;
+    font-weight: 500;
     text-align: left;
     cursor: pointer;
 
@@ -47,8 +47,8 @@
     flex: none;
     width: .75rem;
     height: .75rem;
-    border-right: 2px solid currentColor;
-    border-bottom: 2px solid currentColor;
+    border-right: 2px solid $color-brand;
+    border-bottom: 2px solid $color-brand;
     transform: rotate(45deg);
 
     [aria-expanded="true"] > & {
@@ -62,15 +62,20 @@
 
 // No display rule on the panel itself: it would override hidden="until-found" (AR-21).
 .cmp-travelquestions__panel {
-    padding: 0 0 1rem;
+    padding: 0 0 1.25rem;
     color: $color-foreground;
 
-    p {
+    p, li {
         margin: 0 0 .75rem;
     }
 
+    ul {
+        padding-left: 1.25rem;
+    }
+
     a {
-        color: $color-link;
+        color: $color-brand;
+        font-weight: 700;
     }
 }
 

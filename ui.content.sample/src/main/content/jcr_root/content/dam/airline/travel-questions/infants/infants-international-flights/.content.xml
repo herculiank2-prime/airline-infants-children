@@ -5,7 +5,7 @@
     <jcr:content
         cq:name="infants-international-flights"
         cq:parentPath="/content/dam/airline/travel-questions/infants"
-        jcr:description="Placeholder copy for a fictional airline. Not legal advice."
+        jcr:description="Copy from qantas.com, used with permission (ADR-029)."
         jcr:primaryType="dam:AssetContent"
         jcr:title="Infants on international flights"
         contentFragment="{Boolean}true">
@@ -16,7 +16,7 @@
             <master
                 jcr:mixinTypes="[cq:Taggable]"
                 jcr:primaryType="nt:unstructured"
-                answer="&lt;p&gt;On international flights an infant on your lap pays a reduced fare, usually 10% of the adult fare plus taxes.&lt;/p&gt;&lt;p&gt;Every infant needs their own passport and any visas the destination requires. Check the entry rules for each country on your trip.&lt;/p&gt;"
+                answer="&lt;ul&gt;&lt;li&gt;Infants must have their own ticket for international flights – but this does not include a seat.&lt;/li&gt;&lt;li&gt;All infants booked online must travel either in the lap of the adult travelling with them, or if you booked a bassinet, be placed in the bassinet when permitted during the flight.&lt;/li&gt;&lt;li&gt;Infants under two years old who don’t occupy a separate seat are charged 10% of the adult fare when accompanied by an adult. There must be one adult for every infant booked, or a fare must be paid.&lt;/li&gt;&lt;li&gt;If your infant under two years old will occupy their own seat, you will need to book a seat for them and provide their age. A discount may apply depending on the route.&lt;/li&gt;&lt;li&gt;If your booking includes flights operated by other airlines, check directly with those airlines for their policies on infants occupying a seat.&lt;/li&gt;&lt;/ul&gt;&lt;p&gt;&lt;a href=&quot;https://www.qantas.com/en-au/onboard/seat-selection#bassinet&quot;&gt;Learn more about booking bassinets&lt;/a&gt;&lt;/p&gt;"
                 answer_x0040_ContentType="text/html"
                 cq:tags="[airline:travel/infants,airline:market/au,airline:market/nz]"
                 question="Infants on international flights"

@@ -18,7 +18,7 @@ test.describe("Structured data, metadata and the persisted query (SE-01, SE-02, 
         for (const entity of faq.mainEntity) {
             expect(entity["@type"]).toBe("Question");
             expect(entity.acceptedAnswer["@type"]).toBe("Answer");
-            expect(entity.acceptedAnswer.text).toMatch(/^<p>/);
+            expect(entity.acceptedAnswer.text).toMatch(/^<(p|ul|ol)>/);
         }
         const firstPanel = await page.locator(".cmp-travelquestions__panel").first().innerHTML();
         expect(firstPanel.trim()).toBe(faq.mainEntity[0].acceptedAnswer.text);
@@ -27,7 +27,7 @@ test.describe("Structured data, metadata and the persisted query (SE-01, SE-02, 
     test("title, description and canonical come from page properties", async ({ page }) => {
         await page.goto(PAGE_PATH);
         await expect(page).toHaveTitle("Flying with infants and children");
-        await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /Plan a trip with a baby/);
+        await expect(page.locator('meta[name="description"]')).toHaveAttribute("content", /A guide for flying with infants, children/);
         await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href",
             /^(https?:\/\/[^/]+)?\/.*travel-information\/flying-infants-children\.html$/);
     });

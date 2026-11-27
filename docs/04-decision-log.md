@@ -310,3 +310,21 @@ Format: context → options → decision → trade-offs → consequences. Status
 - **Decision.** (b).
 - **Trade-offs.** (b) keeps history honest but means the artefacts didn't guide PR-002 to PR-005. In practice the same rules were applied from the design and the decision log. (a) would hide an error that the AI-practice criteria explicitly ask us to report.
 - **Consequences.** `docs/03-architect-review.md` marks AR-28 as completed in PR-006. `AI_NOTES.md` lists this among the AI errors. Future reviews check that each resolution names a commit.
+
+## ADR-029 - Use the live reference page's copy, images and styling, with permission
+
+- **Context.** The first demo used fictional copy (A-02) and a generic look. A stakeholder review compared it with the reference page (qantas.com, "Flying with infants and children") and found that it looked nothing like it. The project owner confirmed permission to reuse the page's text, images and visual design in this demo.
+- **Options.**
+  - (a) Keep fictional copy and only restyle.
+  - (b) Paraphrase the live copy.
+  - (c) Copy the live copy verbatim, reuse its images and logos, and match its layout and styles.
+- **Decision.** (c), limited to the sample content package and the site clientlib.
+- **Trade-offs.** (c) gives a faithful comparison and real-length content for the layout and tests. Its cost: the sample content is no longer neutral, so a different brand needs a new sample package. Some footer links and the header's sub-navigation are approximations, because the live header and footer are built by JavaScript.
+- **Consequences.**
+  - Assumption A-02 is superseded for the sample package.
+  - The `ui.content.sample` fragments, demo page and header and footer experience fragments carry the live copy. Fragment descriptions note the source.
+  - The code (`core`, `ui.apps`, policies) stays brand-neutral apart from the clientlib theme.
+  - The page uses only existing components plus a breadcrumb proxy, a section container style group and text styles (alert, card, related links, intro, card icons).
+  - Decorative card icons and the footer logo are CSS backgrounds, because the rich-text sanitizer strips `loading="lazy"` and PF-01 requires lazy images below the hero.
+  - The accordion's heading moved into a text component, so `travelquestions` renders `aria-labelledby` only when it has its own heading.
+  - UI tests now assert the live titles, the `infant-questions` data-layer parent and the qantas.com Joey Club URL.

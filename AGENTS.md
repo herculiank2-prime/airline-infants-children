@@ -4,7 +4,7 @@ AEM as a Cloud Service project (archetype 58) for a fictional airline's "Flying 
 
 ## Ground rules
 
-- **Never** put PII, credentials, client data, Salesforce schemas or unapproved legal copy in prompts, code or fixtures. Accordion answers are fictional placeholder copy (assumption A-02).
+- **Never** put PII, credentials, client data, Salesforce schemas or unapproved legal copy in prompts, code or fixtures. The exception is the sample content (`ui.content.sample`) and the site theme, which reuse the reference page's copy, images and styling with the owner's permission (ADR-029, superseding A-02). Keep that content out of `core`, `ui.apps` and test fixtures beyond the asserted titles.
 - Record each design-changing choice as an ADR in `docs/04-decision-log.md` (Context, Options, Decision, Trade-offs, Consequences), numbered after the last one.
 - Each PR gets `docs/pull-requests/PR-NNN.md` with Why, What changed, Verification, and AI assistance (agent used, what a human checked).
 - Tag code and tests with requirement IDs (`AC-01`, `HD-02`, ...) from `docs/01-analysis-discovery.md`.

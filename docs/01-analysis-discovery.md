@@ -83,7 +83,7 @@ Assessment weights: Solution design 25 %, AEM engineering 25 %, AI practice 20 %
 | # | Assumption | Why it is reasonable |
 |---|---|---|
 | A-01 | The build covers the hero, Joey Club teaser and the "Booking for infants (under 2 years)" accordion. Other reference-page sections (meals, baggage, bassinets, Bluey) are out of scope. | The Part B scope table lists exactly these three components |
-| A-02 | Accordion answer copy is **our own fictional wording** for "the airline"; only the six item titles follow the reference page | Ground rules forbid client content; AC-01 only constrains titles |
+| A-02 | *(Superseded by ADR-029: sample content now uses the reference copy with permission.)* Accordion answer copy is **our own fictional wording** for "the airline"; only the six item titles follow the reference page | Ground rules forbid client content; AC-01 only constrains titles |
 | A-03 | Imagery is generated or self-produced for this exercise (no stock or client images) | Ground rules: everything must be our own work or openly licensed |
 | A-04 | "Preview mode" (PF-01) means the AEM author page rendered with `wcmmode=disabled` on the local SDK, measured with Lighthouse using its mobile profile (Moto G Power emulation, simulated slow 4G) | No publish/CDN locally; this is the nearest repeatable environment |
 | A-05 | Header and footer XFs are placeholders (logo text, primary nav, footer links), not the airline's real global XFs | PT-01 says placeholder XFs |

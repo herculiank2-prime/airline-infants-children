@@ -43,11 +43,11 @@ test.describe("Accessibility and layout (PT-02, SD-08, EN-04, EN-06)", () => {
         await page.screenshot({ path: testInfo.outputPath(`page-${testInfo.project.name}.png`), fullPage: true });
     });
 
-    test("hero image is eager and other images are lazy (PF-01)", async ({ page }) => {
+    test("hero image is eager and images below it are lazy (PF-01)", async ({ page }) => {
         await page.goto(PAGE_PATH);
         await expect(page.locator(".cmp-hero__image")).toHaveAttribute("loading", "eager");
         await expect(page.locator(".cmp-hero__image")).toHaveAttribute("fetchpriority", "high");
-        for (const image of await page.locator("img:not(.cmp-hero__image)").all()) {
+        for (const image of await page.locator("main img:not(.cmp-hero__image), footer img").all()) {
             await expect(image).toHaveAttribute("loading", "lazy");
         }
     });

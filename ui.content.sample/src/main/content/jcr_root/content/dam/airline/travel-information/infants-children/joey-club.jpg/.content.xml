@@ -6,12 +6,12 @@
         <metadata
             dam:Fileformat="JPEG"
             dam:MIMEtype="image/jpeg"
-            dc:description="Cartoon kangaroo joey with a backpack and paper plane, surrounded by crayons and activity books"
+            dc:description="Animated image of Joey Club animal characters"
             dc:format="image/jpeg"
             dc:title="Joey Club"
             jcr:primaryType="nt:unstructured"
-            tiff:ImageLength="{Long}800"
-            tiff:ImageWidth="{Long}1200"/>
+            tiff:ImageLength="{Long}1067"
+            tiff:ImageWidth="{Long}1600"/>
         <related jcr:primaryType="nt:unstructured"/>
     </jcr:content>
 </jcr:root>

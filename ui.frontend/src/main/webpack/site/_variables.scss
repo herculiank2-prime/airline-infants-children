@@ -1,21 +1,23 @@
 
-//== Font
+//== Font (the live site uses the licensed "Qantas Sans"; Helvetica is its declared fallback)
 
-$font-family:           system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+$font-family:           "Qantas Sans", Helvetica, Arial, sans-serif;
 $font-size:             16px;
 $font-height:           1.5;
 
 //== Color (all text pairs meet WCAG 2.2 AA contrast)
 
-$color-foreground:      #1d1d1f;
+$color-foreground:      #323232;
 $color-background:      #ffffff;
-$color-muted:           #4a4a4f;
-$color-surface:         #f4f5f7;
-$color-border:          #c9ccd1;
-$color-brand:           #b5121b;
-$color-brand-dark:      #8c0e15;
-$color-link:            #0b57a4;
-$color-focus:           #1a73e8;
+$color-muted:           #626262;
+$color-surface:         #f3f2f1;
+$color-border:          #dadada;
+$color-brand:           #df0000;
+$color-brand-dark:      #b30000;
+$color-link:            #323232;
+$color-focus:           #0a6ebd;
+$color-info-bg:         #e6f4f9;
+$color-info-border:     #0a7fa8;
 $color-warning-bg:      #fff4ce;
 $color-warning-fg:      #5c4300;
 
@@ -23,5 +25,24 @@ $color-warning-fg:      #5c4300;
 
 $breakpoint-tablet:     768px;
 $breakpoint-desktop:    1200px;
-$content-max-width:     72rem;
+$content-max-width:     1232px;
+$page-gutter:           1.25rem;
+$page-gutter-desktop:   6rem;
 $radius:                .5rem;
+$radius-feature:        4rem;
+$clientlib-images: "/etc.clientlibs/airline/clientlibs/clientlib-site/resources/images";
+
+$section-spacing:       4rem;
+$section-spacing-desktop: 7rem;
+
+@mixin chevron($color: $color-brand) {
+    content: "";
+    display: inline-block;
+    width: .45em;
+    height: .45em;
+    margin-left: .5em;
+    border-right: 2px solid $color;
+    border-top: 2px solid $color;
+    transform: rotate(45deg);
+    vertical-align: .1em;
+}

@@ -1,12 +1,13 @@
 <sly data-sly-use.accordion="com.airline.travel.core.models.TravelQuestionsAccordion"
-     data-sly-use.templates="core/wcm/components/commons/v1/templates.html"></sly>
+     data-sly-use.templates="core/wcm/components/commons/v1/templates.html"
+     data-sly-test.headingId="${'{0}-heading' @ format=accordion.id}"></sly>
 <section data-sly-test="${!accordion.empty}"
          id="${accordion.id}"
          class="cmp-travelquestions"
-         aria-labelledby="${accordion.id}-heading"
+         aria-labelledby="${accordion.heading ? headingId : ''}"
          data-cmp-data-layer="${accordion.data.json}">
     <h2 data-sly-element="${accordion.headingElement}" class="cmp-travelquestions__heading"
-        id="${accordion.id}-heading" data-sly-test="${accordion.heading}">${accordion.heading}</h2>
+        id="${headingId}" data-sly-test="${accordion.heading}">${accordion.heading}</h2>
     <div class="cmp-travelquestions__item" data-sly-repeat.item="${accordion.items}"
          data-cmp-data-layer="${item.data.json}">
         <h3 data-sly-element="${accordion.itemHeadingElement}" class="cmp-travelquestions__item-heading">

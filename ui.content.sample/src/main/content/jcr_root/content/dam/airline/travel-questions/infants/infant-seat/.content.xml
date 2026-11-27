@@ -5,7 +5,7 @@
     <jcr:content
         cq:name="infant-seat"
         cq:parentPath="/content/dam/airline/travel-questions/infants"
-        jcr:description="Placeholder copy for a fictional airline. Not legal advice."
+        jcr:description="Copy from qantas.com, used with permission (ADR-029)."
         jcr:primaryType="dam:AssetContent"
         jcr:title="Booking a seat for your infant"
         contentFragment="{Boolean}true">
@@ -16,7 +16,7 @@
             <master
                 jcr:mixinTypes="[cq:Taggable]"
                 jcr:primaryType="nt:unstructured"
-                answer="&lt;p&gt;You can book a seat for your infant at the child fare. They must travel in an approved child restraint fitted to the aircraft seat.&lt;/p&gt;&lt;ul&gt;&lt;li&gt;Bring a restraint that is approved for aircraft use.&lt;/li&gt;&lt;li&gt;Choose a window seat so the restraint does not block the aisle.&lt;/li&gt;&lt;/ul&gt;"
+                answer="&lt;p&gt;Infants under 2 years of age do not require a seat but will be seated on the lap of the adult travelling with them.&lt;/p&gt;&lt;p&gt;If you would prefer to book a seat for your infant under two years, &lt;a href=&quot;https://www.qantas.com/en-au/help/contact-us&quot;&gt;contact us&lt;/a&gt; or your travel agent to make the booking. Infants occupying a seat will pay a discounted fare. The booking can not be made via Qantas.com.&lt;/p&gt;&lt;p&gt;Infants occupying a seat must be restrained in an approved child car seat or restraint. Refer to &lt;a href=&quot;https://www.qantas.com/en-au/travel-information/flying-infants-children/restraints&quot;&gt;Child restraints&lt;/a&gt; onboard aircraft.&lt;/p&gt;"
                 answer_x0040_ContentType="text/html"
                 cq:tags="[airline:travel/infants,airline:market/au,airline:market/nz]"
                 question="Booking a seat for your infant"

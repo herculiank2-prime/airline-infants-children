@@ -5,9 +5,9 @@
     <jcr:content
         cq:name="infant-not-born"
         cq:parentPath="/content/dam/airline/travel-questions/infants"
-        jcr:description="Placeholder copy for a fictional airline. Not legal advice."
+        jcr:description="Copy from qantas.com, used with permission (ADR-029)."
         jcr:primaryType="dam:AssetContent"
-        jcr:title="My infant isn&apos;t born yet, how do I book?"
+        jcr:title="My infant isn’t born yet, how do I book?"
         contentFragment="{Boolean}true">
         <data
             cq:model="/conf/airline/settings/dam/cfm/models/travel-question"
@@ -16,10 +16,10 @@
             <master
                 jcr:mixinTypes="[cq:Taggable]"
                 jcr:primaryType="nt:unstructured"
-                answer="&lt;p&gt;Book your own flights now, then add your infant after they are born. Call us or use Manage booking with their name and date of birth.&lt;/p&gt;&lt;p&gt;If you expect to travel late in pregnancy, read our guidance for expectant mothers before you book.&lt;/p&gt;"
+                answer="&lt;p&gt;You can make your booking now and once your infant is born, contact your local Qantas office to add them to your booking and arrange for their ticket if required.&lt;/p&gt;&lt;p&gt;Ticket requirements for infants depend on whether you&apos;re travelling internationally or domestically. On domestic flights, infants can travel on their parent or guardian’s tickets when seated on their lap.&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.qantas.com/en-au/travel-information/specific-needs-assistance/fitness-to-fly#pregnant-customers&quot;&gt;Explore travel while pregnant&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://www.qantas.com/en-au/help/contact-us&quot;&gt;Contact your local Qantas office&lt;/a&gt;&lt;/p&gt;"
                 answer_x0040_ContentType="text/html"
                 cq:tags="[airline:travel/infants,airline:market/au,airline:market/nz]"
-                question="My infant isn&apos;t born yet, how do I book?"
+                question="My infant isn’t born yet, how do I book?"
                 sortOrder="{Long}60"
                 tags="[airline:travel/infants,airline:market/au,airline:market/nz]"/>
         </data>
