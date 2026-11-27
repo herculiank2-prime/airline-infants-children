@@ -1,0 +1,15 @@
+---
+description: Dispatcher filters, caching and rewrites
+globs: dispatcher/src/**
+alwaysApply: false
+---
+
+# Dispatcher
+
+- Filters are an allow-list (ADR-015). Deny everything first, then allow exact paths, extensions and selectors. Don't include `default_filters.any`.
+- A new public endpoint needs three things in the same PR: a filter rule, a cache rule, and a TTL that matches SD-08 in `SOLUTION_DESIGN.md`.
+- Persisted queries: allow `GET /graphql/execute.json/airline/*` only. Never allow `/graphql/execute.json` without the configuration name, or `POST /content/cq:graphql/*`.
+- Cache lifetimes come from AEM headers (`HtmlCacheHeadersFilter`, persisted-query `cache-control` and `surrogate-control`). Don't hard-code TTLs in `.any` files unless the design says so.
+- Files marked immutable by the Dispatcher SDK must not be edited. Change the `*.farm` or `*.vhost` files in `enabled_*` and `available_*` only.
+- Run `bin/validate.sh src` (Dispatcher SDK) before opening a PR. If you can't, say so in the PR (see README departures).
+- AI-generated Dispatcher changes are reviewed with `.ai/prompts/dispatcher-review.md` and by a human. Treat them as security changes.
