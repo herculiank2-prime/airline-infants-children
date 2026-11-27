@@ -25,10 +25,10 @@
 
     <groupId>com.adobe.cq.cloud</groupId>
     <version>0.0.1-SNAPSHOT</version>
-    <artifactId>com.adobe.cq.cloud.testing.ui.cypress.tests</artifactId>
-    <name>com.adobe.cq.cloud.testing.ui.cypress - UI Tests</name>
+    <artifactId>com.adobe.cq.cloud.testing.ui.playwright.tests</artifactId>
+    <name>Airline Travel Information - UI Tests (Playwright)</name>
     <packaging>pom</packaging>
-    <description>Cypress UI tests</description>
+    <description>Playwright and axe-core UI tests (ADR-012)</description>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -113,8 +113,8 @@
                                     <goal>install-node-and-npm</goal>
                                 </goals>
                                 <configuration>
-                                    <nodeVersion>v18.14.2</nodeVersion>
-                                    <npmVersion>9.5.0</npmVersion>
+                                    <nodeVersion>v24.22.3</nodeVersion>
+                                    <npmVersion>11.19.1</npmVersion>
                                     <installDirectory>test-module</installDirectory>
                                 </configuration>
                             </execution>

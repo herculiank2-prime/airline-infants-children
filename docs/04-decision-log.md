@@ -271,3 +271,33 @@ Format: context → options → decision → trade-offs → consequences. Status
 - **Decision.** (b), keeping EN-02's "no manual steps".
 - **Trade-offs.** (b) makes the query text reviewable in Git and identical in every environment. Queries edited in GraphiQL on an environment are overwritten on the next deploy, which is intended. The query text is stored as a binary property (`_jcr_data.binary`), so diffs show it as a file.
 - **Consequences.** Change a query by editing its `.binary` file. The endpoint must be published with the queries for publish-side `execute.json` (done by the package install on publish).
+## ADR-025 - Reset the local publish repository instead of repairing it
+
+- **Context.** The first `-PautoInstallSinglePackagePublish` deploy got a 404 from Package Manager. `error.log` on 4503 showed `SegmentNotFoundException` ("Segment not found"), so repoinit aborted and Package Manager never started.
+- **Options.**
+  - (a) Run `oak-run check` and roll back to the last good revision.
+  - (b) Move `crx-quickstart` aside and start a fresh publish, then deploy and replicate again.
+- **Decision.** (b). The old repository was renamed to `crx-quickstart.corrupt-20261127` and kept, not deleted.
+- **Trade-offs.** (b) loses nothing that is not in Git or on author, and it proves the deploy works on a clean instance (EN-02). (a) keeps the instance history but takes longer and may still fail.
+- **Consequences.** `docs/05-build-deploy-test.md` lists the reset and the replication steps. Publish content always comes from author replication, never from manual edits.
+
+## ADR-026 - UI tests run against publish directly; short-URL 404s are expected without the Dispatcher
+
+- **Context.** Publish maps `/content/airline/` to `/` outbound only (design 12). The Dispatcher rewrite resolves incoming short URLs, so on bare 4503 links like `/au/en/...` return 404. The console-error test (EN-06) failed on one such image request.
+- **Options.**
+  - (a) Make the mapping two-way on publish.
+  - (b) Run the suite only through a local Dispatcher container.
+  - (c) Record failed requests by URL and skip short-URL 404s unless `AEM_DISPATCHER=1`.
+- **Decision.** (c).
+- **Trade-offs.** (a) changes production URL resolution just to suit local tests. (b) needs Docker on every developer machine. (c) still fails on any 4xx or 5xx for `/content`, `/etc.clientlibs`, `/libs` or `/graphql`, plus every console error and uncaught exception.
+- **Consequences.** In Cloud Manager (behind the Dispatcher) set `AEM_DISPATCHER=1` so every 404 counts. Tests navigate with `/content/...` URLs. Local timeouts are 60 s with 2 workers, because SDK publish renders slowly on first hit.
+
+## ADR-027 - Canonical link is root-relative on the local SDK (deviation)
+
+- **Context.** Design 11 says the canonical is absolute through the Externalizer `publish` domain. On 4503 Core Page renders `/au/en/travel-information/flying-infants-children.html`, because the project has no Externalizer configuration.
+- **Options.**
+  - (a) Add an Externalizer configuration and a canonical override.
+  - (b) Accept the root-relative canonical for the demo and configure the domain per environment in Cloud Manager.
+- **Decision.** (b), for time.
+- **Trade-offs.** Search engines resolve a root-relative canonical against the page origin, so it still works. It is less robust when content is syndicated or served from another host.
+- **Consequences.** The Playwright test accepts absolute or root-relative URLs. Next step: set the Externalizer `publish` domain through Cloud Manager environment variables, then tighten the test to absolute only.

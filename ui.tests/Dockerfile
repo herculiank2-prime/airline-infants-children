@@ -12,20 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-FROM cypress/included:13.14.1
+# Playwright image with browsers preinstalled; tests use the bundled Chromium (PW_CHANNEL="").
+FROM mcr.microsoft.com/playwright:v1.65.1-noble
 
-ENV APP_PATH /usr/src/app
-RUN apt -qqy update \
-    # Generic dependencies
-    && apt -qqy --no-install-recommends install \
-    curl \
-    build-essential
-# <<< End EAAS Convention \
+ENV APP_PATH=/usr/src/app
+ENV PW_CHANNEL=""
+ENV CI=true
+ENV PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1
 
-# Set Application Environment
 WORKDIR ${APP_PATH}
 COPY ./test-module ./
-RUN npm install
-# no need to wait for selenium
+RUN npm ci --no-audit --no-fund
 ENTRYPOINT ["bash","run.sh"]
-

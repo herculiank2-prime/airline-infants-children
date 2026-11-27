@@ -6,3 +6,5 @@
 *.vars text
 *.any text
 magic text
+*.sh text eol=lf
+Dockerfile text eol=lf

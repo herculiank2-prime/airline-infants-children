@@ -1,75 +1,32 @@
-# Cypress Sample Test Module
+# UI tests (Playwright + axe-core)
 
-This module documents the recommended structure for a Cypress test module and adheres to the Cloud Manager UI test module conventions,
-ensuring that tests will be executed and reports generated are stored in the proper location.
+End-to-end tests for the infants and children page (EN-04). They run against **AEM publish** and cover:
 
-Some examples of basic tasks like logging in-out of AEM instances, taking screenshots, logging browser requests are included.
+| Spec | What it checks |
+|---|---|
+| `accordion.spec.ts` | Six questions in order, collapsed on load, `aria-expanded`/`aria-controls`, Tab/Enter/Space (AC-01) |
+| `datalayer.spec.ts` | `airline:accordion:expand`/`collapse` and `airline:teaser:click` with component ID and title (DL-01) |
+| `accessibility.spec.ts` | axe-core WCAG 2.1 AA scan (no serious/critical), landmarks, one `h1`, skip link, no overflow at 375/1280, eager hero, no console errors (PT-02, EN-06) |
+| `structured-data.spec.ts` | One FAQPage JSON-LD matching the accordion, title/description/canonical, persisted query contract (SE-01, SE-02, HD-02) |
 
+Every test runs twice: at 375 px and at 1280 px wide.
 
+## Run locally
 
+Uses the installed Microsoft Edge, so no browser download is needed.
 
-- Install Cypress
-  ```shell
-  npm install
-  ```
-
-- Set environment variables required for test execution
-  ```shell
-  export AEM_AUTHOR_URL=https://author-p***-e***.adobeaemcloud.com
-  export AEM_AUTHOR_USERNAME=admin
-  export AEM_AUTHOR_PASSWORD=***
-  export AEM_PUBLISH_URL=https://publish-p***-e***.adobeaemcloud.com
-  export AEM_PUBLISH_USERNAME=admin
-  export AEM_PUBLISH_PASSWORD=***
-  export REPORTS_PATH=target/
-  ```
-
-- Run tests with one of the following commands
-  ```shell
-  npm test              # Using default Cypress browser
-  npm run test-chrome   # Using Google Chrome browser
-  npm run test-firefox  # Using Firefox browser
-  ```
-
-- For debugging tests, you may run Cypress with the browser visible and Cypress console
-  ```shell
-  npx cypress run --headed --no-exit --browser chrome
-  ```
-
-
-In order to be able to interpret the results of the tests correctly, a summary in JUnit format needs to be
-provided. To achieve this, both the `spec` and `mocha-junit-reporter` reporter are configured:
-
-```javascript
-reporter: 'cypress-multi-reporters',
-reporterOptions: {
-  configFile: 'reporter.config.js',
-},
+```powershell
+cd ui.tests/test-module
+$env:PATH = "$PWD\node;$env:PATH"          # Node installed here by `mvn install`
+$env:PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD = "1"
+npm ci
+npm test                                     # AEM_PUBLISH_URL defaults to http://localhost:4503
+npm run report                               # HTML report in target/html-report
 ```
 
-```javascript
-const reportsPath = process.env.REPORTS_PATH || 'cypress/results'
+Set `PW_CHANNEL=""` to use Playwright's bundled Chromium instead of Edge (as the Docker image does).
 
-module.exports = {
-  "reporterEnabled": "spec, mocha-junit-reporter",
-  "mochaJunitReporterReporterOptions": {
-    "mochaFile": `${reportsPath}/output.xml`
-  },
-}
-```
+## Cloud Manager
 
-In order for the report to be found `reportPath` must be the value passed in the environment
-variable `REPORTS_PATH` as expected by EaaS. See [cypress.config.js](cypress.config.js)
-
-
-Cypress will automatically record videos for all test executions and create screenshots for test failures.
-
-Additional screenshots can be captured during the test execution using following command:
-
-```javascript
-cy.screenshot()
-```
-
-`$REPORTS_PATH/videos` will contain the videos.
-
-`$REPORTS_PATH/screenshots` will contain the images.
+`mvn install` packages this folder as the UI-test Docker context. The image (`../Dockerfile`) runs `run.sh`, which
+calls `npm test`; JUnit results go to `$REPORTS_PATH/junit`.
