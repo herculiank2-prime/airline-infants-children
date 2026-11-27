@@ -301,3 +301,12 @@ Format: context → options → decision → trade-offs → consequences. Status
 - **Decision.** (b), for time.
 - **Trade-offs.** Search engines resolve a root-relative canonical against the page origin, so it still works. It is less robust when content is syndicated or served from another host.
 - **Consequences.** The Playwright test accepts absolute or root-relative URLs. Next step: set the Externalizer `publish` domain through Cloud Manager environment variables, then tighten the test to absolute only.
+## ADR-028 - Commit the AI artefacts with the docs PR, and correct the AR-28 resolution
+
+- **Context.** The architect-review resolution (AR-28) said that a project-specific `AGENTS.md`, `.cursor/rules/*.mdc`, `.cursor/skills/new-aem-component/SKILL.md` and `.ai/prompts/` were committed. The final doc review found that none of them existed, and `AGENTS.md` was still the archetype's generic text, which still mentioned Cypress.
+- **Options.**
+  - (a) Rewrite history so the artefacts appear in PR-001.
+  - (b) Commit them now in PR-006, correct the resolution text, and say so.
+- **Decision.** (b).
+- **Trade-offs.** (b) keeps history honest but means the artefacts didn't guide PR-002 to PR-005. In practice the same rules were applied from the design and the decision log. (a) would hide an error that the AI-practice criteria explicitly ask us to report.
+- **Consequences.** `docs/03-architect-review.md` marks AR-28 as completed in PR-006. `AI_NOTES.md` lists this among the AI errors. Future reviews check that each resolution names a commit.
